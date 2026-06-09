@@ -6,9 +6,9 @@ interconnect (NVLink/PCIe/NCCL) characterisation for the NVIDIA TU102 GPU
 NVLink bridge. In the style of Agner Fog's x86 instruction tables, with the
 methodology of Jia et al.'s Volta/Turing dissections.
 
-**Status: skeleton (M0).** No measurements published yet. The table schema,
-measurement policy, and coverage manifest are in place; benchmark families land
-in milestones M1–M5, completeness audit and paper at M6.
+**Status: skeleton.** No measurements published yet. The table schema,
+measurement policy, and coverage manifest are in place; the benchmark families
+land next, followed by a completeness audit and the paper.
 
 ## What this will contain
 

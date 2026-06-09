@@ -24,6 +24,11 @@
 % negative parallelism ("It's not X — it's Y"), "serves as", magic adverbs,
 % manufactured fragments, false ranges, signposted conclusions. Any one
 % pattern once may pass; clusters are a rewrite trigger.
+% Work-segmentation vocabulary is likewise banned from prose, headers, and
+% commit subjects: no numbered spans ("Phase 1", "Step 3 of 5", "M2") and
+% no deformed plan arithmetic ("5.5"); spans of work get proper names. See
+% github.com/connollydavid/no-phase-skill (VOCABULARY.md). Academic section
+% numbering produced by LaTeX is typography, not a plan label, and is fine.
 %
 % Template notes: pdfLaTeX, arXiv-safe (no shell-escape, Type 1 fonts
 % embedded). Palatino-descended text/math (newpx) + Inconsolata mono for
@@ -107,7 +112,8 @@
 
 \begin{abstract}
 \noindent
-% Drafted at M6. One paragraph: Agner-style op table for TU102 (sm_75),
+% Drafted last, once the table is complete. One paragraph: Agner-style op
+% table for TU102 (sm_75),
 % methodology (dependent chains, fine-grained P-chase, SASS-gated benches,
 % locked clocks), priors from Jia et al. T4 with per-row deviation tracking,
 % additive NVLink/PCIe/NCCL characterisation, and worked examples driving

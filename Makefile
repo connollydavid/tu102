@@ -12,7 +12,7 @@ all: bins
 
 bins: $(BENCH_BINS)
 ifeq ($(BENCH_SRCS),)
-	@echo "no benches yet (M1)"
+	@echo "no benches yet"
 endif
 
 %.bin: %.cu bench/common/harness.cuh
