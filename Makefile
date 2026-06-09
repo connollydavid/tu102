@@ -1,7 +1,9 @@
 # nvcc 13.3 parses libstdc++ 16 headers cleanly (the 13.2 incompat that
 # forced a g++-15 host-compiler pin is fixed), so no -ccbin pin here.
 NVCC      := /opt/cuda-13.3/bin/nvcc
-NVCCFLAGS := -O2 -arch=sm_75 -lineinfo
+GIT_SHA   := $(shell git rev-parse --short HEAD)
+NVCCFLAGS := -O2 -arch=sm_75 -lineinfo -DTU102_GIT_SHA=\"$(GIT_SHA)\"
+LDLIBS    := -lnvidia-ml
 
 BENCH_SRCS := $(wildcard bench/*/*.cu)
 BENCH_BINS := $(BENCH_SRCS:.cu=.bin)
@@ -16,7 +18,7 @@ ifeq ($(BENCH_SRCS),)
 endif
 
 %.bin: %.cu bench/common/harness.cuh
-	$(NVCC) $(NVCCFLAGS) -o $@ $<
+	$(NVCC) $(NVCCFLAGS) -o $@ $< $(LDLIBS)
 
 # disassemble every built bench for check_sass.py
 sass: $(BENCH_BINS:.bin=.sass)
