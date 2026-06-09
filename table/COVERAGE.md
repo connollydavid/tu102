@@ -7,24 +7,28 @@ release is tagged.
 
 ## Core SM — ALU/FP
 
-- [ ] `alu.ffma.{lat,tput}` — anchor: 2.0 warpinst/SM/clk
-- [ ] `alu.fadd.{lat,tput}`, `alu.fmul.{lat,tput}`
-- [ ] `alu.iadd3.{lat,tput}`, `alu.imad.{lat,tput}` (pipe = fma)
-- [ ] `alu.lop3.{lat,tput}`, `alu.shf.{lat,tput}`, `alu.sel.{lat,tput}`
-- [ ] `alu.isetp.{lat,tput}`, `alu.fsetp.{lat,tput}`
-- [ ] `alu.popc.{lat,tput}`, `alu.flo.{lat,tput}`
-- [ ] `alu.prmt.{lat,tput}` — byte permute; nibble/byte unpack in dequant
-- [ ] `alu.idp4a.{lat,tput}` — IDP.4A.{U8,S8} (dp4a); consumer: FA-split dp4a
+- [x] `alu.ffma.{lat,tput}` — anchor: 2.0 warpinst/SM/clk
+- [x] `alu.fadd.{lat,tput}`, `alu.fmul.{lat,tput}`
+- [x] `alu.iadd3.{lat,tput}`, `alu.imad.{lat,tput}` (pipe = fma)
+- [x] `alu.lop3.{lat,tput}`, `alu.shf.{lat,tput}`, `alu.sel.{lat,tput}`
+- [x] `alu.isetp.{lat,tput}`, `alu.fsetp.{lat,tput}`
+- [x] `alu.popc.{lat,tput}`, `alu.flo.{lat,tput}`
+- [x] `alu.prmt.{lat,tput}` — byte permute; nibble/byte unpack in dequant
+- [x] `alu.idp4a.{lat,tput}` — IDP.4A.{U8,S8} (dp4a); consumer: FA-split dp4a
       variant arbitration, MMVQ q8 dot
-- [ ] `alu.idiv.u32.tput` — emulated divide sequence cost
-- [ ] `alu.hfma2.{lat,tput}` (fp16x2)
-- [ ] `alu.dadd.{lat,tput}`, `alu.dfma.{lat,tput}` (FP64 = 1/32 FFMA expected)
-- [ ] `alu.regbank.conflict` — register-file bank-conflict penalty on 3-src
-      ops (operand-layout lever). Caveat: ptxas owns register allocation and
-      the operand collector hides small conflicts; if two-method agreement
-      is unreachable from PTX-level control, this row is descoped to a
-      documented note rather than shipped `UNVERIFIED`
-- [ ] co-issue matrix: pipe binding for every row above
+- [x] `alu.idiv.u32.tput` — emulated divide sequence cost
+- [x] `alu.hfma2.{lat,tput}` (fp16x2)
+- [x] `alu.dadd.{lat,tput}`, `alu.dfma.{lat,tput}` (FP64 = 1/32 FFMA expected)
+- [x] `alu.regbank.conflict` — **descoped to this note** (the caveat fired):
+      ptxas owns register allocation, and the Harness pinning catalogue
+      (bench/alu/ops.cuh — constant folding, uniform-datapath conversion,
+      IADD3 strength reduction surviving carry pins and cross-coupled
+      accumulators) demonstrates PTX-level control over emitted registers
+      is not achievable. Operand-bank layout cannot be pinned without a
+      SASS-level assembler, so two-method agreement is unreachable from
+      this toolchain by construction. Revisit only if a maintained sm_75
+      SASS assembler enters the toolchain
+- [x] co-issue matrix: pipe binding for every row above
 
 ## SFU / conversion
 
@@ -55,8 +59,9 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [ ] `mem.l2.{lat,bw}`; cliff at 6 MB
 - [ ] `mem.const.{imm,cbank,idc}.lat` — constant hierarchy
 - [ ] `mem.tlb.{l1,l2}.{pagesize,reach,lat}` (P-chase)
-- [ ] `mem.dram.{read,write,copy}.bw` — gate: read ≥570 GB/s (85% of 672);
-      `mem.dram.lat`
+- [ ] `mem.dram.{read,write,copy}.bw` — gate: read ≥530 GB/s (85% of the
+      624 GB/s P2-state peak; compute cannot reach the P0 memory clock —
+      see SCHEMA clock-gate item); `mem.dram.lat`
 - [ ] `mem.ldg.u8.stride18.tput` — q4_0 block stride; predict 18 sectors/req
 - [ ] `mem.ldg.policy.{ldcs,ldcg,ldlu}` eviction-policy probes — consumer: MMVQ
 - [ ] `mem.stg.*` write paths

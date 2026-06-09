@@ -14,10 +14,12 @@
 namespace tu102 {
 
 constexpr int ILP = 8;
-// Throughput regions are event-timed, so the per-invocation launch-wave skew
-// (a few us) enters the measurement; 20 ms amortises it below the 0.1%
-// between-run floor. Latency regions read clock64 on-device and are immune.
-constexpr double TPUT_TIMED_MS = 20.0;
+// Throughput is timed in actual SM cycles via clock64 on block 0 (one block
+// per SM, so its span is exactly its SM's work). Event-based wall timing
+// normalised by the nominal 1455 MHz showed 0.3-1.0% between-run spread that
+// GREW with region length — real-clock thermal sag, not launch skew; clock64
+// is immune (the latency rows, clock64-based, had zero spread throughout).
+constexpr double TPUT_TIMED_MS = 2.0;
 constexpr const char* SRC = "bench/alu/alu.cu";
 
 // Operands arrive as kernel parameters: runtime values are opaque to ptxas,
@@ -40,7 +42,7 @@ __global__ void lat_kernel(unsigned trips, typename Op::T a, typename Op::T b,
 
 template <typename Op>
 __global__ void tput_kernel(unsigned trips, typename Op::T a, typename Op::T b,
-                            typename Op::T* sink) {
+                            long long* out_cycles, typename Op::T* sink) {
     using T = typename Op::T;
     T x[ILP], y[ILP];
 #pragma unroll
@@ -48,12 +50,17 @@ __global__ void tput_kernel(unsigned trips, typename Op::T a, typename Op::T b,
         x[i] = lane_mix<T>::mix(a, threadIdx.x + 5u * i);
         y[i] = a;
     }
+    __syncthreads();
+    long long t0 = clock64();
     for (unsigned t = 0; t < trips; t++) {
 #pragma unroll
         for (int u = 0; u < Op::unroll / ILP; u++)
 #pragma unroll
             for (int i = 0; i < ILP; i++) Op::step(x[i], y[i], b);
     }
+    __syncthreads();
+    long long t1 = clock64();
+    if (threadIdx.x == 0 && blockIdx.x == 0) *out_cycles = t1 - t0;
     if (threadIdx.x == 31) *sink = x[(int)(trips & (ILP - 1))];
 }
 
@@ -108,12 +115,11 @@ template <typename Op>
 double measure_tput_once(unsigned trips, int warps_per_sm) {
     using T = typename Op::T;
     T a = seed_a<T>(), b = seed_b<T>();
-    float ms = timed_ms([&] {
-        tput_kernel<Op><<<N_SM, 32 * warps_per_sm>>>(trips, a, b, (T*)bufs.sink);
-    });
-    double cycles = (double)ms * 1e-3 * SM_CLOCK_MHZ * 1e6;
-    // warp instructions per SM per cycle
-    return ((double)warps_per_sm * trips * Op::unroll * Op::insts_per_step) / cycles;
+    long long cycles = 0;
+    tput_kernel<Op><<<N_SM, 32 * warps_per_sm>>>(trips, a, b, bufs.cycles, (T*)bufs.sink);
+    TU102_CUDA_CHECK(cudaMemcpy(&cycles, bufs.cycles, 8, cudaMemcpyDeviceToHost));
+    // warp instructions per SM per actual SM cycle (block 0 = one full SM)
+    return ((double)warps_per_sm * trips * Op::unroll * Op::insts_per_step) / (double)cycles;
 }
 
 template <typename Op>
@@ -122,7 +128,8 @@ unsigned calibrate_tput_trips(int warps_per_sm) {
     T a = seed_a<T>(), b = seed_b<T>();
     unsigned trips = 256;
     while (timed_ms([&] {
-               tput_kernel<Op><<<N_SM, 32 * warps_per_sm>>>(trips, a, b, (T*)bufs.sink);
+               tput_kernel<Op><<<N_SM, 32 * warps_per_sm>>>(trips, a, b, bufs.cycles,
+                                                            (T*)bufs.sink);
            }) < TPUT_TIMED_MS * 1.1)
         trips *= 2;
     return trips;
