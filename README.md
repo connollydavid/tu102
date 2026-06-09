@@ -1,7 +1,7 @@
-# TU102 (sm_75) microarchitecture characterization
+# TU102 (sm_75) microarchitecture characterisation
 
 Instruction-level latency/throughput tables, memory-hierarchy measurements, and
-interconnect (NVLink/PCIe/NCCL) characterization for the NVIDIA TU102 GPU
+interconnect (NVLink/PCIe/NCCL) characterisation for the NVIDIA TU102 GPU
 (Turing, compute capability 7.5), measured on 2× Quadro RTX 6000 with an NV2
 NVLink bridge. In the style of Agner Fog's x86 instruction tables, with the
 methodology of Jia et al.'s Volta/Turing dissections.
@@ -24,7 +24,10 @@ in milestones M1–M5, completeness audit and paper at M6.
   to ±20%.
 - `data/results/<host>/` — append-only raw run CSVs. The pristine reference
   dataset is `t5820-2xrtx6000` (Xeon W-2140B, both GPUs PCIe 3.0 x16).
-- `paper/` — LaTeX write-up (arXiv-ready).
+- `paper/` — LaTeX write-up (arXiv-ready). `PAPER.md` at the repository root
+  is a generated GitHub-readable mirror (`make paper-md`, via pandoc); the
+  `.tex` is the source of truth. Prose is British English; code identifiers
+  and named APIs stay US English ASCII.
 
 ## Hardware
 
