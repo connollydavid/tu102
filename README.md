@@ -35,8 +35,14 @@ in milestones M1–M5, completeness audit and paper at M6.
 |---|---|
 | GPU | 2× Quadro RTX 6000 (TU102, 72 SMs, 24 GB GDDR6, ~672 GB/s) |
 | Interconnect | NVLink NV2 (2 links, ~50 GB/s/dir aggregate), PCIe 3.0 x16 per GPU |
-| Clock policy | SM locked at 1455 MHz for all cycle-domain rows |
-| Toolchain | CUDA 13.2, `nvcc -ccbin g++-15 -O2 -arch=sm_75` |
+| Clock policy | SM locked at 1455 MHz for all cycle-domain rows; memory clock locked for bandwidth rows; ECC disabled (recorded per run) |
+| Toolchain | CUDA 13.3 (`nvcc -O2 -arch=sm_75`), driver 610.43.02 |
+
+Scope: compute path only. RT cores (not reachable from CUDA), NVENC/NVDEC,
+and the graphics pipe are out of scope — stated, not silent. The table is a
+**snapshot** of this toolchain/driver pairing, not a living document; run
+headers carry the exact versions, and the append-only results layout admits
+later datasets under newer toolchains.
 
 ## Methodology lineage
 

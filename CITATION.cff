@@ -12,7 +12,9 @@ authors:
     email: david@connol.ly
 repository-code: "https://github.com/connollydavid/tu102"
 url: "https://github.com/connollydavid/tu102"
-license: MIT
+license:
+  - MIT
+  - CC-BY-4.0
 keywords:
   - GPU microarchitecture
   - NVIDIA Turing

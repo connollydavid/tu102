@@ -10,16 +10,16 @@ hand-edited.
 |---|---|
 | `row_id` | stable dotted key, e.g. `alu.ffma.lat`, `mem.ldg.u8.stride18.tput`, `x.nvlink.peer_ldg.lat` |
 | `class` | family: `alu sfu tensor cvt mem smem atomics sync branch launch x` (`x` = interconnect) |
-| `instruction` | SASS mnemonic as emitted by nvcc 13.2 (e.g. `FFMA`, `MUFU.EX2`, `HMMA.1688.F32`) |
-| `variant` | qualifier: `l1hit`, `stride18`, `conflict16`, `192thr`, `f32acc`, … |
-| `kind` | `latency_cycles` \| `recip_tput` \| `bandwidth` \| `time_us` \| `na` |
-| `value` | median over R reps |
-| `unit` | `cycles`, `warpinst/SM/clk`, `GB/s`, `us`, … |
+| `instruction` | SASS mnemonic (e.g. `FFMA`, `MUFU.EX2`, `HMMA.1688.F32`). Rows are SASS-level and therefore compiler-agnostic; benches are compiled with nvcc 13.3 (`/opt/cuda-13.3`), and `check_sass.py` proves each bench times exactly the named op |
+| `variant` | qualifier: `l1hit`, `stride18`, `conflict16`, `192thr`, `f32acc`, `w32` (warps/SM at which a tput value was taken), … |
+| `kind` | `latency_cycles` \| `latency_ns` \| `recip_tput` \| `bandwidth` \| `time_us` \| `na` |
+| `value` | median over R reps (see between-run rule below) |
+| `unit` | `cycles`, `ns`, `warpinst/SM/clk`, `GB/s`, `us`, … |
 | `cv_pct` | coefficient of variation over reps; flagged >3% (cycle rows) / >8% (host rows) |
-| `pipe` | issue pipe by co-issue probe: `fma alu sfu tensor lsu uniform xu` (Turing IMAD issues on the FMA pipe) |
-| `prior_value` | published prior, where one exists |
+| `pipe` | issue pipe by contention probe: `fma alu sfu tensor lsu uniform xu` (Turing IMAD issues on the FMA pipe) |
+| `prior_value` | published prior, where one exists AND applies (see prior-applicability rule) |
 | `prior_src` | bib locator, grammar `<bibkey>:<table/section>`, e.g. `jia2019turing:tab3.1` |
-| `deviation_pct` | (value − prior) / prior × 100 |
+| `deviation_pct` | (value − prior) / prior × 100; computed only where the prior applies |
 | `flag` | `ok` \| `DEV>25%` \| `NA_SM75` \| `UNVERIFIED` |
 | `measured_by` | provenance: `bench/<family>/<file>.cu@<gitsha>` + results-file line |
 | `clock_mhz` | locked SM clock during measurement (1455 for all cycle rows) |
@@ -27,35 +27,82 @@ hand-edited.
 
 ## Conventions
 
-- All cycle-domain rows at SM clock locked to 1455 MHz.
+- **Clock domains.** Core-domain rows (alu/sfu/tensor/cvt/smem/sync/branch)
+  are quoted in cycles at the locked SM clock. Memory-system and interconnect
+  latencies (`mem.l2`, `mem.dram`, `mem.tlb`, `x.*`) are quoted in **ns**
+  (`kind=latency_ns`) — they live partly in other clock domains and SM-cycle
+  numbers would be clock-ratio-dependent. Bandwidths in GB/s; host rows in µs.
 - Throughput anchor: FFMA = 2.0 warpinst/SM/clk = 64 thread-FMA/SM/clk.
+- **Occupancy convention.** `recip_tput`/`bandwidth` values are the peak
+  across the warps/SM sweep; `variant` records the sweep point (`w32` = 32
+  warps/SM); the full sweep stays in `data/results/`.
 - Features absent on sm_75 (`cp.async`/LDGSTS, async barriers, …) are real
   rows with `kind=na, flag=NA_SM75`, `prior_src` pointing at the PTX ISA
   clause that scopes them to sm_80+. Explicit absence, not missing keys.
+- **Prior applicability.** T4 (`jia2019turing`) priors apply to **core-domain
+  rows only** (same SM microarchitecture). Memory-system, interconnect, and
+  launch rows take whitepaper priors or none — TU104 has a different L2,
+  DRAM system, and no NVLink. `deviation_pct` is computed only where a prior
+  applies; rows without an applicable prior are annotated wholesale, never
+  flagged `DEV>25%`.
 - `UNVERIFIED` marks rows where only one measurement method exists and no
   prior corroborates; cleared when two independent methods agree.
+- **Scope exclusions.** RT cores (not reachable from CUDA), NVENC/NVDEC, and
+  the graphics/display pipe are out of scope. This is a compute-path
+  characterisation; the exclusions are stated rather than silent.
 
 ## Measurement policy
 
 Every bench binary, via `bench/common/harness.cuh`:
 
-1. **Clock gate**: precheck SM clock == 1455 MHz on the target GPU; exit 2
-   with instructions (`sudo bash scripts/gpu-clocks.sh lock`) if unlocked.
-2. 3 warmup iterations; timed region ≥ 2 ms.
-3. R = 10 reps; report median + `cv_pct`.
-4. Loop overhead cancelled by the 2N−N slope method.
-5. Per-rep clock sampling; reps where the clock dipped below the lock are
-   rejected.
-6. Op selection pinned by PTX inline asm; `tools/check_sass.py` gates every
-   bench (the timed loop must contain exactly the intended SASS op —
-   nvcc 13.2 codegen guard).
-7. Latency: `clock64()` dependent chains / fine-grained P-chase
+1. **Clock gate — both domains**: precheck SM clock locked (1455 MHz) AND
+   memory clock locked (`nvidia-smi -lmc`) on the target GPU; exit 2 with
+   instructions if either is unlocked. The repo's production
+   `gpu-clocks.sh` locks SM clocks only — the harness owns the memory-clock
+   lock check itself. Per-rep sampling covers **both** clocks; reps where
+   either dipped are rejected.
+2. **Run header** auto-captures: hostname, driver, CUDA toolkit, GPU
+   topology, locked clocks (both domains), **ECC state** (Disabled on this
+   rig, matching production — bandwidth gates are interpreted relative to
+   the recorded ECC state), CPU governor, display-context check, bench git
+   sha, timestamp.
+3. **Host-row prechecks**: CPU governor locked to `performance` (launch and
+   host-latency rows are invalid otherwise), and no display/graphics context
+   on either GPU — `run_all.sh` aborts on graphics contexts as well as
+   compute processes.
+4. 3 warmup iterations; timed region ≥ 2 ms.
+5. R = 10 reps; report median + `cv_pct`. **Between-run rule:** every
+   published row requires ≥ 2 independent process invocations; `mk_table.py`
+   computes between-run spread and flags rows where it exceeds the
+   within-run cv.
+6. Loop overhead cancelled by the 2N−N slope method; the chosen N is
+   documented per bench and the loop body is verified (via SASS size) to fit
+   in the L0 instruction cache, so the slope never silently measures icache
+   misses.
+7. Op selection pinned by PTX inline asm; `tools/check_sass.py` gates every
+   bench. Both gates carry **negative tests**: the clock gate must fail on an
+   unlocked GPU, and a deliberately miscompiled bench must fail check_sass.
+8. Latency: `clock64()` dependent chains / fine-grained P-chase
    [wong2010demystifying, mei2017dissecting]. Throughput: steady-state
    unrolls with warps/SM sweeps. Host rows: `steady_clock` + cudaEvent
    cross-check, R = 1000, median + p10/p90.
-8. `run_all.sh` aborts if any compute process is resident on either GPU.
-9. Both GPUs are measured; SM-domain rows are asserted identical GPU0 vs
-   GPU1. Interconnect rows differ by design and carry the topology in
-   `variant`.
-10. `ncu` (from /opt/cuda-13.3, version-stamped) is corroboration-only —
-    never the source of a `value`.
+9. **Pipe binding (Turing is single-issue per scheduler — no dual issue):**
+   contention probes. Saturate a known pipe with a reference op stream,
+   inject the candidate op stream, and read the binding off the throughput
+   degradation matrix (degrades the FFMA stream → fma pipe; degrades LOP3 →
+   alu pipe; degrades neither → its own pipe).
+10. **Gate taxonomy.** Verification gates are either **methodology-sanity**
+    (two independent methods agree within cv — failure aborts the milestone)
+    or **prior-comparison** (mismatch is flagged, investigated, and
+    published either way). Anchors like "FFMA lat = 4 cyc" are
+    prior-comparisons: the table exists to publish true deviations, not to
+    be tuned until it matches Jia et al.
+11. SM-domain rows are measured on both GPUs and must agree **within their
+    combined cv** (not bit-identical — binning and thermals exist).
+    Interconnect rows differ by design and carry the topology in `variant`.
+12. **NCCL rows** pin and record `NCCL_ALGO`, `NCCL_PROTO`, channel count,
+    and NCCL version; first-call (cold channel) and steady-state are
+    separate rows. An unpinned NCCL latency is unfalsifiable.
+13. `ncu` (13.3 — now matched to both driver and toolkit) is
+    corroboration-only by methodology choice: profiler counters never
+    populate `value`.
