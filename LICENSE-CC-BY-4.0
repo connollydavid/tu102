@@ -1,0 +1,14 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Applies to the table, data, and paper in this repository (table/, data/,
+paper/). The code (bench/, tools/, Makefile, CI configuration) is licensed
+under MIT — see LICENSE.
+
+You are free to share and adapt this material for any purpose, even
+commercially, provided you give appropriate credit (attribution to
+David Connolly <david@connol.ly>, with a link to
+https://github.com/connollydavid/tu102), provide a link to the license, and
+indicate if changes were made.
+
+This is a human-readable summary of (and not a substitute for) the license.
+Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode

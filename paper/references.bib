@@ -1,0 +1,89 @@
+@misc{fog2025instruction,
+  author       = {Fog, Agner},
+  title        = {Instruction tables: Lists of instruction latencies, throughputs and micro-operation breakdowns for {Intel}, {AMD} and {VIA} {CPUs}},
+  howpublished = {\url{https://www.agner.org/optimize/instruction_tables.pdf}},
+  institution  = {Technical University of Denmark},
+  year         = {2025},
+  note         = {Continuously updated; format and intent followed by this work}
+}
+
+@misc{fog2025microarch,
+  author       = {Fog, Agner},
+  title        = {The microarchitecture of {Intel}, {AMD} and {VIA} {CPUs}: An optimization guide for assembly programmers and compiler makers},
+  howpublished = {\url{https://www.agner.org/optimize/microarchitecture.pdf}},
+  institution  = {Technical University of Denmark},
+  year         = {2025}
+}
+
+@inproceedings{wong2010demystifying,
+  author    = {Wong, Henry and Papadopoulou, Misel-Myrto and Sadooghi-Alvandi, Maryam and Moshovos, Andreas},
+  title     = {Demystifying {GPU} microarchitecture through microbenchmarking},
+  booktitle = {2010 IEEE International Symposium on Performance Analysis of Systems \& Software (ISPASS)},
+  pages     = {235--246},
+  year      = {2010},
+  doi       = {10.1109/ISPASS.2010.5452013},
+  note      = {Origin of the GPU pointer-chase methodology}
+}
+
+@article{mei2017dissecting,
+  author  = {Mei, Xinxin and Chu, Xiaowen},
+  title   = {Dissecting {GPU} Memory Hierarchy Through Microbenchmarking},
+  journal = {IEEE Transactions on Parallel and Distributed Systems},
+  volume  = {28},
+  number  = {1},
+  pages   = {72--86},
+  year    = {2017},
+  doi     = {10.1109/TPDS.2016.2549523},
+  note    = {Fine-grained P-chase}
+}
+
+@misc{jia2018volta,
+  author        = {Jia, Zhe and Maggioni, Marco and Staiger, Benjamin and Scarpazza, Daniele P.},
+  title         = {Dissecting the {NVIDIA} {Volta} {GPU} Architecture via Microbenchmarking},
+  year          = {2018},
+  eprint        = {1804.06826},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.DC}
+}
+
+@misc{jia2019turing,
+  author        = {Jia, Zhe and Maggioni, Marco and Smith, Jeffrey and Scarpazza, Daniele P.},
+  title         = {Dissecting the {NVIDIA} {Turing} {T4} {GPU} via Microbenchmarking},
+  year          = {2019},
+  eprint        = {1903.07486},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.DC},
+  note          = {Primary per-row prior; T4 is TU104 --- same SM as TU102}
+}
+
+@techreport{nvidia2018turing,
+  author      = {{NVIDIA Corporation}},
+  title       = {{NVIDIA} {Turing} {GPU} Architecture},
+  number      = {WP-09183-001\_v01},
+  institution = {NVIDIA Corporation},
+  year        = {2018},
+  url         = {https://images.nvidia.com/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf}
+}
+
+@manual{ptx_isa,
+  author       = {{NVIDIA Corporation}},
+  title        = {Parallel Thread Execution {ISA}},
+  year         = {2026},
+  url          = {https://docs.nvidia.com/cuda/parallel-thread-execution/},
+  note         = {Version matching CUDA 13.2; cited per-clause for features scoped to sm\_80+ (NA\_SM75 rows)}
+}
+
+@manual{cuda_binutils,
+  author = {{NVIDIA Corporation}},
+  title  = {{CUDA} Binary Utilities ({cuobjdump}, {nvdisasm})},
+  year   = {2026},
+  url    = {https://docs.nvidia.com/cuda/cuda-binary-utilities/}
+}
+
+@manual{nccl_docs,
+  author = {{NVIDIA Corporation}},
+  title  = {{NCCL}: {NVIDIA} Collective Communication Library Documentation},
+  year   = {2026},
+  url    = {https://docs.nvidia.com/deeplearning/nccl/},
+  note   = {NCCL 2.30.4 used for the allreduce latency-floor rows}
+}
