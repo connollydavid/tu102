@@ -4,7 +4,7 @@ NVCCFLAGS := -ccbin /usr/bin/g++-15 -O2 -arch=sm_75 -lineinfo
 BENCH_SRCS := $(wildcard bench/*/*.cu)
 BENCH_BINS := $(BENCH_SRCS:.cu=.bin)
 
-.PHONY: all bins sass table verify paper clean
+.PHONY: all bins sass table verify paper paper-md clean
 
 all: bins
 
@@ -30,6 +30,11 @@ verify:
 
 paper:
 	cd paper && latexmk -pdf main.tex
+
+# GitHub-readable mirror of the paper; main.tex is the source of truth
+paper-md:
+	cd paper && pandoc -s main.tex --citeproc --bibliography=references.bib \
+		-t gfm -o ../PAPER.md
 
 clean:
 	rm -f $(BENCH_BINS) $(BENCH_BINS:.bin=.sass)

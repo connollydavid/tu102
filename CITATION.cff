@@ -1,10 +1,10 @@
 cff-version: 1.2.0
 message: "If you use this table or tooling, please cite it as below."
 type: dataset
-title: "TU102 (sm_75) Microarchitecture Characterization"
+title: "TU102 (sm_75) Microarchitecture Characterisation"
 abstract: >-
   Agner-Fog-style instruction latency/throughput tables, memory-hierarchy
-  measurements, and NVLink/PCIe/NCCL interconnect characterization for the
+  measurements, and NVLink/PCIe/NCCL interconnect characterisation for the
   NVIDIA TU102 GPU (Turing, sm_75), measured on 2x Quadro RTX 6000.
 authors:
   - family-names: Connolly
