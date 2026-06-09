@@ -1,0 +1,192 @@
+#!/usr/bin/env python3
+"""Generate table/tu102_ops.csv from data/results/<host>/ + table/priors_t4.csv.
+
+Aggregation per SCHEMA.md:
+  - value = median across all qualifying invocations (both GPUs for SM rows)
+  - between-run rule: >= 2 independent invocations required; rows where the
+    between-run spread exceeds the within-run cv (with a 0.1% floor) are
+    flagged in notes
+  - GPU agreement: SM-domain medians must agree within combined cv
+    (0.3% floor); disagreement -> UNVERIFIED + note
+  - tput rows: peak across the warps/SM sweep; variant records the point
+  - deviation_pct computed only where a prior exists (prior-applicability
+    rule lives in priors_t4.csv itself: no row there, no prior here)
+
+Deterministic output: same inputs -> byte-identical CSV (the idempotency
+gate in the Harness verification plan).
+"""
+
+import collections
+import csv
+import os
+import statistics
+import sys
+
+HOST_DS = "t5820-2xrtx6000"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RESULTS = os.path.join(ROOT, "data", "results", HOST_DS)
+PRIORS = os.path.join(ROOT, "table", "priors_t4.csv")
+OUT = os.path.join(ROOT, "table", "tu102_ops.csv")
+
+# row_id prefix -> SASS instruction (as proven by check_sass.py)
+INSTRUCTION = {
+    "alu.ffma": "FFMA", "alu.fadd": "FADD", "alu.fmul": "FMUL",
+    "alu.iadd3_lop3": "IADD3+LOP3", "alu.iadd3": "IADD3", "alu.imad": "IMAD",
+    "alu.lop3": "LOP3", "alu.shf": "SHF", "alu.sel": "SEL", "alu.fsel": "SEL",
+    "alu.isetp_sel": "ISETP+SEL", "alu.isetp": "ISETP",
+    "alu.fsetp_sel": "FSETP+SEL", "alu.fsetp": "FSETP",
+    "alu.popc": "POPC", "alu.flo": "FLO", "alu.prmt": "PRMT",
+    "alu.idp4a": "IDP.4A", "alu.hfma2": "HFMA2",
+    "alu.dadd": "DADD", "alu.dfma": "DFMA",
+    "alu.idiv": "(IDIV sequence)",
+}
+
+
+def instruction_for(row_id):
+    for prefix in sorted(INSTRUCTION, key=len, reverse=True):
+        if row_id.startswith(prefix):
+            return INSTRUCTION[prefix]
+    return ""
+
+
+def sweep_base(variant):
+    """w8_s8 -> _s8 (sweep family); w8 -> ''. Non-sweep variants pass through."""
+    if variant.startswith("w") and variant[1].isdigit():
+        rest = variant.lstrip("w0123456789")
+        return rest
+    return None  # not a sweep point
+
+
+def main():
+    priors = {}
+    with open(PRIORS) as f:
+        for row in csv.DictReader(f):
+            priors[row["row_id"]] = row
+
+    # measurements[(row_id, variant_key)] = list of result dicts
+    measurements = collections.defaultdict(list)
+    for fname in sorted(os.listdir(RESULTS)):
+        if fname == "runs.csv" or not fname.endswith(".csv"):
+            continue
+        with open(os.path.join(RESULTS, fname)) as f:
+            for row in csv.DictReader(f):
+                row["family"] = fname[:-4]
+                measurements[row["row_id"]].append(row)
+
+    # pipe labels from the contention probes (bench/alu/pipes.cu): rows named
+    # alu.<op>.pipe carry "pipe=<label>; ..." in notes; they fill the pipe
+    # column and stay out of the table body (diagnostics live in data/)
+    pipe_label = {}
+    for row_id, rows in list(measurements.items()):
+        if row_id.endswith(".pipe"):
+            note = rows[0]["notes"]
+            if note.startswith("pipe="):
+                pipe_label[row_id[:-len(".pipe")]] = note.split(";")[0][len("pipe="):]
+            del measurements[row_id]
+
+    out_rows = []
+    for row_id in sorted(measurements):
+        rows = measurements[row_id]
+        kind = rows[0]["kind"]
+        unit = rows[0]["unit"]
+        family = rows[0]["family"]
+        git_shas = sorted({r["git_sha"] for r in rows})
+        bench_src = rows[0]["bench_src"]
+        n_runs = len({r["run_id"] for r in rows})
+        notes = [r["notes"] for r in rows if r["notes"]]
+        note = notes[0] if notes else ""
+
+        if kind == "recip_tput":
+            # peak across the sweep, per (run, gpu, sweep-suffix)
+            by_suffix = collections.defaultdict(list)
+            for r in rows:
+                sb = sweep_base(r["variant"])
+                if sb is None:
+                    continue
+                by_suffix[sb].append(r)
+            groups = by_suffix.items()
+        else:
+            groups = [(rows[0]["variant"], rows)]
+
+        for variant_key, grp in sorted(groups):
+            if kind == "recip_tput":
+                # per invocation: take the sweep peak
+                per_run = collections.defaultdict(list)
+                for r in grp:
+                    per_run[(r["run_id"], r["gpu_index"])].append(r)
+                run_vals, peak_variants, cvs = [], [], []
+                gpu_vals = collections.defaultdict(list)
+                for (run, gpu), rr in per_run.items():
+                    peak = max(rr, key=lambda r: float(r["value"]))
+                    run_vals.append(float(peak["value"]))
+                    gpu_vals[gpu].append(float(peak["value"]))
+                    peak_variants.append(peak["variant"])
+                    cvs.append(float(peak["cv_pct"]))
+                variant = collections.Counter(peak_variants).most_common(1)[0][0]
+            else:
+                run_vals = [float(r["value"]) for r in grp]
+                gpu_vals = collections.defaultdict(list)
+                for r in grp:
+                    gpu_vals[r["gpu_index"]].append(float(r["value"]))
+                cvs = [float(r["cv_pct"]) for r in grp]
+                variant = variant_key
+
+            value = statistics.median(run_vals)
+            within_cv = statistics.median(cvs) if cvs else 0.0
+            flag = "ok"
+            extra = []
+
+            if len(run_vals) < 2:
+                flag = "UNVERIFIED"
+                extra.append("between-run rule unmet (single invocation)")
+            else:
+                spread = 100.0 * (max(run_vals) - min(run_vals)) / value if value else 0.0
+                if spread > max(within_cv, 0.1):
+                    extra.append(f"between-run spread {spread:.2f}% exceeds within-run cv {within_cv:.2f}%")
+                    flag = "UNVERIFIED"
+
+            if len(gpu_vals) >= 2:
+                meds = [statistics.median(v) for v in gpu_vals.values()]
+                gpu_diff = 100.0 * abs(meds[0] - meds[1]) / value if value else 0.0
+                if gpu_diff > max(2 * within_cv, 0.3):
+                    extra.append(f"GPU0-vs-GPU1 medians differ {gpu_diff:.2f}%")
+                    flag = "UNVERIFIED"
+
+            prior = priors.get(row_id)
+            prior_value = prior["prior_value"] if prior else ""
+            prior_src = prior["prior_src"] if prior else ""
+            deviation = ""
+            if prior:
+                dev = 100.0 * (value - float(prior["prior_value"])) / float(prior["prior_value"])
+                deviation = f"{dev:.1f}"
+                if abs(dev) > 25 and flag == "ok":
+                    flag = "DEV>25%"
+
+            all_notes = "; ".join([note] * bool(note) + extra)
+            out_rows.append({
+                "row_id": row_id, "class": family,
+                "instruction": instruction_for(row_id), "variant": variant,
+                "kind": kind, "value": f"{value:.6g}", "unit": unit,
+                "cv_pct": f"{within_cv:.3f}",
+                "pipe": next((p for k, p in pipe_label.items()
+                              if row_id.startswith(k + ".")), ""),
+                "prior_value": prior_value, "prior_src": prior_src,
+                "deviation_pct": deviation, "flag": flag,
+                "measured_by": f"{bench_src}@{'+'.join(git_shas)} n_runs={n_runs}",
+                "clock_mhz": "1455", "notes": all_notes,
+            })
+
+    fields = ["row_id", "class", "instruction", "variant", "kind", "value",
+              "unit", "cv_pct", "pipe", "prior_value", "prior_src",
+              "deviation_pct", "flag", "measured_by", "clock_mhz", "notes"]
+    with open(OUT, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fields)
+        w.writeheader()
+        for r in out_rows:
+            w.writerow(r)
+    print(f"{OUT}: {len(out_rows)} rows")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
