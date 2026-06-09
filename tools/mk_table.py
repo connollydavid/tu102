@@ -81,7 +81,7 @@ def main():
         if row_id.endswith(".pipe"):
             note = rows[0]["notes"]
             if note.startswith("pipe="):
-                pipe_label[row_id[:-len(".pipe")]] = note.split(";")[0][len("pipe="):]
+                pipe_label[row_id[:-len(".pipe")]] = note.split(";")[0][len("pipe="):].split(" (")[0]
             del measurements[row_id]
 
     out_rows = []

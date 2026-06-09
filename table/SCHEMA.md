@@ -55,12 +55,20 @@ hand-edited.
 
 Every bench binary, via `bench/common/harness.cuh`:
 
-1. **Clock gate — both domains**: precheck SM clock locked (1455 MHz) AND
-   memory clock locked (`nvidia-smi -lmc`) on the target GPU; exit 2 with
-   instructions if either is unlocked. The repo's production
-   `gpu-clocks.sh` locks SM clocks only — the harness owns the memory-clock
-   lock check itself. Per-rep sampling covers **both** clocks; reps where
-   either dipped are rejected.
+1. **Clock gate — both domains**: precheck SM clock locked (1455 MHz; a
+   locked clock holds its target even at idle, so this is checkable at
+   init); exit 2 with instructions if unlocked. The memory clock on TU102
+   **cannot be locked** — `nvidia-smi -lmc` reports unsupported on this
+   GPU, and the applications-clock interface is deprecated in driver
+   610.43.02 (both verified on this rig). What holds instead, measured on
+   both GPUs: CUDA compute always executes in the **P2 performance state
+   with the memory clock at 6500 MHz** (idle drops to 810/405; the P0
+   7001 MHz point is unreachable under compute). The harness ramps into
+   P2 with a warmup kernel, verifies mem = 6500±15 MHz under load at init,
+   and samples **both** clocks around every rep, rejecting reps where
+   either is off target. Bandwidth expectations are stated against the P2
+   memory clock: peak DRAM ≈ 624 GB/s (384-bit × 13 Gbps effective), not
+   the P0-derived 672.
 2. **Run header** auto-captures: hostname, driver, CUDA toolkit, GPU
    topology, locked clocks (both domains), **ECC state** (Disabled on this
    rig, matching production — bandwidth gates are interpreted relative to
@@ -84,8 +92,12 @@ Every bench binary, via `bench/common/harness.cuh`:
    unlocked GPU, and a deliberately miscompiled bench must fail check_sass.
 8. Latency: `clock64()` dependent chains / fine-grained P-chase
    [wong2010demystifying, mei2017dissecting]. Throughput: steady-state
-   unrolls with warps/SM sweeps. Host rows: `steady_clock` + cudaEvent
-   cross-check, R = 1000, median + p10/p90.
+   unrolls with warps/SM sweeps, timed in **actual SM cycles** via
+   `clock64()` on one block (one block per SM, so its span is exactly its
+   SM's work) — wall-clock event timing normalised by the nominal locked
+   clock showed 0.3–1.0% between-run spread that grew with region length
+   (real-clock thermal sag); on-device cycle counts are immune. Host rows:
+   `steady_clock` + cudaEvent cross-check, R = 1000, median + p10/p90.
 9. **Pipe binding (Turing is single-issue per scheduler — no dual issue):**
    contention probes. Saturate a known pipe with a reference op stream,
    inject the candidate op stream, and read the binding off the throughput
