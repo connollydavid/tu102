@@ -6,9 +6,9 @@ author:
 bibliography: references.bib
 date: Draft — 2026-06-09
 title: |
-  An Instruction-Level Characterisation of the NVIDIA TU102 GPU  
+  **An Instruction-Level Characterisation of the NVIDIA TU102 GPU  
   Latency, Throughput, Memory Hierarchy, and NVLink Interconnect on
-  sm_75
+  sm_75**
 ---
 
 # Introduction

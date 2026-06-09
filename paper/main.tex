@@ -19,27 +19,93 @@
 % COVERAGE.md/SCHEMA.md IS the receipt (cite commit dates in Methodology);
 % one-line robustness checks ("the use of median would not reverse the
 % overall results"); numbered display equations for derived-stat formulas.
+%
+% Template notes: pdfLaTeX, arXiv-safe (no shell-escape, Type 1 fonts
+% embedded). Palatino-descended text/math (newpx) + Inconsolata mono for
+% SASS/PTX. One accent colour, used only for section numbers, links, and
+% listing keywords — the content is the interface. Prefer plain unit text
+% in prose ("1455 MHz"); siunitx belongs in tables. Remember: arXiv upload
+% needs the .bbl alongside the .tex.
 \documentclass[11pt]{article}
 
-\usepackage[margin=1in]{geometry}
-\usepackage{booktabs}
+% ---------------- typography ----------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{newpxtext,newpxmath}        % Palatino-descended text + maths
+\usepackage[varqu,varl]{zi4}            % Inconsolata for SASS/PTX/code
+\usepackage{microtype}
+\usepackage[margin=1.1in]{geometry}
+\setlength{\parskip}{0pt}
 \usepackage{graphicx}
-\usepackage{url}
-\usepackage[numbers]{natbib}
 
-\title{An Instruction-Level Characterisation of the NVIDIA TU102 GPU\\
-\large Latency, Throughput, Memory Hierarchy, and NVLink Interconnect on sm\_75}
-\author{David Connolly\\\texttt{david@connol.ly}}
-\date{Draft — \today}
+% ---------------- tables & units ----------------
+\usepackage{booktabs}
+\usepackage{siunitx}
+\sisetup{per-mode=symbol, detect-weight=true, table-number-alignment=right}
+
+% ---------------- one accent colour, sparingly ----------------
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{1F5F5B}      % deep teal
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries}{\textcolor{accent}{\thesection}}{0.8em}{}
+\titleformat{\subsection}
+  {\large\bfseries}{\textcolor{accent}{\thesubsection}}{0.8em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries}{\textcolor{accent}{\thesubsubsection}}{0.8em}{}
+
+\usepackage{caption}
+\captionsetup{labelfont={bf,small}, font=small, labelsep=period}
+
+% ---------------- listings: SASS / PTX / CUDA ----------------
+\usepackage{listings}
+\lstdefinelanguage{sass}{
+  morekeywords={FFMA,FADD,FMUL,IADD3,IMAD,LOP3,SHF,SEL,ISETP,FSETP,POPC,
+    FLO,PRMT,IDP,HFMA2,DADD,DFMA,MUFU,F2F,I2F,F2I,HMMA,IMMA,LDSM,LDG,LDS,
+    STG,STS,LDC,BAR,SHFL,VOTE,BRA,EXIT,NOP,CS2R,S2R,MOV,RET},
+  sensitive=true,
+  morecomment=[l]{//},
+}
+\lstset{
+  language=sass,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{black!55},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=leftline,
+  framerule=0.6pt,
+  rulecolor=\color{accent!60},
+  xleftmargin=1em,
+  aboveskip=0.8\baselineskip,
+  belowskip=0.8\baselineskip,
+}
+
+% ---------------- references & links ----------------
+\usepackage[numbers]{natbib}
+\usepackage{url}
+\usepackage[colorlinks=true, linkcolor=accent, citecolor=accent,
+            urlcolor=accent]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+% ---------------- title block ----------------
+\title{\bfseries An Instruction-Level Characterisation of the NVIDIA
+  TU102 GPU\\[0.3em]
+  \large\mdseries Latency, Throughput, Memory Hierarchy, and NVLink
+  Interconnect on sm\_75}
+\author{David Connolly\\[0.2em]\normalsize\texttt{david@connol.ly}}
+\date{\normalsize Draft --- \today}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
+\noindent
 % Drafted at M6. One paragraph: Agner-style op table for TU102 (sm_75),
 % methodology (dependent chains, fine-grained P-chase, SASS-gated benches,
 % locked clocks), priors from Jia et al. T4 with per-row deviation tracking,
-% additive NVLink/PCIe/NCCL characterization, and worked examples driving
+% additive NVLink/PCIe/NCCL characterisation, and worked examples driving
 % real kernel decisions in a production inference stack.
 \end{abstract}
 
