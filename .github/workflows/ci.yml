@@ -1,0 +1,58 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate CITATION.cff
+        run: pipx run cffconvert --validate
+      - name: Lint table CSVs
+        run: |
+          python3 - <<'EOF'
+          import csv, glob, sys
+          ok = True
+          for path in glob.glob('table/*.csv'):
+              with open(path, newline='') as f:
+                  rows = list(csv.reader(f))
+              if not rows:
+                  continue
+              width = len(rows[0])
+              for i, row in enumerate(rows[1:], start=2):
+                  if len(row) != width:
+                      print(f'{path}:{i}: {len(row)} cols, header has {width}')
+                      ok = False
+          sys.exit(0 if ok else 1)
+          EOF
+
+  paper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: paper
+      - uses: actions/upload-artifact@v4
+        with:
+          name: paper-pdf
+          path: paper/main.pdf
+
+  paper-md-fresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check PAPER.md is regenerated from main.tex
+        run: |
+          # pinned to the pandoc major.minor used locally — gfm output
+          # drifts across pandoc versions and would false-fail the diff
+          wget -q https://github.com/jgm/pandoc/releases/download/3.6/pandoc-3.6-1-amd64.deb
+          sudo dpkg -i pandoc-3.6-1-amd64.deb
+          make paper-md
+          git diff --exit-code PAPER.md
