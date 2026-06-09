@@ -27,7 +27,7 @@ title: |
 
 # Conclusion
 
-# Acknowledgments
+# Acknowledgements
 
 The microbenchmark harness, analysis tooling, and manuscript drafts were
 developed with the assistance of Claude (model `claude-fable-5`,
