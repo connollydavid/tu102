@@ -19,7 +19,10 @@ is present in `tu102_ops.csv` as measured, or as an explicit `NA_SM75` row.
 - [ ] `alu.hfma2.{lat,tput}` (fp16x2)
 - [ ] `alu.dadd.{lat,tput}`, `alu.dfma.{lat,tput}` (FP64 = 1/32 FFMA expected)
 - [ ] `alu.regbank.conflict` — register-file bank-conflict penalty on 3-src
-      ops (operand-layout lever)
+      ops (operand-layout lever). Caveat: ptxas owns register allocation and
+      the operand collector hides small conflicts; if two-method agreement
+      is unreachable from PTX-level control, this row is descoped to a
+      documented note rather than shipped `UNVERIFIED`
 - [ ] co-issue matrix: pipe binding for every row above
 
 ## SFU / conversion (M2, M4)
@@ -81,8 +84,10 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [ ] `x.nvlink.fence_roundtrip.us` — peer STG + `__threadfence_system()` +
       system-scope flag poll; the hand-rolled exchange primitive (input to
       the NCCL-floor memo)
-- [ ] `x.nvlink.contention.local_vs_peer` — peer traffic vs local DRAM
-      bandwidth share
+- [ ] `x.nvlink.contention.local_vs_peer` — scalar at a defined operating
+      point: % degradation of local DRAM-read bandwidth while the peer
+      streams at full NVLink rate; the full 2D trade surface stays in
+      `data/` as a curve
 - [ ] `x.nvlink.{sm,ce}.{uni,bi}.bw` size curve 4 KB–256 MB — gate: ±15% of
       50 GB/s/dir
 - [ ] `x.pcie.{h2d,d2h}.{pinned,pageable}.bw` per GPU

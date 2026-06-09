@@ -1,5 +1,7 @@
-NVCC      := /opt/cuda/bin/nvcc
-NVCCFLAGS := -ccbin /usr/bin/g++-15 -O2 -arch=sm_75 -lineinfo
+# nvcc 13.3 parses libstdc++ 16 headers cleanly (the 13.2 incompat that
+# forced a g++-15 host-compiler pin is fixed), so no -ccbin pin here.
+NVCC      := /opt/cuda-13.3/bin/nvcc
+NVCCFLAGS := -O2 -arch=sm_75 -lineinfo
 
 BENCH_SRCS := $(wildcard bench/*/*.cu)
 BENCH_BINS := $(BENCH_SRCS:.cu=.bin)
@@ -20,7 +22,7 @@ endif
 sass: $(BENCH_BINS:.bin=.sass)
 
 %.sass: %.bin
-	/opt/cuda/bin/cuobjdump -sass $< > $@
+	/opt/cuda-13.3/bin/cuobjdump -sass $< > $@
 
 table:
 	python3 tools/mk_table.py
