@@ -14,3 +14,6 @@ paper/*.fls
 paper/*.fdb_latexmk
 paper/*.toc
 paper/main.pdf
+
+# python
+__pycache__/
