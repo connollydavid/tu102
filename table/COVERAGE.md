@@ -2,9 +2,10 @@
 
 Architectural completeness checklist. A family is done when every listed row
 is present in `tu102_ops.csv` as measured, or as an explicit `NA_SM75` row.
-`tools/check_complete.py` (M6) diffs this manifest against the CSV.
+`tools/check_complete.py` diffs this manifest against the CSV before any
+release is tagged.
 
-## Core SM — ALU/FP (M1)
+## Core SM — ALU/FP
 
 - [ ] `alu.ffma.{lat,tput}` — anchor: 2.0 warpinst/SM/clk
 - [ ] `alu.fadd.{lat,tput}`, `alu.fmul.{lat,tput}`
@@ -25,19 +26,19 @@ is present in `tu102_ops.csv` as measured, or as an explicit `NA_SM75` row.
       documented note rather than shipped `UNVERIFIED`
 - [ ] co-issue matrix: pipe binding for every row above
 
-## SFU / conversion (M2, M4)
+## SFU / conversion
 
 - [ ] `sfu.mufu.{rcp,rsq,ex2,lg2,sin,cos}.{lat,tput}`
 - [ ] `cvt.f2f.{f16f32,f32f16}.{lat,tput}` — consumer: delta-net convert storm
 - [ ] `cvt.i2f.*`, `cvt.f2i.*` — consumer: dequant chains
 
-## Tensor cores (M4)
+## Tensor cores
 
 - [ ] `tensor.hmma.1688.{f16acc,f32acc}.tput` (f32acc = ½ f16acc expected)
 - [ ] `tensor.imma.8816.tput`
 - [ ] `tensor.ldsm.{lat,tput}` (LDSM.16 variants)
 
-## Memory hierarchy — every cache level present, plus DRAM (M2, M3)
+## Memory hierarchy — every cache level present, plus DRAM
 
 TU102 levels, each with latency + bandwidth + geometry rows: register file
 (bank conflicts — under ALU above), L0/L1 instruction caches, unified L1
@@ -63,7 +64,7 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [ ] `NA_SM75`: `cp.async`/LDGSTS, async barriers, L2 residency controls
       (sm_80+)
 
-## Sync / control / launch (M4)
+## Sync / control / launch
 
 - [ ] `sync.bar.{lat,tput}` warps-per-CTA sweep 32..1024 incl. 192
 - [ ] `sync.shfl.{lat,tput}`, `sync.vote.{lat,tput}`
@@ -73,7 +74,7 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [ ] `launch.event.{record,query,sync}.us`
 - [ ] uniform-datapath note (U-register ops)
 
-## Interconnect — additive scope (M5)
+## Interconnect — additive scope
 
 - [ ] `x.nvlink.peer_ldg.{lat,bw}` (P-chase + streaming over NVLink)
 - [ ] `x.nvlink.peer_stg.bw` — read-vs-write asymmetry noted against peer_ldg

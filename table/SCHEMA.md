@@ -92,7 +92,8 @@ Every bench binary, via `bench/common/harness.cuh`:
    degradation matrix (degrades the FFMA stream → fma pipe; degrades LOP3 →
    alu pipe; degrades neither → its own pipe).
 10. **Gate taxonomy.** Verification gates are either **methodology-sanity**
-    (two independent methods agree within cv — failure aborts the milestone)
+    (two independent methods agree within cv — failure blocks the affected
+    rows from publication until resolved)
     or **prior-comparison** (mismatch is flagged, investigated, and
     published either way). Anchors like "FFMA lat = 4 cyc" are
     prior-comparisons: the table exists to publish true deviations, not to
