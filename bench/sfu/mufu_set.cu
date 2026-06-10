@@ -21,8 +21,10 @@ constexpr const char* SRC = "bench/sfu/mufu_set.cu";
     };
 // nvcc's approx-algebra deletes rcp from BOTH rcp∘rcp (identity) and
 // rcp∘rsq (rewritten to a pure rsq chain — verified twice in SASS). The
-// surviving pin chains rcp with an FADD on a runtime kernel parameter that
-// no algebraic rewrite can remove; rcp.lat derives as pair − fadd.lat.
+// surviving pin chains rcp with an add on a runtime kernel parameter that
+// no algebraic rewrite can remove (default -fmad contracts it with the
+// hoisted scale into one FFMA — the SASS pair is MUFU.RCP + FFMA);
+// rcp.lat derives as pair − ffma.lat (4.07, measured).
 struct MufuRcp {
     static constexpr const char* key = "MufuRcp";
     __device__ static void step(float& x, float b) {

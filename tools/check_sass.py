@@ -99,7 +99,7 @@ EXPECT_FN = {
     # sin/cos lower to an FMUL range-scale + MUFU (1:1, verified); the rows
     # are pair chains with the per-op value derived against fmul.lat
     "MufuSinE": {"primary": {"MUFU", "FMUL"}},
-    "MufuRcpE": {"primary": {"MUFU", "FADD"}},
+    "MufuRcpE": {"primary": {"MUFU", "FFMA", "FADD"}},  # fmad contracts the add
     "MufuCosE": {"primary": {"MUFU", "FMUL"}},
     "mufu_lat_kernel": {"primary": {"MUFU"}},
     "mufu_tput_kernel": {"primary": {"MUFU"}},
