@@ -44,16 +44,18 @@ __global__ void atom_global_lat_kernel(unsigned trips, int c, unsigned* gslots,
     if (threadIdx.x == 0) { *out = t1 - t0; *sink = v; }
 }
 
-__global__ void atom_cas_lat_kernel(unsigned trips, unsigned* gslot,
+__global__ void atom_cas_lat_kernel(unsigned trips, unsigned* gslots,
                                     long long* out, unsigned* sink) {
+    // every lane chases its own line: contention-free dependent CAS chain
+    // (a divergent single-lane wrapper defeats the loop parser and warps
+    // the reconvergence structure)
+    unsigned* target = &gslots[(threadIdx.x & 31) * 32];
     unsigned v = threadIdx.x + 1;
     long long t0 = clock64();
-    if (threadIdx.x == 0) {
-        for (unsigned t = 0; t < trips; t++) {
+    for (unsigned t = 0; t < trips; t++) {
 #pragma unroll
-            for (int u = 0; u < CHASE_UNROLL; u++)
-                v = atomicCAS(gslot, v, v + 1);
-        }
+        for (int u = 0; u < CHASE_UNROLL; u++)
+            v = atomicCAS(target, v, v + 1);
     }
     long long t1 = clock64();
     if (threadIdx.x == 0) { *out = t1 - t0; *sink = v; }
@@ -116,7 +118,7 @@ int main(int argc, char** argv) {
     }
     run_lat(r, "atomics.global.cas.lat", "", [&](unsigned t) {
         atom_cas_lat_kernel<<<1, 32>>>(t, d_gslots, d_cyc, d_sink);
-    }, "single-thread dependent CAS chain; no published prior");
+    }, "per-lane dependent CAS chains on distinct lines; no published prior");
 
     std::fprintf(stderr, "atomics: done (run %s)\n", r.run_id);
     return 0;
