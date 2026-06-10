@@ -73,6 +73,11 @@ EXPECT_FN = {
     "i2f_pair": {"primary": {"F2I", "I2F"}},
     "mufu_ex2": {"primary": {"MUFU"}},
     "bar_kernel": {"primary": {"BAR"}, "min": 8},
+    # composite probe: the differential runner projects from the EMITTED
+    # census, so this gate is smoke only (loop exists, base work present)
+    "inject_kernel": {"primary": {"FFMA", "LOP3", "LDG"}, "min": 40,
+                      "companions": {"IDP", "POPC", "SEL", "ISETP", "IMAD",
+                                     "LEA", "MOV", "SHF", "FADD"}},
 }
 
 INSTR_RE = re.compile(r"/\*([0-9a-f]+)\*/\s+((?:@!?P\d+\s+)?[A-Z][A-Z0-9.]*[^;]*)")
