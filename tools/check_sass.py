@@ -62,6 +62,8 @@ EXPECT_FN = {
     "smem_bw_kernel": {"primary": {"LDS"},
                        "companions": {"FADD", "FFMA", "IMAD", "LOP3", "LEA", "SHF", "MOV"}},
     "l1_chase_kernel": {"primary": {"LDG"}},
+    "l1bw_kernel": {"primary": {"LDG"},
+                    "companions": {"FADD", "FFMA", "IMAD", "LOP3", "LEA", "SHF", "MOV"}},
     "stride_kernel": {"primary": {"LDG"}, "min": 12,
                       "companions": {"IMAD", "LEA", "SHF", "LOP3", "MOV", "IADD3"}},
     # ptxas lowers the f16->f32 widening to HADD2 (verified): the pair is
