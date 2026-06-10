@@ -63,6 +63,17 @@ EXPECT_FN = {
                        "companions": {"FADD", "FFMA", "IMAD", "LOP3", "LEA", "SHF", "MOV"}},
     "l1_chase_kernel": {"primary": {"LDG"}},
     "pchase_kernel": {"primary": {"LDG"}},
+    "peer_chase_kernel": {"primary": {"LDG"}},
+    "peer_ring_init": None,
+    "peer_read_bw_kernel": {"primary": {"LDG"}, "min": 4,
+                            "companions": {"FADD", "IMAD", "LEA", "SHF", "MOV", "LOP3"}},
+    "peer_write_bw_kernel": {"primary": {"STG"}, "min": 1,
+                             "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
+    # threadfence_system lowers to MEMBAR.SYS + CCTL + ERRBAR; the 0-byte
+    # variant is fence-only (no stores) by design
+    "peer_burst_kernel": {"primary": {"STG"}, "min": 0,
+                          "companions": {"MEMBAR", "CCTL", "ERRBAR", "IMAD", "LEA",
+                                         "SHF", "MOV", "LOP3", "SEL"}},
     "policy_chase_kernel": {"primary": {"LDG"}},
     "policy_ring_init": None,
     "carveout_chase_kernel": {"primary": {"LDG"}},

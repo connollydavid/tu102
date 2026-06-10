@@ -165,19 +165,35 @@ sfu.mufu.rsq.lat,sfu,,,latency_cycles,15,cycles,0.000,,,,,ok,bench/sfu/mufu_set.
 sfu.mufu.rsq.tput,sfu,,w16,recip_tput,0.499984,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,
 sfu.mufu.sin.lat,sfu,,,latency_cycles,21,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
 sfu.mufu.sin.tput,sfu,,w16,recip_tput,0.499733,warpinst/SM/clk,0.001,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,
-sync.bar.lat,sync,,w1,latency_cycles,22.3437,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
-sync.bar.lat,sync,,w16,latency_cycles,52.3436,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
-sync.bar.lat,sync,,w2,latency_cycles,24.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
-sync.bar.lat,sync,,w32,latency_cycles,84.3439,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
-sync.bar.lat,sync,,w4,latency_cycles,28.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
-sync.bar.lat,sync,,w6,latency_cycles,32.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,192 threads; production attention block shape
-sync.bar.lat,sync,,w8,latency_cycles,36.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
+sync.bar.lat,sync,,w1,latency_cycles,22.3437,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=6,1455,
+sync.bar.lat,sync,,w16,latency_cycles,52.3436,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=6,1455,
+sync.bar.lat,sync,,w2,latency_cycles,24.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=6,1455,
+sync.bar.lat,sync,,w32,latency_cycles,84.3439,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=6,1455,
+sync.bar.lat,sync,,w4,latency_cycles,28.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=6,1455,
+sync.bar.lat,sync,,w6,latency_cycles,32.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=6,1455,192 threads; production attention block shape
+sync.bar.lat,sync,,w8,latency_cycles,36.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=6,1455,
 sync.shfl.lat,sync,,idx,latency_cycles,25,cycles,0.000,,,,,ok,bench/sync/shfl.cu@5c88700 n_runs=5,1455,value-dependent SHFL.IDX ring chain
 sync.shfl.tput,sync,,w4_idx,recip_tput,0.49998,warpinst/SM/clk,0.000,,,,,ok,bench/sync/shfl.cu@5c88700 n_runs=5,1455,
 tensor.hmma.1688.lat,tensor,,d_feeds_a,latency_cycles,14.0234,cycles,0.000,,,,,ok,bench/tensor/tensor.cu@36c748c n_runs=5,1455,dependent accumulate chain (D feeds A)
 tensor.hmma.1688.tput,tensor,,w8_f16acc,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@36c748c n_runs=5,1455,m16n8k8 f16 accumulate; 1024 MAC per inst per warp
 tensor.hmma.1688.tput,tensor,,w8_f32acc,recip_tput,0.499955,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@36c748c n_runs=5,1455,m16n8k8 f32 accumulate; FULL rate on this Quadro-positioned TU102 (the half-rate prior describes GeForce variants)
 tensor.imma.8816.tput,tensor,,w8_s8,recip_tput,0.999914,warpinst/SM/clk,0.000,,1.0,nvidia2018turing:sec-tc,-0.0,ok,bench/tensor/tensor.cu@36c748c n_runs=5,1455,m8n8k16 s8; 1024 MAC per inst per warp
+x.nvlink.msg.oneway,x,,0b_gpu0to1,time_us,1.20043,us,0.347,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,store burst + threadfence_system; one warp
+x.nvlink.msg.oneway,x,,0b_gpu1to0,time_us,1.1628,us,0.226,,,,,UNVERIFIED,bench/x/peer.cu@f0869ee n_runs=4,1455,store burst + threadfence_system; one warp; between-run spread 0.78% exceeds within-run cv 0.23%
+x.nvlink.msg.oneway,x,,20480b_gpu0to1,time_us,1.80378,us,2.364,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,store burst + threadfence_system; one warp
+x.nvlink.msg.oneway,x,,20480b_gpu1to0,time_us,1.75507,us,0.018,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,store burst + threadfence_system; one warp
+x.nvlink.msg.oneway,x,,4096b_gpu0to1,time_us,1.3484,us,0.216,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,store burst + threadfence_system; one warp
+x.nvlink.msg.oneway,x,,4096b_gpu1to0,time_us,1.32092,us,0.061,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,store burst + threadfence_system; one warp
+x.nvlink.msg.oneway,x,,512b_gpu0to1,time_us,1.29464,us,0.742,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,store burst + threadfence_system; one warp
+x.nvlink.msg.oneway,x,,512b_gpu1to0,time_us,1.24703,us,0.027,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,store burst + threadfence_system; one warp
+x.nvlink.peer_ldg.bw,x,,gpu0to1,bandwidth,43.3939,GB/s,0.041,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,SM-path streaming read from peer memory
+x.nvlink.peer_ldg.bw,x,,gpu1to0,bandwidth,43.3868,GB/s,0.038,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,SM-path streaming read from peer memory
+x.nvlink.peer_ldg.lat,x,,gpu0to1,latency_ns,472.389,ns,0.012,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,peer chase with .cg; ns = cyc/1.455; ring resident in the peer L2
+x.nvlink.peer_ldg.lat,x,,gpu0to1_default,latency_ns,472.379,ns,0.009,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,default load policy: does a peer line enter the local L1?
+x.nvlink.peer_ldg.lat,x,,gpu1to0,latency_ns,472.73,ns,0.197,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,peer chase with .cg; ns = cyc/1.455; ring resident in the peer L2
+x.nvlink.peer_ldg.lat,x,,gpu1to0_default,latency_ns,472.336,ns,0.008,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,default load policy: does a peer line enter the local L1?
+x.nvlink.peer_stg.bw,x,,gpu0to1,bandwidth,45.8147,GB/s,0.010,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,SM-path streaming write to peer memory
+x.nvlink.peer_stg.bw,x,,gpu1to0,bandwidth,45.8198,GB/s,0.006,,,,,ok,bench/x/peer.cu@f0869ee n_runs=4,1455,SM-path streaming write to peer memory
 mem.cpasync,mem,NA_SM75,,na,,,,,,ptx_isa:cp.async,,NA_SM75,table/na_sm75.csv,,cp.async / LDGSTS require sm_80+; explicit absence
 sync.asyncbar,sync,NA_SM75,,na,,,,,,ptx_isa:mbarrier,,NA_SM75,table/na_sm75.csv,,asynchronous barriers (mbarrier) require sm_80+
 mem.l2.residency,mem,NA_SM75,,na,,,,,,ptx_isa:l2-cache-hints,,NA_SM75,table/na_sm75.csv,,L2 residency controls (annotated pointers) require sm_80+
