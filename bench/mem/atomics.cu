@@ -82,6 +82,7 @@ void run_lat(Run& r, const char* row, const char* variant, L launch,
         cudaEventDestroy(e1);
         if (ms >= MIN_TIMED_MS * 1.1) break;
         trips *= 2;
+        calib_guard(trips);
     }
     auto vals = run_reps(r, [&] {
         long long s1 = 0, s2 = 0;

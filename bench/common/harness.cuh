@@ -79,6 +79,16 @@ inline void die_gate(const char* what, const char* fix) {
     std::exit(2);
 }
 
+// calibration ceiling: a kernel whose body was optimised away never reaches
+// the timed-region target and would double trips forever (it happened — an
+// empty rcp chain hung an invocation); benches call this in their
+// calibration loops
+inline void calib_guard(unsigned trips) {
+    if (trips > (1u << 26))
+        die_gate("calibration ceiling exceeded (kernel body likely optimised away)",
+                 "inspect the SASS: the timed loop is probably empty");
+}
+
 inline unsigned clock_now(const Run& r, nvmlClockType_t t) {
     unsigned mhz = 0;
     nvmlDeviceGetClockInfo(r.nvml, t, &mhz);
