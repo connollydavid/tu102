@@ -35,6 +35,7 @@ alu.lop3.lat,alu,LOP3,,latency_cycles,4.10938,cycles,0.000,alu,4,jia2019turing:t
 alu.lop3.tput,alu,LOP3,w8,recip_tput,1.96918,warpinst/SM/clk,0.000,alu,2.0,nvidia2018turing:sec-sm,-1.5,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
 alu.popc.lat,alu,POPC,,latency_cycles,15,cycles,0.000,own,15,jia2019turing:tab4.1,0.0,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
 alu.popc.tput,alu,POPC,w16,recip_tput,0.499986,warpinst/SM/clk,0.000,own,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
+alu.popc_vs_lsu.probe,pipes,POPC,class,na,0.676738,warpinst/SM/clk,0.000,,,,,UNVERIFIED,bench/alu/audit_probes.cu@78d2a33 n_runs=4,1455,pipe=SHARED path; mix 0.676 vs same 0.50 / diff 1.00 warpinst/SM/clk (explains the factorial POPC error class); between-run spread 0.17% exceeds within-run cv 0.00%
 alu.prmt.lat,alu,PRMT,,latency_cycles,4.125,cycles,0.000,alu,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
 alu.prmt.tput,alu,PRMT,w32,recip_tput,1.96612,warpinst/SM/clk,0.000,alu,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
 alu.sel.lat,alu,SEL,,latency_cycles,4.10156,cycles,0.000,alu,4,jia2019turing:tab4.1,2.5,ok,bench/alu/alu.cu@813577c n_runs=8,1455,setp off-chain; chain is SEL alone
@@ -177,6 +178,7 @@ sync.shfl.tput,sync,,w4_idx,recip_tput,0.49998,warpinst/SM/clk,0.000,,,,,ok,benc
 tensor.hmma.1688.lat,tensor,,d_feeds_a,latency_cycles,14.0234,cycles,0.000,,,,,ok,bench/tensor/tensor.cu@36c748c n_runs=5,1455,dependent accumulate chain (D feeds A)
 tensor.hmma.1688.tput,tensor,,w8_f16acc,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@36c748c n_runs=5,1455,m16n8k8 f16 accumulate; 1024 MAC per inst per warp
 tensor.hmma.1688.tput,tensor,,w8_f32acc,recip_tput,0.499955,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@36c748c n_runs=5,1455,m16n8k8 f32 accumulate; FULL rate on this Quadro-positioned TU102 (the half-rate prior describes GeForce variants)
+tensor.hmma_vs_hfma2.probe,pipes,,class,na,0.758505,warpinst/SM/clk,0.000,,,,,ok,bench/alu/audit_probes.cu@78d2a33 n_runs=4,1455,pipe=SHARED unit (FP16 via tensor cores); mix 0.759 vs shared 0.80 / distinct 1.00
 tensor.imma.8816.tput,tensor,,w8_s8,recip_tput,0.999914,warpinst/SM/clk,0.000,,1.0,nvidia2018turing:sec-tc,-0.0,ok,bench/tensor/tensor.cu@36c748c n_runs=5,1455,m8n8k16 s8; 1024 MAC per inst per warp
 x.consume.local,x,,20kb_singlewarp,time_us,1.1354,us,0.000,,,,,ok,bench/x/fence.cu@a1e7cf0 n_runs=4,1455,one-warp L2-resident read+fold (the responder loop)
 x.consume.local,x,,4kb_singlewarp,time_us,0.32165,us,0.000,,,,,ok,bench/x/fence.cu@a1e7cf0 n_runs=4,1455,one-warp L2-resident read+fold (the responder loop)
