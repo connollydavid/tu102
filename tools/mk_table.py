@@ -68,6 +68,8 @@ def main():
     for fname in sorted(os.listdir(RESULTS)):
         if fname == "runs.csv" or not fname.endswith(".csv"):
             continue
+        if fname == "proj.csv":
+            continue  # diagnostic family (differential experiment); not table rows
         with open(os.path.join(RESULTS, fname)) as f:
             for row in csv.DictReader(f):
                 row["family"] = fname[:-4]
