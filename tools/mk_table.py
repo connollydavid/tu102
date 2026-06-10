@@ -93,23 +93,28 @@ def main():
         git_shas = sorted({r["git_sha"] for r in rows})
         bench_src = rows[0]["bench_src"]
         n_runs = len({r["run_id"] for r in rows})
-        notes = [r["notes"] for r in rows if r["notes"]]
-        note = notes[0] if notes else ""
 
-        if kind == "recip_tput":
-            # peak across the sweep, per (run, gpu, sweep-suffix)
+        if kind in ("recip_tput", "bandwidth"):
+            # w-prefixed variants are occupancy sweeps: peak per suffix.
+            # Anything else (stride18, conflict4, broadcast) is its own group.
             by_suffix = collections.defaultdict(list)
+            standalone = collections.defaultdict(list)
             for r in rows:
                 sb = sweep_base(r["variant"])
                 if sb is None:
-                    continue
-                by_suffix[sb].append(r)
-            groups = by_suffix.items()
+                    standalone[r["variant"]].append(r)
+                else:
+                    by_suffix[("sweep", sb)].append(r)
+            groups = list(by_suffix.items()) + list(standalone.items())
         else:
-            groups = [(rows[0]["variant"], rows)]
+            # latency rows: every variant is its own row
+            by_variant = collections.defaultdict(list)
+            for r in rows:
+                by_variant[r["variant"]].append(r)
+            groups = list(by_variant.items())
 
-        for variant_key, grp in sorted(groups):
-            if kind == "recip_tput":
+        for variant_key, grp in sorted(groups, key=lambda kv: str(kv[0])):
+            if isinstance(variant_key, tuple):
                 # per invocation: take the sweep peak
                 per_run = collections.defaultdict(list)
                 for r in grp:
@@ -135,13 +140,18 @@ def main():
             within_cv = statistics.median(cvs) if cvs else 0.0
             flag = "ok"
             extra = []
+            grp_notes = [g["notes"] for g in grp if g["notes"]]
+            note = grp_notes[-1] if grp_notes else ""  # latest annotation wins
 
+            # cycle-domain rows are deterministic (0.1% floor); wall-clock
+            # bandwidth rows carry real DRAM refresh/thermal variation (0.5%)
+            floor = 0.5 if kind == "bandwidth" and unit == "GB/s" else 0.1
             if len(run_vals) < 2:
                 flag = "UNVERIFIED"
                 extra.append("between-run rule unmet (single invocation)")
             else:
                 spread = 100.0 * (max(run_vals) - min(run_vals)) / value if value else 0.0
-                if spread > max(within_cv, 0.1):
+                if spread > max(within_cv, floor):
                     extra.append(f"between-run spread {spread:.2f}% exceeds within-run cv {within_cv:.2f}%")
                     flag = "UNVERIFIED"
 
@@ -152,7 +162,12 @@ def main():
                     extra.append(f"GPU0-vs-GPU1 medians differ {gpu_diff:.2f}%")
                     flag = "UNVERIFIED"
 
-            prior = priors.get(row_id)
+            # variant-specific priors: <row_id>.<variant> beats <row_id>
+            prior = priors.get(f"{row_id}.{variant}") or priors.get(row_id)
+            if prior and variant and f"{row_id}.{variant}" not in priors \
+               and kind in ("latency_cycles", "latency_ns") \
+               and variant not in ("", "l1hit", "broadcast", "conflict1", "derived"):
+                prior = None  # a bare-row prior binds only the base variant
             prior_value = prior["prior_value"] if prior else ""
             prior_src = prior["prior_src"] if prior else ""
             deviation = ""

@@ -12,6 +12,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate CITATION.cff
         run: pipx run cffconvert --validate
+      - name: project.py unit tests
+        run: cd tools && python3 test_project.py
       - name: Lint table CSVs
         run: |
           python3 - <<'EOF'
