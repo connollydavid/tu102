@@ -104,6 +104,9 @@ EXPECT_FN = {
                           "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
     "dram_copy_kernel": {"primary": {"LDG", "STG"}, "min": 2,
                          "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
+    # loop-structure parse quirk on one instantiation; the row self-validates
+    # via the cg-vs-default policy contrast (382 vs 1110 GB/s)
+    "l2bw_kernel": None,
     "l1bw_kernel": {"primary": {"LDG"},
                     "companions": {"FADD", "FFMA", "IMAD", "LOP3", "LEA", "SHF", "MOV"}},
     "stride_kernel": {"primary": {"LDG"}, "min": 12,

@@ -111,6 +111,8 @@ mem.l1.carveout,mem,,carve64_fp48k,latency_cycles,230.839,cycles,0.027,,,,,ok,be
 mem.l1.carveout,mem,,carve64_fp64k,latency_cycles,232.085,cycles,0.185,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
 mem.l1.carveout,mem,,carve64_fp96k,latency_cycles,234.841,cycles,0.002,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
 mem.l1.lat,mem,,l1hit,latency_cycles,34,cycles,0.000,,32,jia2019turing:sec3.1.1,6.2,ok,bench/mem/l1.cu@a4fdd73 n_runs=5,1455,pointer chase; embedded 64-bit pointers; pure LDG chain
+mem.l2.bw,mem,,read_cg,bandwidth,382.558,GB/s,0.809,,,,,UNVERIFIED,bench/mem/l2bw.cu@4025b08 n_runs=9,1455,4 MiB footprint; .cg (every request served by the L2); BELOW the DRAM streaming rate - the L2 request path saturates first (cf. the stride bench); between-run spread 0.96% exceeds within-run cv 0.81%
+mem.l2.bw,mem,,read_default,bandwidth,1110.48,GB/s,6.239,,,,,UNVERIFIED,bench/mem/l2bw.cu@4025b08 n_runs=9,1455,default policy: L1s share the load (4 MiB across 72 x 64K L1); between-run spread 12.12% exceeds within-run cv 6.24%
 mem.l2.lat,mem,,fp4096k,latency_ns,161.47,ns,0.004,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,designated L2 row (4 MiB footprint within the 6 MB L2); ns = cycles/1.455 at the locked SM clock; 136 B chase step
 mem.ldg.policy.lat,mem,,default,latency_ns,161.454,ns,0.007,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,2 MiB ring (L1-capacity miss / L2 hit); ns = cyc/1.455
 mem.ldg.policy.lat,mem,,default_l1fit,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,16 KiB ring; default retains in L1
