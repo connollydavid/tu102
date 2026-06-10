@@ -9,7 +9,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Validate CITATION.cff
         run: pipx run cffconvert --validate
       - name: project.py unit tests
@@ -43,21 +43,37 @@ jobs:
   paper:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build PDF
-        uses: xu-cheng/latex-action@v3
+        uses: xu-cheng/latex-action@v4
         with:
           root_file: main.tex
           working_directory: paper
-      - uses: actions/upload-artifact@v4
+      - name: Assemble the bundle
+        # self-describing, sha-stamped names: a downloaded file stays
+        # traceable when detached from the zip. The bundle is the
+        # release shape: paper as PDF and as the agent-readable mirror
+        # (figure links rewritten to the bundled SVGs), the full table
+        # with its codebook, and the citation record.
+        id: bundle
+        run: |
+          stamp="$(date -u +%Y%m%d)-${GITHUB_SHA::7}"
+          mkdir -p bundle/figures
+          cp paper/main.pdf "bundle/tu102-paper-${stamp}.pdf"
+          sed 's|paper/figures/|figures/|g' PAPER.md > "bundle/tu102-paper-${stamp}.md"
+          cp paper/figures/*.svg bundle/figures/
+          cp table/tu102_ops.csv "bundle/tu102-ops-${stamp}.csv"
+          cp table/SCHEMA.md CITATION.cff bundle/
+          echo "stamp=${stamp}" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v7
         with:
-          name: paper-pdf
-          path: paper/main.pdf
+          name: tu102-${{ steps.bundle.outputs.stamp }}
+          path: bundle/
 
   paper-md-fresh:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check PAPER.md is regenerated from main.tex
         run: |
           # pinned to the pandoc major.minor used locally — gfm output
