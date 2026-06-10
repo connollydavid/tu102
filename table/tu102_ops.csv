@@ -45,19 +45,19 @@ cvt.f2f.lat,cvt,,roundtrip_pair,latency_cycles,11.5625,cycles,0.000,,,,,ok,bench
 cvt.f2f.tput,cvt,,w32_pair,recip_tput,0.99982,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,round-trip pair stream
 cvt.i2f_f2i.lat,cvt,,roundtrip_pair,latency_cycles,15.0078,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,per-convert avg of f32-to-s32-to-f32 pair
 cvt.i2f_f2i.tput,cvt,,w16_pair,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,round-trip pair stream
-mem.const.cbank.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,UNVERIFIED,bench/mem/constpath.cu@3727ddd n_runs=5,1455,divergent registers converging to one slot: main-path LDC broadcast hit; immediates are decode-embedded (note not row); between-run spread 80.43% exceeds within-run cv 0.00%
-mem.const.idc.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,UNVERIFIED,bench/mem/constpath.cu@3727ddd n_runs=5,1455,32 distinct constant addresses per step: serialised constant read (per-step latency); between-run spread 80.43% exceeds within-run cv 0.00%
+mem.const.cbank.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,ok,bench/mem/constpath.cu@3727ddd n_runs=4,1455,divergent registers converging to one slot: main-path LDC broadcast hit; immediates are decode-embedded (note not row)
+mem.const.idc.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,ok,bench/mem/constpath.cu@3727ddd n_runs=4,1455,32 distinct constant addresses per step: serialised constant read (per-step latency)
 mem.const.uldc.lat,mem,,,latency_cycles,5.10938,cycles,0.000,,,,,ok,bench/mem/constpath.cu@3727ddd n_runs=4,1455,warp-uniform chain lowered to ULDC by ptxas: the uniform-datapath constant load (SASS verified)
 mem.dram.bw,mem,,copy,bandwidth,507.085,GB/s,0.209,,,,,ok,bench/mem/drambw.cu@9cea8e3 n_runs=4,1455,float4 copy within the buffer; bytes counted read+write
 mem.dram.bw,mem,,read,bandwidth,608.621,GB/s,0.069,,,,,ok,bench/mem/drambw.cu@9cea8e3 n_runs=4,1455,coalesced float4 read; 512 MiB footprint
 mem.dram.bw,mem,,write,bandwidth,477.438,GB/s,0.418,,,,,UNVERIFIED,bench/mem/drambw.cu@9cea8e3 n_runs=4,1455,coalesced float4 write; between-run spread 0.86% exceeds within-run cv 0.42%
 mem.dram.lat,mem,,fp262144k,latency_ns,299.949,ns,0.076,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,designated DRAM row (256 MiB footprint); ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.icache.lat,mem,,body128k,latency_cycles,4.79534,cycles/op,0.008,,,,,UNVERIFIED,bench/mem/icache.cu@24a15ef n_runs=5,1455,single warp; unrolled FFMA body; 16 B per SASS op; between-run spread 87.80% exceeds within-run cv 0.01%
-mem.icache.lat,mem,,body16k,latency_cycles,2.11816,cycles/op,0.000,,,,,UNVERIFIED,bench/mem/icache.cu@24a15ef n_runs=5,1455,single warp; unrolled FFMA body; 16 B per SASS op; between-run spread 75.89% exceeds within-run cv 0.00%
-mem.icache.lat,mem,,body1k,latency_cycles,2.09375,cycles/op,0.000,,,,,UNVERIFIED,bench/mem/icache.cu@24a15ef n_runs=5,1455,single warp; unrolled FFMA body; 16 B per SASS op; between-run spread 73.13% exceeds within-run cv 0.00%
-mem.icache.lat,mem,,body32k,latency_cycles,2.34668,cycles/op,0.000,,,,,UNVERIFIED,bench/mem/icache.cu@24a15ef n_runs=5,1455,single warp; unrolled FFMA body; 16 B per SASS op; between-run spread 78.46% exceeds within-run cv 0.00%
-mem.icache.lat,mem,,body4k,latency_cycles,2.05469,cycles/op,0.000,,,,,UNVERIFIED,bench/mem/icache.cu@24a15ef n_runs=5,1455,single warp; unrolled FFMA body; 16 B per SASS op; between-run spread 74.14% exceeds within-run cv 0.00%
-mem.icache.lat,mem,,body64k,latency_cycles,3.88259,cycles/op,0.007,,,,,UNVERIFIED,bench/mem/icache.cu@24a15ef n_runs=5,1455,single warp; unrolled FFMA body; 16 B per SASS op; between-run spread 86.54% exceeds within-run cv 0.01%
+mem.icache.lat,mem,,body128k,latency_cycles,4.79555,cycles/op,0.009,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body16k,latency_cycles,2.11816,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body1k,latency_cycles,2.09375,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body32k,latency_cycles,2.34668,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body4k,latency_cycles,2.05469,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body64k,latency_cycles,3.88443,cycles/op,0.007,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
 mem.l1.bw,mem,,w4_f128,bandwidth,31.9997,B/clk/SM,0.002,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
 mem.l1.bw,mem,,w16_f32,bandwidth,63.9111,B/clk/SM,0.018,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
 mem.l1.bw,mem,,w32_f64,bandwidth,63.9862,B/clk/SM,0.012,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
@@ -86,18 +86,18 @@ mem.smem.lat,mem,,conflict2,latency_cycles,24,cycles,0.000,,,,,ok,bench/mem/smem
 mem.smem.lat,mem,,conflict32,latency_cycles,84,cycles,0.000,,85,jia2019turing:fig3.11,-1.2,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
 mem.smem.lat,mem,,conflict4,latency_cycles,28,cycles,0.000,,,,,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
 mem.smem.lat,mem,,conflict8,latency_cycles,36,cycles,0.000,,,,,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
-mem.tlb.lat,mem,,reach1024m,latency_ns,167.679,ns,0.004,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach12288m,latency_ns,173.558,ns,0.005,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach128m,latency_ns,167.677,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 86.09% exceeds within-run cv 0.00%
-mem.tlb.lat,mem,,reach16384m,latency_ns,173.541,ns,0.005,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach16m,latency_ns,159.357,ns,0.002,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 85.95% exceeds within-run cv 0.00%; GPU0-vs-GPU1 medians differ 0.61%
-mem.tlb.lat,mem,,reach2048m,latency_ns,167.613,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach256m,latency_ns,167.577,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach32m,latency_ns,160.83,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 85.51% exceeds within-run cv 0.00%
-mem.tlb.lat,mem,,reach4096m,latency_ns,167.633,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach512m,latency_ns,167.633,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach64m,latency_ns,167.452,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 86.12% exceeds within-run cv 0.00%
-mem.tlb.lat,mem,,reach8192m,latency_ns,167.663,ns,0.009,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=5,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 1.99% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.98%
+mem.tlb.lat,mem,,reach1024m,latency_ns,167.679,ns,0.004,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach12288m,latency_ns,173.555,ns,0.005,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach128m,latency_ns,167.698,ns,0.004,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach16384m,latency_ns,173.541,ns,0.005,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach16m,latency_ns,159.841,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 0.61% exceeds within-run cv 0.00%; GPU0-vs-GPU1 medians differ 0.61%
+mem.tlb.lat,mem,,reach2048m,latency_ns,167.606,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach256m,latency_ns,167.577,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach32m,latency_ns,160.859,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach4096m,latency_ns,167.634,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach512m,latency_ns,167.633,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach64m,latency_ns,167.51,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach8192m,latency_ns,167.661,ns,0.008,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 1.99% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.98%
 sfu.mufu.ex2.lat,sfu,,,latency_cycles,15,cycles,0.000,,15,jia2019turing:tab4.1,0.0,ok,bench/sfu/mufu.cu@a4fdd73 n_runs=5,1455,ftz form (single MUFU.EX2; non-ftz adds a denormal fixup sequence); chain saturates to inf
 sfu.mufu.ex2.tput,sfu,,w32,recip_tput,0.49998,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu.cu@a4fdd73 n_runs=5,1455,
 sync.bar.lat,sync,,w1,latency_cycles,22.3437,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
