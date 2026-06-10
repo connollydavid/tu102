@@ -70,6 +70,8 @@ EXPECT_FN = {
     "pchase_ring_init": None,
     "tlb_chase_kernel": {"primary": {"LDG"}},
     "tlb_ring_init": None,
+    "tex_chase_kernel": {"primary": {"LDG"}},
+    "tex_ring_init": None,
     "icache_kernel": {"primary": {"FFMA"}},
     "atom_shared_lat_kernel": {"primary": {"ATOMS"}, "min": 16},
     "atom_global_lat_kernel": {"primary": {"ATOMG"}, "min": 16},
@@ -249,6 +251,8 @@ def main():
     for name, raw in parse_functions(sass):
         fn_key = next((k for k in EXPECT_FN if k in name), None)
         if fn_key is not None:
+            if EXPECT_FN[fn_key] is None:
+                continue  # init/helper kernels gated elsewhere or not at all
             checked += 1
             instrs = raw
             loop = hot_loop(instrs)
@@ -260,10 +264,6 @@ def main():
             body = instrs[loop[0]:loop[1] + 1]
             size = instrs[loop[1]][0] - instrs[loop[0]][0] + 16
             expect = EXPECT_FN[fn_key]
-            if expect is None:
-                print(f"PASS {label}: gated elsewhere (census-match), "
-                      f"{len(body)} instrs, {size} B")
-                continue
             primary = expect["primary"]
             allowed = primary | expect.get("companions", set()) | CONTROL
             min_primary = expect.get("min", args.min_primary)

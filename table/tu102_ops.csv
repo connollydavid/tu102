@@ -125,6 +125,7 @@ mem.smem.lat,mem,,conflict2,latency_cycles,24,cycles,0.000,,,,,ok,bench/mem/smem
 mem.smem.lat,mem,,conflict32,latency_cycles,84,cycles,0.000,,85,jia2019turing:fig3.11,-1.2,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
 mem.smem.lat,mem,,conflict4,latency_cycles,28,cycles,0.000,,,,,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
 mem.smem.lat,mem,,conflict8,latency_cycles,36,cycles,0.000,,,,,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
+mem.tex.lat,mem,,ldg_ci,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/tex.cu@4576286 n_runs=4,1455,read-only path chase via __ldg; compare l1hit 34 cyc (unified-L1 test)
 mem.tlb.lat,mem,,reach1024m,latency_ns,167.679,ns,0.004,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
 mem.tlb.lat,mem,,reach12288m,latency_ns,173.555,ns,0.005,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
 mem.tlb.lat,mem,,reach128m,latency_ns,167.698,ns,0.004,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
@@ -146,3 +147,6 @@ sync.bar.lat,sync,,w32,latency_cycles,84.3439,cycles,0.000,,,,,ok,bench/sync/bar
 sync.bar.lat,sync,,w4,latency_cycles,28.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
 sync.bar.lat,sync,,w6,latency_cycles,32.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,192 threads; production attention block shape
 sync.bar.lat,sync,,w8,latency_cycles,36.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
+mem.cpasync,mem,NA_SM75,,na,,,,,,ptx_isa:cp.async,,NA_SM75,table/na_sm75.csv,,cp.async / LDGSTS require sm_80+; explicit absence
+sync.asyncbar,sync,NA_SM75,,na,,,,,,ptx_isa:mbarrier,,NA_SM75,table/na_sm75.csv,,asynchronous barriers (mbarrier) require sm_80+
+mem.l2.residency,mem,NA_SM75,,na,,,,,,ptx_isa:l2-cache-hints,,NA_SM75,table/na_sm75.csv,,L2 residency controls (annotated pointers) require sm_80+
