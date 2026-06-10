@@ -210,15 +210,11 @@ hypotheses of <a href="#sec:hypotheses" data-reference-type="ref+label"
 data-reference="sec:hypotheses">4</a>, with their predictions,
 operationalisations, and decision rules, were committed before their
 data existed (repository commit `c6e1a34`, 2026-06-10, preceding every
-measurement it governs). The commit history is the receipt. A later
-message-only history rewrite renamed every commit while preserving trees
-and dates byte-for-byte; the original history remains on the
-`main-original` branch with an old-to-new map in the repository, so the
-receipt and the provenance stamps in the raw data both stay resolvable.
-One registered rule fired mid-study and was honoured: a
-composed-prediction gate failed at its registered tolerance, and the
-affected comparison was blocked rather than re-derived, until
-independently measured constituents allowed a documented remediation
+measurement it governs). The commit history is the receipt. One
+registered rule fired mid-study and was honoured: a composed-prediction
+gate failed at its registered tolerance, and the affected comparison was
+blocked rather than re-derived, until independently measured
+constituents allowed a documented remediation
 (<a href="#sec:hypotheses-outcomes" data-reference-type="ref+label"
 data-reference="sec:hypotheses-outcomes">4.4</a>).
 
