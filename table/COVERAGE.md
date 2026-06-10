@@ -63,7 +63,7 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [x] `mem.ldg.u8.stride.tput` (variants stride1..128) — the stride-18 sector model reproduces the DRAM peak
 - [x] `mem.ldg.policy.lat` (variants default/ldcs/ldcg/ldlu × footprint) — .cs retains in L1; the MMVQ lever is .cg on the streamed side
 - [ ] `mem.stg.*` write paths
-- [x] `atomics.shared.add.lat` (contention sweep binds Jia's deltas), `atomics.global.add.lat`, `atomics.global.cas.lat`
+- [x] `atomics.shared.add.lat` (contention sweep binds Jia's deltas; the +17-cycle chain-method constant is ncu-corroborated as return-value wait — 83.6% short-scoreboard stall, `data/ncu-atomics-20260610/`), `atomics.global.add.lat`, `atomics.global.cas.lat`
 - [x] atomics throughput rows + `atomics.shared.cas` — shared CAS 37 cyc (+12 on add); shared add sustains 0.5 warpinst/SM/clk (ATOMS.ADD, no shared RED form); global RED from one SM peaks at one warp (the L2 service path, not warps, binds)
 - [x] explicit-absence rows `mem.cpasync`, `sync.asyncbar`, `mem.l2.residency` (NA_SM75 with PTX ISA locators)
 
