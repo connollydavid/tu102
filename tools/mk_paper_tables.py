@@ -155,6 +155,12 @@ def x_table(rows):
         ("exchange round trip, flag only", us("x.nvlink.fence_roundtrip", "0b_gpu0to1")),
         ("exchange round trip, 4 KiB", us("x.nvlink.fence_roundtrip", "4096b_gpu0to1")),
         ("exchange round trip, 20 KiB", us("x.nvlink.fence_roundtrip", "20480b_gpu0to1")),
+        ("first read after peer write, 4 KiB", us("x.nvlink.peer_write_visibility", "4096b_gpu0to1")),
+        ("first read after peer write, 20 KiB", us("x.nvlink.peer_write_visibility", "20480b_gpu0to1")),
+        ("steady-state read of the same bytes, 4 / 20 KiB",
+         val(rows, "x.consume.local", "4kb_singlewarp_gpu1", nd=2) + " / "
+         + val(rows, "x.consume.local", "20kb_singlewarp_gpu1", nd=2)
+         + " \\textmu s"),
         ("ADDLINESPACE", ""),
         ("NCCL all-reduce, 4 KiB steady", us("x.nccl.allreduce", "4096b_steady", nd=1)),
         ("NCCL all-reduce, 20 KiB steady", us("x.nccl.allreduce", "20480b_steady", nd=1)),

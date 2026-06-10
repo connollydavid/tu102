@@ -76,6 +76,62 @@ __global__ void rt_responder(unsigned trips, const float* payload,
     if (threadIdx.x == 0) local_box->litmus = acc;
 }
 
+// first-read-after-peer-write: same handshake as the round trip, but the
+// responder times ONLY its payload-read section, immediately after the
+// peer's write+fence+flag. The steady-state comparator is x.consume.local
+// (same loop, same warp, warm lines); the difference is the visibility
+// cost the remediated gate could not see.
+template <int K>
+__global__ void vis_initiator(unsigned trips, float* peer_payload,
+                              Mailbox* peer_box, Mailbox* local_box) {
+    constexpr int NVEC = K / 4;
+    for (unsigned t = 1; t <= trips; t++) {
+        for (int i = (int)threadIdx.x; i < NVEC; i += 32)
+            peer_payload[i] = (float)(t + i);
+        __threadfence_system();
+        if (threadIdx.x == 0) peer_box->flag = t;
+        __threadfence_system();
+        if (threadIdx.x == 0) {
+            long long guard = 0;
+            while (local_box->flag != t) {
+                if (++guard > (1ll << 31)) { local_box->err = 1; break; }
+            }
+        }
+        __syncwarp();
+        if (local_box->err) break;
+    }
+}
+
+template <int K>
+__global__ void vis_responder(unsigned trips, const float* payload,
+                              Mailbox* local_box, Mailbox* peer_box,
+                              long long* out) {
+    constexpr int NVEC = K / 4;
+    unsigned long long acc = 0;
+    long long read_cyc = 0;
+    for (unsigned t = 1; t <= trips; t++) {
+        if (threadIdx.x == 0) {
+            long long guard = 0;
+            while (local_box->flag != t) {
+                if (++guard > (1ll << 31)) { local_box->err = 1; break; }
+            }
+        }
+        __syncwarp();
+        if (local_box->err) break;
+        long long c0 = clock64();
+        float s = 0;
+        for (int i = (int)threadIdx.x; i < NVEC; i += 32) s += payload[i];
+        __syncwarp();
+        long long c1 = clock64();
+        read_cyc += c1 - c0;
+        acc += (unsigned long long)s;
+        __threadfence_system();
+        if (threadIdx.x == 0) peer_box->flag = t;
+        __threadfence_system();
+    }
+    if (threadIdx.x == 0) { local_box->litmus = acc; *out = read_cyc; }
+}
+
 // the responder's payload consumption as a standalone row: one warp reads
 // K L2-resident bytes and folds them (exactly the litmus loop)
 template <int K>
@@ -120,10 +176,17 @@ __global__ void local_read_bw(unsigned iters, const float4* buf, size_t n,
     size_t tid = blockIdx.x * blockDim.x + threadIdx.x;
     size_t total = (size_t)gridDim.x * blockDim.x;
     long long t0 = clock64();
+    // uniform trip counts (base loop identical across threads) keep the
+    // SASS free of reconvergence ops; the wrap is predicated, not a 64-bit
+    // % (which compiles to a division CALL and fails the purity gate)
     for (unsigned t = 0; t < iters; t++)
-        for (size_t i = tid; i < n; i += total * 4) {
+        for (size_t base = 0; base < n; base += total * 4) {
 #pragma unroll
-            for (int u = 0; u < 4; u++) acc[u] += buf[(i + u * total) % n].x;
+            for (int u = 0; u < 4; u++) {
+                size_t j = base + tid + (size_t)u * total;
+                if (j >= n) j -= n;
+                acc[u] += buf[j].x;
+            }
         }
     long long t1 = clock64();
     if (threadIdx.x == 0 && blockIdx.x == 0) *out = t1 - t0;
@@ -288,6 +351,51 @@ int main(int argc, char** argv) {
         TU102_CUDA_CHECK(cudaSetDevice(self));
     }
 
+    // first-read-after-peer-write rows (the responder reports its read
+    // section through d_cyc; the roundtrip lambda's per-trip division
+    // then yields read time per trip)
+    double vis4k, vis20k;
+    {
+        auto measure_vis = [&](int kbytes, auto ik, auto rk) {
+            unsigned trips = 512;
+            auto vals = run_reps(r, [&] {
+                return roundtrip(ik, rk, kbytes, trips);
+            });
+            Mailbox h1;
+            TU102_CUDA_CHECK(
+                cudaMemcpy(&h1, box1, sizeof h1, cudaMemcpyDeviceToHost));
+            if (h1.litmus == 0)
+                die_gate("visibility litmus failed: responder saw no payload",
+                         "fence broken");
+            char variant[32];
+            std::snprintf(variant, sizeof variant, "%db_gpu%dto%d", kbytes,
+                          self, other);
+            char notes[200];
+            std::snprintf(notes, sizeof notes,
+                          "single-warp read of K bytes immediately after peer "
+                          "write+fence+flag; steady-state comparator "
+                          "x.consume.local %0.3f us -> visibility penalty "
+                          "%0.3f us",
+                          kbytes == 4096 ? cons4k : cons20k,
+                          median(vals) - (kbytes == 4096 ? cons4k : cons20k));
+            report_row(r, "x", "x.nvlink.peer_write_visibility", "time_us",
+                       variant, median(vals), "us", cv_pct(vals),
+                       (int)vals.size(), (int)r.rejected_total, SRC, notes,
+                       &vals);
+            return median(vals);
+        };
+        vis4k = measure_vis(4096, [&](unsigned t, cudaStream_t s) {
+            vis_initiator<4096><<<1, 32, 0, s>>>(t, payload1, box1, box0);
+        }, [&](unsigned t, cudaStream_t s) {
+            vis_responder<4096><<<1, 32, 0, s>>>(t, payload1, box1, box0, d_cyc);
+        });
+        vis20k = measure_vis(20480, [&](unsigned t, cudaStream_t s) {
+            vis_initiator<20480><<<1, 32, 0, s>>>(t, payload1, box1, box0);
+        }, [&](unsigned t, cudaStream_t s) {
+            vis_responder<20480><<<1, 32, 0, s>>>(t, payload1, box1, box0, d_cyc);
+        });
+    }
+
     // composed-prediction gate (a-priori formula and ±25% tolerance)
     {
         double pred0 = 2.0 * (1.20 + 0.472);
@@ -329,6 +437,24 @@ int main(int argc, char** argv) {
         report_row(r, "x", "x.nvlink.fence_roundtrip.composed", "na", "gate_v2",
                    f20, "pct_err", 0.0, 2, 0, SRC, n2, &d2);
         std::fprintf(stderr, "  %s\n", n2);
+
+        // gate v3: the consume row replaced by the first-read-after-peer-write
+        // row — the named visibility residual measured by its own instrument
+        double v4 = rt0 + (1.35 - 1.20) + vis4k;
+        double v20 = rt0 + (1.80 - 1.20) + vis20k;
+        double g4 = 100.0 * (v4 - rt4k) / rt4k;
+        double g20 = 100.0 * (v20 - rt20k) / rt20k;
+        char n3[240];
+        std::snprintf(n3, sizeof n3,
+                      "gate v3 (visibility-aware constituents): pred %0.2f/%0.2f vs "
+                      "meas %0.2f/%0.2f us; err %+.1f/%+.1f%% vs +-25%% -> 4K %s, 20K %s",
+                      v4, v20, rt4k, rt20k, g4, g20,
+                      std::fabs(g4) <= 25 ? "PASS" : "FAIL",
+                      std::fabs(g20) <= 25 ? "PASS" : "FAIL");
+        std::vector<double> d3{g4, g20};
+        report_row(r, "x", "x.nvlink.fence_roundtrip.composed", "na", "gate_v3",
+                   g20, "pct_err", 0.0, 2, 0, SRC, n3, &d3);
+        std::fprintf(stderr, "  %s\n", n3);
     }
 
     // peer atomics

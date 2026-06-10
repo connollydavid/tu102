@@ -12,7 +12,12 @@ SM-path streaming sustains 43.4~GB/s reading and 45.8 writing per
 direction (inside the $\pm15\%$ gate; posted writes faster), and a peer
 \texttt{atomicAdd} chains at 541~ns. With one GPU streaming inbound
 writes at full NVLink rate, the victim's local DRAM read bandwidth
-degrades 15.1\% at the defined operating point.
+degrades 16.4\% at the defined operating point. Freshly peer-written
+lines also read back dearer than warm ones: a single warp's first read
+of 20~KiB its peer has just written, fenced, and flagged costs
+2.59~\textmu s against 1.14 for the same bytes at steady state --- a
+visibility cost with its own table row, measured by timing only the
+responder's read section inside the litmus-checked handshake.
 
 The exchange primitive of \cref{sec:hyp-exchange} --- peer store,
 \texttt{\_\_threadfence\_system} (which lowers to
@@ -29,7 +34,8 @@ retired in favour of these standalone numbers. PCIe rows complete the
 picture: 12.2/13.2~GB/s pinned in each direction on both x16 GPUs, and a
 ${\sim}4$~\textmu s pinned small-transfer floor. \Cref{tab:interconnect}
 collects the rows; \cref{fig:exchange} sets the primitive against the
-registered bar of \cref{sec:hyp-exchange}.
+registered bar of \cref{sec:hyp-exchange}, whose comparison now applies
+at both payload sizes (\cref{sec:hypotheses-outcomes}).
 
 \begin{table}[t]
 \centering
@@ -46,8 +52,8 @@ spread flag in the table.}
 \centering
 \includegraphics{figures/fig_exchange}
 \caption{The exchange primitive against the NCCL per-call floor. The
-registered comparison applies where the composed-prediction gate passes
-(4~KiB and below); at 20~KiB the margin is observational
-(\cref{sec:hypotheses-outcomes}).}
+visibility-aware composed gate passes at both payload sizes, so the
+registered comparison applies across its domain: margins 2.2$\times$ at
+4~KiB and 1.6$\times$ at 20~KiB (\cref{sec:hypotheses-outcomes}).}
 \label{fig:exchange}
 \end{figure}

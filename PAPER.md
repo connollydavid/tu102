@@ -1,26 +1,26 @@
 ---
 abstract: |
   We present an Agner-Fog-style operation table for the NVIDIA TU102 GPU
-  (compute capability 7.5): 238 measured rows covering instruction
+  (compute capability 7.5): 243 measured rows covering instruction
   latency and throughput with contention-probed issue-pipe bindings, the
   complete memory hierarchy, and the NVLink/PCIe/NCCL interconnect, on a
   locked-clock two-GPU rig. Every timed loop is SASS-verified — the
-  public toolchain rewrote or deleted measurement kernels seven distinct
+  public toolchain rewrote or deleted measurement kernels eight distinct
   ways, each caught by the gate — and every row carries provenance,
   priors where they apply, and published deviations. Three
   decision-grade questions were pre-registered in the repository before
   their data existed. Their outcomes split sharply: compositions of
   table rows predict single-resource kernels within 3.5% but fail with
   the wrong sign on an issue-coupled kernel pair, under-predict a
-  payload-bearing interconnect primitive until single-warp width rows
-  replace streaming floors, and under-predict production dispatch cost
-  by half against an empty-launch floor whose gap survives four
-  exonerated mechanisms. Findings new to the public record include the
-  fma-pipe binding of dp4a, full-rate f32-accumulate tensor cores on
-  Quadro-positioned TU102, evict-first loads that still allocate in L1,
-  and an L2 whose request path saturates below the DRAM streaming rate.
-  The table, benchmarks, and registration history are public and
-  regenerable.
+  payload-bearing interconnect primitive until single-warp width and
+  first-read visibility rows replace streaming floors, and under-predict
+  production dispatch cost by half against an empty-launch floor whose
+  gap survives four exonerated mechanisms. Findings new to the public
+  record include the fma-pipe binding of dp4a, full-rate f32-accumulate
+  tensor cores on Quadro-positioned TU102, evict-first loads that still
+  allocate in L1, and an L2 whose request path saturates below the DRAM
+  streaming rate. The table, benchmarks, and registration history are
+  public and regenerable.
 author:
 - |
   David Connolly  
@@ -67,7 +67,7 @@ across issue pipes or where a primitive row turns out to be a floor
 rather than a typical cost. Both failure modes are measured, diagnosed,
 and published.
 
-The contributions are: (i) the table itself, 238 rows with per-row
+The contributions are: (i) the table itself, 243 rows with per-row
 provenance, priors, and deviation flags, regenerable from a fresh clone;
 (ii) the measurement methodology, including a SASS-gated benchmark
 discipline that caught every compiler-induced measurement defect before
@@ -176,12 +176,15 @@ dependent add chains into `IMAD` and `LEA` through both a dead carry-out
 pin and cross-coupled accumulators; deleted six of eight independent
 accumulator chains whose results a sink did not consume; folded
 `rcp.approx` compositions as exact algebra, twice; contracted a
-deliberately separate add into an `FFMA`; and lowered an f16 widening
-conversion to `HADD2` rather than the expected `F2F`. Every one of these
-was caught by counting emitted mnemonics against the design, not by a
-timing looking wrong — several produced plausible numbers for the wrong
-instruction stream. Both gates carry negative tests: a deliberately
-unlocked clock and a deliberately miscompiled kernel must fail.
+deliberately separate add into an `FFMA`; lowered an f16 widening
+conversion to `HADD2` rather than the expected `F2F`; and expanded a
+64-bit remainder into a division subroutine call whose float-reciprocal
+emulation put `MUFU` and conversion traffic inside a bandwidth loop.
+Every one of these was caught by counting emitted mnemonics against the
+design, not by a timing looking wrong — several produced plausible
+numbers for the wrong instruction stream. Both gates carry negative
+tests: a deliberately unlocked clock and a deliberately miscompiled
+kernel must fail.
 
 ## Statistics and gate taxonomy
 
@@ -338,20 +341,25 @@ memory, binds it), and projection arbitrates that branch.
 
 *The NVLink exchange*
 (<a href="#sec:hyp-exchange" data-reference-type="ref+label"
-data-reference="sec:hyp-exchange">4.2</a>): the composed gate passed
+data-reference="sec:hyp-exchange">4.2</a>): **confirmed across the
+registered domain**, in three documented steps. The composed gate passed
 flag-only ($`-14\%`$) and failed with payload, because the registered
 composition charged the payload at streaming bandwidth a single warp
 cannot reach — the same floor-row failure mode as the dispatch
 hypothesis below, observed independently. With the constituents
 re-measured at the right width (a single-warp store burst and a
-single-warp consumption row), the remediated gate passes at 4 KiB
-($`-10\%`$) and the registered comparison applies there: 4.92 s against
-a bar of 10.78 (half the pinned NCCL floor at that size) — **confirmed
-at 4 KiB and below, margin 2.2$`\times`$**. At 20 KiB the remediated
-composition still under-predicts by 28%: about 2.3 s of round trip is a
-first-read-after-peer-write visibility cost with no table row yet, so
-the formal comparison stays blocked there, with the raw 1.6$`\times`$
-margin published as observational.
+single-warp consumption row), the remediated gate passed at 4 KiB
+($`-10\%`$) but still under-predicted 20 KiB by 28%; the residual was
+named — a first-read-after-peer-write visibility cost with no table row
+— and the comparison stayed blocked there until the row existed.
+Measured by its own instrument (the responder times only its read
+section), the visibility row puts the first read of 20 KiB of freshly
+peer-written lines at 2.59 s against 1.14 steady-state, and the
+visibility-aware composition closes the gate at both sizes ($`-4.5\%`$
+at 4 KiB, $`-10.3\%`$ at 20). The registered comparison therefore
+applies across its stated domain: 4.92 s against a bar of 10.78 at 4 KiB
+(margin 2.2$`\times`$), 7.94 against 12.51 at 20 KiB (margin
+1.6$`\times`$).
 
 *Dispatch composition*
 (<a href="#sec:hyp-dispatch" data-reference-type="ref+label"
@@ -626,7 +634,12 @@ SM-path streaming sustains 43.4 GB/s reading and 45.8 writing per
 direction (inside the $`\pm15\%`$ gate; posted writes faster), and a
 peer `atomicAdd` chains at 541 ns. With one GPU streaming inbound writes
 at full NVLink rate, the victim’s local DRAM read bandwidth degrades
-15.1% at the defined operating point.
+16.4% at the defined operating point. Freshly peer-written lines also
+read back dearer than warm ones: a single warp’s first read of 20 KiB
+its peer has just written, fenced, and flagged costs 2.59 s against 1.14
+for the same bytes at steady state — a visibility cost with its own
+table row, measured by timing only the responder’s read section inside
+the litmus-checked handshake.
 
 The exchange primitive of
 <a href="#sec:hyp-exchange" data-reference-type="ref+label"
@@ -649,25 +662,31 @@ data-reference="tab:interconnect">4</a> collects the rows;
 data-reference="fig:exchange">4</a> sets the primitive against the
 registered bar of
 <a href="#sec:hyp-exchange" data-reference-type="ref+label"
-data-reference="sec:hyp-exchange">4.2</a>.
+data-reference="sec:hyp-exchange">4.2</a>, whose comparison now applies
+at both payload sizes
+(<a href="#sec:hypotheses-outcomes" data-reference-type="ref+label"
+data-reference="sec:hypotheses-outcomes">4.4</a>).
 
 <div id="tab:interconnect">
 
-| quantity                            |            value |
-|:------------------------------------|-----------------:|
-| peer load latency (NVLink hop)      |           472 ns |
-| peer `atomicAdd` latency            |           541 ns |
-| peer read bandwidth                 |        43.4 GB/s |
-| peer write bandwidth                |        45.8 GB/s |
-| one-way message, flag only          |           1.20 s |
-| exchange round trip, flag only      |           3.93 s |
-| exchange round trip, 4 KiB          |           4.91 s |
-| exchange round trip, 20 KiB         |           7.94 s |
-| NCCL all-reduce, 4 KiB steady       |           21.1 s |
-| NCCL all-reduce, 20 KiB steady      |           25.0 s |
-| NCCL all-reduce, first call (cold)  |          8.14 ms |
-| PCIe 3.0 x16 pinned H2D / D2H       | 12.2 / 13.2 GB/s |
-| PCIe small-transfer floor (4 B H2D) |           3.89 s |
+| quantity                                        |            value |
+|:------------------------------------------------|-----------------:|
+| peer load latency (NVLink hop)                  |           472 ns |
+| peer `atomicAdd` latency                        |           541 ns |
+| peer read bandwidth                             |        43.4 GB/s |
+| peer write bandwidth                            |        45.8 GB/s |
+| one-way message, flag only                      |           1.20 s |
+| exchange round trip, flag only                  |           3.93 s |
+| exchange round trip, 4 KiB                      |           4.92 s |
+| exchange round trip, 20 KiB                     |           7.94 s |
+| first read after peer write, 4 KiB              |           0.61 s |
+| first read after peer write, 20 KiB             |           2.59 s |
+| steady-state read of the same bytes, 4 / 20 KiB |    0.32 / 1.14 s |
+| NCCL all-reduce, 4 KiB steady                   |           21.1 s |
+| NCCL all-reduce, 20 KiB steady                  |           25.0 s |
+| NCCL all-reduce, first call (cold)              |          8.14 ms |
+| PCIe 3.0 x16 pinned H2D / D2H                   | 12.2 / 13.2 GB/s |
+| PCIe small-transfer floor (4 B H2D)             |           3.89 s |
 
 Interconnect rows, GPU0$`\to`$GPU1 direction (the reverse direction
 agrees within 1% throughout). The cold NCCL row is the median of four
@@ -679,8 +698,10 @@ the table.
 <figure id="fig:exchange">
 <img src="paper/figures/fig_exchange.svg" />
 <figcaption>The exchange primitive against the NCCL per-call floor. The
-registered comparison applies where the composed-prediction gate passes
-(4 KiB and below); at 20 KiB the margin is observational (<a
+visibility-aware composed gate passes at both payload sizes, so the
+registered comparison applies across its domain: margins 2.2<span
+class="math inline">×</span> at 4 KiB and 1.6<span
+class="math inline">×</span> at 20 KiB (<a
 href="#sec:hypotheses-outcomes" data-reference-type="ref+label"
 data-reference="sec:hypotheses-outcomes">4.4</a>).</figcaption>
 </figure>
@@ -719,25 +740,25 @@ pollutes the L1), the resident weights keep the default policy, and
 behaviour of real composite kernels well enough to drive engineering
 decisions?* Where a single resource binds, yes, and tightly: the
 per-pipe-max projection sits within 3.5% on every single-resource
-anchor, the smem-bound attention variant within 5%, the latency-regime
-exchange primitive within 10–14%. Where work couples across issue pipes,
-or where a primitive row is a floor rather than a typical cost, no — and
-both failure modes were caught by pre-registered gates rather than
-discovered in production. The practical reading for anyone pricing
-similar hardware: trust the table’s rows, trust compositions in
-single-resource regimes, and measure directly anywhere pipes couple.
+anchor, the smem-bound attention variant within 5%, the exchange
+primitive within 4–14% once its constituents are measured at the right
+width and freshness. Where work couples across issue pipes, or where a
+primitive row is a floor rather than a typical cost, no — and both
+failure modes were caught by pre-registered gates rather than discovered
+in production. The practical reading for anyone pricing similar
+hardware: trust the table’s rows, trust compositions in single-resource
+regimes, and measure directly anywhere pipes couple.
 
 ## Limitations
 
 One rig, one toolchain-and-driver snapshot, and rows therefore
 confounded with both: a different `nvcc` emits different SASS for the
-same PTX (this paper catalogues seven distinct rewrites), and a
+same PTX (this paper catalogues eight distinct rewrites), and a
 different driver may move the host-domain rows. T4 priors transfer only
 core-domain, as recorded per row. Several rows are single-method and
 flagged `UNVERIFIED` pending a second construction; several more
 (enumerated in the public coverage manifest) remain open, among them
-`LDSM`, vote, atomic throughputs, and the peer-write visibility row that
-blocks the 20 KiB exchange comparison. The chain-method atomics offset
+`LDSM`, vote, and atomic throughputs. The chain-method atomics offset
 shows that even agreeing contention structure can ride a method
 constant. No independent replication exists yet; the repository is
 arranged so that one requires a clone and a locked clock.

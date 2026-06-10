@@ -6,15 +6,16 @@ interconnect (NVLink/PCIe/NCCL) characterisation for the NVIDIA TU102 GPU
 NVLink bridge. In the style of Agner Fog's x86 instruction tables, with the
 methodology of Jia et al.'s Volta/Turing dissections.
 
-**Status: measured; audit in progress.** 238 rows across every family:
+**Status: measured; audit in progress.** 243 rows across every family:
 ALU with contention-probed pipe bindings, the full memory hierarchy
 (smem/L1/L2/DRAM/TLB/constant/instruction caches, carveout, policies,
 atomics), tensor cores, SFU, shuffle/branch/barrier, the launch family,
 and the NVLink/PCIe/NCCL interconnect — every row gated on locked clocks
 and SASS-verified loops, every flag carrying its investigation. All three
 pre-registered hypotheses (`paper/` section 4) carry recorded outcomes: a
-fired kill criterion, a regime-scoped confirmation, and two published
-refutations. The manifest auditor (`tools/check_complete.py`, CI-gated)
+fired kill criterion, a confirmation reached through two documented gate
+remediations (the second supplied by a first-read-after-peer-write
+visibility row), and two published refutations. The manifest auditor (`tools/check_complete.py`, CI-gated)
 holds the open remainder explicit in `table/COVERAGE.md`. The paper and
 v1.0 close the work.
 

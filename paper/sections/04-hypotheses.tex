@@ -110,20 +110,25 @@ registered. The staged variant's projection, by contrast, landed within
 5\% of measurement (a single resource, shared memory, binds it), and
 projection arbitrates that branch.
 
-\emph{The NVLink exchange} (\cref{sec:hyp-exchange}): the composed gate
-passed flag-only ($-14\%$) and failed with payload, because the
+\emph{The NVLink exchange} (\cref{sec:hyp-exchange}): \textbf{confirmed
+across the registered domain}, in three documented steps. The composed
+gate passed flag-only ($-14\%$) and failed with payload, because the
 registered composition charged the payload at streaming bandwidth a
 single warp cannot reach --- the same floor-row failure mode as the
 dispatch hypothesis below, observed independently. With the constituents
 re-measured at the right width (a single-warp store burst and a
-single-warp consumption row), the remediated gate passes at 4~KiB
-($-10\%$) and the registered comparison applies there: 4.92~\textmu s
-against a bar of 10.78 (half the pinned NCCL floor at that size) ---
-\textbf{confirmed at 4~KiB and below, margin 2.2$\times$}. At 20~KiB the
-remediated composition still under-predicts by 28\%: about 2.3~\textmu s
-of round trip is a first-read-after-peer-write visibility cost with no
-table row yet, so the formal comparison stays blocked there, with the
-raw 1.6$\times$ margin published as observational.
+single-warp consumption row), the remediated gate passed at 4~KiB
+($-10\%$) but still under-predicted 20~KiB by 28\%; the residual was
+named --- a first-read-after-peer-write visibility cost with no table
+row --- and the comparison stayed blocked there until the row existed.
+Measured by its own instrument (the responder times only its read
+section), the visibility row puts the first read of 20~KiB of freshly
+peer-written lines at 2.59~\textmu s against 1.14 steady-state, and the
+visibility-aware composition closes the gate at both sizes ($-4.5\%$ at
+4~KiB, $-10.3\%$ at 20). The registered comparison therefore applies
+across its stated domain: 4.92~\textmu s against a bar of 10.78 at
+4~KiB (margin 2.2$\times$), 7.94 against 12.51 at 20~KiB (margin
+1.6$\times$).
 
 \emph{Dispatch composition} (\cref{sec:hyp-dispatch}): refuted. A
 production-shaped decode dispatches 4{,}614 kernels per token; composed
