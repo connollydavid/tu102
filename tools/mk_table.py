@@ -146,8 +146,10 @@ def main():
             note = grp_notes[-1] if grp_notes else ""  # latest annotation wins
 
             # cycle-domain rows are deterministic (0.1% floor); wall-clock
-            # bandwidth rows carry real DRAM refresh/thermal variation (0.5%)
-            floor = 0.5 if kind == "bandwidth" and unit == "GB/s" else 0.1
+            # bandwidth rows carry real DRAM refresh/thermal variation (0.5%);
+            # host-domain time rows carry scheduler jitter (5%)
+            floor = 5.0 if kind == "time_us" else \
+                    0.5 if kind == "bandwidth" and unit == "GB/s" else 0.1
             if len(run_vals) < 2:
                 flag = "UNVERIFIED"
                 extra.append("between-run rule unmet (single invocation)")

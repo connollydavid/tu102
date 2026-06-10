@@ -208,8 +208,9 @@ int main(int argc, char** argv) {
         auto vals = run_reps(r, [&] {
             return roundtrip(ik, rk, kbytes, trips);
         });
-        char variant[16];
-        std::snprintf(variant, sizeof variant, "%db", kbytes);
+        char variant[24];
+        std::snprintf(variant, sizeof variant, "%db_gpu%dto%d", kbytes, self,
+                      other);
         report_row(r, "x", "x.nvlink.fence_roundtrip", "time_us", variant,
                    median(vals), "us", cv_pct(vals), (int)vals.size(),
                    (int)r.rejected_total, SRC,
@@ -263,8 +264,9 @@ int main(int argc, char** argv) {
                 TU102_CUDA_CHECK(cudaMemcpy(&s2, d_cyc, 8, cudaMemcpyDeviceToHost));
                 return (double)(s2 - s1) / (double)trips / 1.455 / 1000.0;
             });
-            char variant[24];
-            std::snprintf(variant, sizeof variant, "%dkb_singlewarp", kb);
+            char variant[32];
+            std::snprintf(variant, sizeof variant, "%dkb_singlewarp_gpu%d", kb,
+                          other);
             report_row(r, "x", "x.consume.local", "time_us", variant, median(vals),
                        "us", cv_pct(vals), (int)vals.size(), (int)r.rejected_total,
                        SRC, "one-warp L2-resident read+fold (the responder loop)", &vals);
@@ -359,7 +361,9 @@ int main(int argc, char** argv) {
             TU102_CUDA_CHECK(cudaMemcpy(&s2, d_cyc, 8, cudaMemcpyDeviceToHost));
             return (double)(s2 - s1) / ((double)trips * 16) / 1.455;
         });
-        report_row(r, "x", "x.nvlink.peer_atom.add.lat", "latency_ns", "gpu0to1",
+        char av[16];
+    std::snprintf(av, sizeof av, "gpu%dto%d", self, other);
+    report_row(r, "x", "x.nvlink.peer_atom.add.lat", "latency_ns", av,
                    median(vals), "ns", cv_pct(vals), (int)vals.size(),
                    (int)r.rejected_total, SRC,
                    "per-lane dependent atomicAdd chains on peer lines", &vals);
