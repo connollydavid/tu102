@@ -64,8 +64,19 @@ def load_rates():
     rates = {}
     with open(TABLE) as f:
         for row in csv.DictReader(f):
+            # sweep rows share a row_id; keep the peak (f32/f64 ceiling)
+            if row["row_id"] in rates and \
+               float(rates[row["row_id"]]["value"]) >= float(row["value"]):
+                continue
             rates[row["row_id"]] = row
     return rates
+
+
+def l1_budget(rates, defaulted):
+    if "mem.l1.bw" in rates:
+        return float(rates["mem.l1.bw"]["value"])
+    defaulted.append("mem.l1.bw(default32)")
+    return 32.0
 
 
 def mem_bytes(mnemonic_full):
@@ -119,7 +130,7 @@ def project(census, warps, mem_class, rates, dram_budget):
     if smem_cycles:
         per_resource["smem"] = warps * smem_cycles
     if mem_bytes_total:
-        budget = dram_budget if mem_class == "dram" else 32.0  # l1-resident streams
+        budget = dram_budget if mem_class == "dram" else l1_budget(rates, defaulted)
         per_resource["mem"] = warps * mem_bytes_total / budget
     per_resource["issue"] = warps * total_insts / ISSUE_CAP
 

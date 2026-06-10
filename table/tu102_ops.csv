@@ -45,6 +45,9 @@ cvt.f2f.lat,cvt,,roundtrip_pair,latency_cycles,11.5625,cycles,0.000,,,,,ok,bench
 cvt.f2f.tput,cvt,,w32_pair,recip_tput,0.99982,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,round-trip pair stream
 cvt.i2f_f2i.lat,cvt,,roundtrip_pair,latency_cycles,15.0078,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,per-convert avg of f32-to-s32-to-f32 pair
 cvt.i2f_f2i.tput,cvt,,w16_pair,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,round-trip pair stream
+mem.l1.bw,mem,,w4_f128,bandwidth,31.9997,B/clk/SM,0.002,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
+mem.l1.bw,mem,,w16_f32,bandwidth,63.9111,B/clk/SM,0.018,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
+mem.l1.bw,mem,,w32_f64,bandwidth,63.9862,B/clk/SM,0.012,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
 mem.l1.lat,mem,,l1hit,latency_cycles,34,cycles,0.000,,32,jia2019turing:sec3.1.1,6.2,ok,bench/mem/l1.cu@a4fdd73 n_runs=5,1455,pointer chase; embedded 64-bit pointers; pure LDG chain
 mem.ldg.u8.stride.tput,mem,,stride1,bandwidth,151.334,GB/s,0.423,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 1 sectors per warp request predicted
 mem.ldg.u8.stride.tput,mem,,stride128,bandwidth,9.61647,GB/s,0.153,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 32 sectors per warp request predicted
