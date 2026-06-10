@@ -138,8 +138,20 @@ mem.tlb.lat,mem,,reach4096m,latency_ns,167.634,ns,0.003,,,,,ok,bench/mem/tlb.cu@
 mem.tlb.lat,mem,,reach512m,latency_ns,167.633,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
 mem.tlb.lat,mem,,reach64m,latency_ns,167.51,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
 mem.tlb.lat,mem,,reach8192m,latency_ns,167.661,ns,0.008,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 1.99% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.98%
+sfu.mufu.cos.lat,sfu,,,latency_cycles,21,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=6,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.cos.tput,sfu,,w16,recip_tput,0.499743,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=6,1455,
 sfu.mufu.ex2.lat,sfu,,,latency_cycles,15,cycles,0.000,,15,jia2019turing:tab4.1,0.0,ok,bench/sfu/mufu.cu@a4fdd73 n_runs=5,1455,ftz form (single MUFU.EX2; non-ftz adds a denormal fixup sequence); chain saturates to inf
 sfu.mufu.ex2.tput,sfu,,w32,recip_tput,0.49998,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu.cu@a4fdd73 n_runs=5,1455,
+sfu.mufu.lg2.lat,sfu,,,latency_cycles,15,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=6,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.lg2.tput,sfu,,w16,recip_tput,0.499984,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=6,1455,
+sfu.mufu.rcp_fadd_pair.lat,sfu,,,latency_cycles,21.1562,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=5,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.rcp_fadd_pair.tput,sfu,,w16,recip_tput,0.499618,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=5,1455,
+sfu.mufu.rcp_rsq_pair.lat,sfu,,,latency_cycles,15,cycles,0.000,,,,,UNVERIFIED,bench/sfu/mufu_set.cu@e163814 n_runs=1,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted); between-run rule unmet (single invocation)
+sfu.mufu.rcp_rsq_pair.tput,sfu,,w16,recip_tput,0.499982,warpinst/SM/clk,0.000,,,,,UNVERIFIED,bench/sfu/mufu_set.cu@e163814 n_runs=1,1455,between-run rule unmet (single invocation)
+sfu.mufu.rsq.lat,sfu,,,latency_cycles,15,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=6,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.rsq.tput,sfu,,w16,recip_tput,0.499984,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=6,1455,
+sfu.mufu.sin.lat,sfu,,,latency_cycles,21,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=6,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.sin.tput,sfu,,w16,recip_tput,0.499733,warpinst/SM/clk,0.001,,,,,ok,bench/sfu/mufu_set.cu@e163814 n_runs=6,1455,
 sync.bar.lat,sync,,w1,latency_cycles,22.3437,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
 sync.bar.lat,sync,,w16,latency_cycles,52.3436,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
 sync.bar.lat,sync,,w2,latency_cycles,24.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,

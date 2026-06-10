@@ -96,6 +96,13 @@ EXPECT_FN = {
     "f2f_pair": {"primary": {"F2F", "HADD2"}},
     "i2f_pair": {"primary": {"F2I", "I2F"}},
     "mufu_ex2": {"primary": {"MUFU"}},
+    # sin/cos lower to an FMUL range-scale + MUFU (1:1, verified); the rows
+    # are pair chains with the per-op value derived against fmul.lat
+    "MufuSinE": {"primary": {"MUFU", "FMUL"}},
+    "MufuRcpE": {"primary": {"MUFU", "FADD"}},
+    "MufuCosE": {"primary": {"MUFU", "FMUL"}},
+    "mufu_lat_kernel": {"primary": {"MUFU"}},
+    "mufu_tput_kernel": {"primary": {"MUFU"}},
     "bar_kernel": {"primary": {"BAR"}, "min": 8},
     # composite probe: the differential runner projects from the EMITTED
     # census, so this gate is smoke only (loop exists, base work present)
