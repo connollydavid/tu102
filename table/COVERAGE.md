@@ -56,7 +56,7 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [x] `mem.tex.lat` — texture-path read (`__ldg`/tex object); same physical
       L1 on Turing — row proves or refutes
 - [x] `mem.l2.lat` (161.5 ns; cliff binds between 5 and 8 MiB)
-- [ ] `mem.l2.bw` — dedicated L2-resident bandwidth row (open)
+- [x] `mem.l2.bw` — read_cg, grid-wide over a 4 MiB footprint
 - [x] `mem.const.{cbank,idc}.lat` + the bonus `mem.const.uldc.lat` (uniform datapath); immediates are decode-embedded (note, not row)
 - [x] `mem.tlb.lat` — reach sweep, .cg loads; both coverage cliffs land on the Jia priors (32 MiB, ~8 GiB)
 - [x] `mem.dram.bw` (variants read/write/copy) — gate passed: read 608 GB/s ≥530 (85% of the 624 GB/s P2 peak); `mem.dram.lat` 299.9 ns
