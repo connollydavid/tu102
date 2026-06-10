@@ -620,8 +620,9 @@ instead, and stride 128 additionally loses DRAM row locality.
 <figure id="fig:stride">
 <img src="paper/figures/fig_stride.svg" />
 <figcaption>The sector model. Useful bandwidth for byte loads by stride,
-and the implied fetched traffic. At strides 18 and 32 the fetched
-sectors reproduce the DRAM streaming rate, independently of the
+and the implied fetched traffic (useful <span
+class="math inline">×</span> min(stride, 32)). At strides 18 and 32 the
+fetched sectors reproduce the DRAM streaming rate, independently of the
 bandwidth benches.</figcaption>
 </figure>
 

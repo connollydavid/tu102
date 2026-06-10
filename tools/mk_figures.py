@@ -119,8 +119,9 @@ def fig_stride(rows):
     xpos = range(len(strides))
     ax.bar([x - 0.18 for x in xpos], useful, 0.36, color=ACCENT,
            label="useful bytes")
+    # the formula lives in the caption; a long legend entry covers the bars
     ax.bar([x + 0.18 for x in xpos], fetched, 0.36, color=GREY, alpha=0.55,
-           label="fetched traffic (useful × min(stride, 32))")
+           label="fetched traffic")
     ax.axhline(dram, ls="--", color=GREY, lw=0.9)
     ax.annotate(f"DRAM read  {dram:.0f} GB/s", (len(strides) - 0.55, dram),
                 textcoords="offset points", xytext=(0, 4), color=GREY,

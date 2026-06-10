@@ -88,9 +88,9 @@ stride 128 additionally loses DRAM row locality.
 \centering
 \includegraphics{figures/fig_stride}
 \caption{The sector model. Useful bandwidth for byte loads by stride,
-and the implied fetched traffic. At strides 18 and 32 the fetched
-sectors reproduce the DRAM streaming rate, independently of the
-bandwidth benches.}
+and the implied fetched traffic (useful $\times$ min(stride, 32)). At
+strides 18 and 32 the fetched sectors reproduce the DRAM streaming
+rate, independently of the bandwidth benches.}
 \label{fig:stride}
 \end{figure} Load-policy probes refute a common assumption:
 \texttt{.cs} (evict-first) lines still enter the L1 and re-read at
