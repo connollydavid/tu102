@@ -1,0 +1,43 @@
+captured: 2026-06-10T13:50:00Z
+
+== uname -a (running kernel; authoritative) ==
+Linux yarn 7.0.10-arch1-1 #1 SMP PREEMPT_DYNAMIC Sat, 23 May 2026 14:21:20 +0000 x86_64 GNU/Linux
+
+== /proc/version ==
+Linux version 7.0.10-arch1-1 (linux@archlinux) (gcc (GCC) 16.1.1 20260430, GNU ld (GNU Binutils) 2.46.0) #1 SMP PREEMPT_DYNAMIC Sat, 23 May 2026 14:21:20 +0000
+
+== virtualization (systemd-detect-virt) ==
+none
+
+== /etc/os-release ==
+NAME="Arch Linux"
+PRETTY_NAME="Arch Linux"
+ID=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://archlinux.org/"
+DOCUMENTATION_URL="https://wiki.archlinux.org/"
+SUPPORT_URL="https://bbs.archlinux.org/"
+BUG_REPORT_URL="https://gitlab.archlinux.org/groups/archlinux/-/issues"
+PRIVACY_POLICY_URL="https://terms.archlinux.org/docs/privacy-policy/"
+LOGO=archlinux-logo
+
+== hostnamectl ==
+ Static hostname: yarn
+       Icon name: computer-desktop
+         Chassis: desktop 🖥️
+      Machine ID: a9d7f0295d15416dbbd85e5c42dd37e4
+         Boot ID: 6751c8733a394592805bee33f38c38ef
+Operating System: Arch Linux
+          Kernel: Linux 7.0.10-arch1-1
+    Architecture: x86-64
+ Hardware Vendor: Dell Inc.
+  Hardware Model: Precision 5820 Tower
+    Hardware SKU: 0738
+Hardware Version: A01
+Firmware Version: 2.48.0
+   Firmware Date: Wed 2025-11-05
+    Firmware Age: 7month 4d
+
+== glibc ==
+ldd (GNU libc) 2.43

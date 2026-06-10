@@ -14,3 +14,11 @@ Hosts:
 Every run file begins with a header block auto-captured by the harness:
 hostname, driver version, CUDA version, GPU topology (`nvidia-smi topo -m`),
 locked clock, bench git sha, timestamp.
+
+`sbom/<host>/` holds a full software bill of materials per measurement
+host, captured by `tools/mk_sbom.sh`: the running kernel (from `uname`
+and `/proc/version`, not the package manager — under WSL2 the kernel is
+Microsoft's and appears in no distro package list), the complete distro
+package inventory, the NVIDIA driver and libcuda resolution path, and
+the CUDA/compiler/python toolchain. The same script runs on each host
+so captures diff directly.

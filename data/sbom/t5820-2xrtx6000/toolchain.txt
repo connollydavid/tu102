@@ -1,0 +1,30 @@
+== CUDA toolkits present ==
+--- /opt/cuda-13.3/bin/nvcc
+Cuda compilation tools, release 13.3, V13.3.33
+Build cuda_13.3.r13.3/compiler.37862127_0
+--- /opt/cuda/bin/nvcc
+Cuda compilation tools, release 13.2, V13.2.78
+Build cuda_13.2.r13.2/compiler.37668154_0
+
+== bench toolkit (Makefile NVCC) ==
+/opt/cuda-13.3/bin/nvcc
+
+== Nsight Compute (corroboration-only) ==
+Version 2026.2.0.0 (build 37790515) (public-release)
+
+== host compilers ==
+g++ (GCC) 16.1.1 20260430
+g++-15 (GCC) 15.2.1 20260506
+
+== python stack (mk_table / mk_figures / mk_paper_tables) ==
+Python 3.14.5
+numpy 2.4.4
+matplotlib 3.10.9
+
+== libraries and tools ==
+nccl 2.30.4-1
+git 2.54.0-1
+github-cli 2.93.0-1
+make 4.4.1-3
+cmake 4.3.3-1
+ninja 1.13.2-3

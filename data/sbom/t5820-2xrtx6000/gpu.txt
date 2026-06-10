@@ -1,0 +1,14 @@
+== nvidia-smi GPU inventory ==
+index, name, driver_version, vbios_version
+0, Quadro RTX 6000, 610.43.02, 90.02.4A.00.05
+1, Quadro RTX 6000, 610.43.02, 90.02.4A.00.05
+
+== libcuda resolution ==
+	libcudart.so.13 (libc6,x86-64) => /opt/cuda-13.3/targets/x86_64-linux/lib/libcudart.so.13
+	libcudart.so.13 (libc6,x86-64) => /opt/cuda/lib64/libcudart.so.13
+	libcudart.so (libc6,x86-64) => /opt/cuda-13.3/targets/x86_64-linux/lib/libcudart.so
+	libcudart.so (libc6,x86-64) => /opt/cuda/lib64/libcudart.so
+	libcudadebugger.so.1 (libc6,x86-64) => /usr/lib/libcudadebugger.so.1
+	libcudadebugger.so (libc6,x86-64) => /usr/lib/libcudadebugger.so
+	libcuda.so.1 (libc6,x86-64) => /usr/lib/libcuda.so.1
+	libcuda.so (libc6,x86-64) => /usr/lib/libcuda.so
