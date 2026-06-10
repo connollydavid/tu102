@@ -54,6 +54,11 @@ atomics.shared.add.lat,atomics,,contention2,latency_cycles,26.9999,cycles,0.000,
 atomics.shared.add.lat,atomics,,contention32,latency_cycles,86.9998,cycles,0.000,,69,jia2019turing:tab4.2,26.1,DEV>25%,bench/mem/atomics.cu@54454fe+6ae35c2 n_runs=12,1455,dependent chain through returned value; c lanes share one slot
 atomics.shared.add.lat,atomics,,contention4,latency_cycles,31.0001,cycles,0.000,,14,jia2019turing:tab4.2,121.4,DEV>25%,bench/mem/atomics.cu@54454fe+6ae35c2 n_runs=12,1455,dependent chain through returned value; c lanes share one slot
 atomics.shared.add.lat,atomics,,contention8,latency_cycles,38.9999,cycles,0.000,,22,jia2019turing:tab4.2,77.3,DEV>25%,bench/mem/atomics.cu@54454fe+6ae35c2 n_runs=12,1455,dependent chain through returned value; c lanes share one slot
+branch.divergent,sync,,1way,cycles_per_iter,16.6875,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,uniform branch baseline; 4 chained FFMAs per iter
+branch.divergent,sync,,2way,cycles_per_iter,35,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,two serialised paths
+branch.divergent,sync,,32way,cycles_per_iter,528,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,fully serialised; reconvergence via BSSY/BSYNC
+branch.divergent,sync,,4way,cycles_per_iter,66.75,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,
+branch.predicated,sync,,,cycles_per_iter,16.6875,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,same work
 cvt.f2f.lat,cvt,,roundtrip_pair,latency_cycles,11.5625,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,per-convert avg of F2F+HADD2 pair: ptxas lowers f16-to-f32 widening to HADD2 (half pipe) not F2F
 cvt.f2f.tput,cvt,,w32_pair,recip_tput,0.99982,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,round-trip pair stream
 cvt.i2f_f2i.lat,cvt,,roundtrip_pair,latency_cycles,15.0078,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,per-convert avg of f32-to-s32-to-f32 pair
@@ -159,6 +164,8 @@ sync.bar.lat,sync,,w32,latency_cycles,84.3439,cycles,0.000,,,,,ok,bench/sync/bar
 sync.bar.lat,sync,,w4,latency_cycles,28.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
 sync.bar.lat,sync,,w6,latency_cycles,32.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,192 threads; production attention block shape
 sync.bar.lat,sync,,w8,latency_cycles,36.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@a4fdd73 n_runs=5,1455,
+sync.shfl.lat,sync,,idx,latency_cycles,25,cycles,0.000,,,,,ok,bench/sync/shfl.cu@5c88700 n_runs=5,1455,value-dependent SHFL.IDX ring chain
+sync.shfl.tput,sync,,w4_idx,recip_tput,0.49998,warpinst/SM/clk,0.000,,,,,ok,bench/sync/shfl.cu@5c88700 n_runs=5,1455,
 mem.cpasync,mem,NA_SM75,,na,,,,,,ptx_isa:cp.async,,NA_SM75,table/na_sm75.csv,,cp.async / LDGSTS require sm_80+; explicit absence
 sync.asyncbar,sync,NA_SM75,,na,,,,,,ptx_isa:mbarrier,,NA_SM75,table/na_sm75.csv,,asynchronous barriers (mbarrier) require sm_80+
 mem.l2.residency,mem,NA_SM75,,na,,,,,,ptx_isa:l2-cache-hints,,NA_SM75,table/na_sm75.csv,,L2 residency controls (annotated pointers) require sm_80+

@@ -104,6 +104,12 @@ EXPECT_FN = {
     "mufu_lat_kernel": {"primary": {"MUFU"}},
     "mufu_tput_kernel": {"primary": {"MUFU"}},
     "bar_kernel": {"primary": {"BAR"}, "min": 8},
+    "shfl_lat_kernel": {"primary": {"SHFL"}},
+    "branch_div_kernel": {"primary": {"FFMA"}, "min": 4,
+                          "companions": {"BSSY", "BSYNC", "SEL", "MOV", "IMAD", "PLOP3", "SHF", "LOP3"}},
+    "branch_pred_kernel": {"primary": {"FFMA"}, "min": 4,
+                           "companions": {"SEL", "MOV", "IMAD", "PLOP3", "SHF", "LOP3"}},
+    "shfl_tput_kernel": {"primary": {"SHFL"}},
     # composite probe: the differential runner projects from the EMITTED
     # census, so this gate is smoke only (loop exists, base work present)
     "fa_mini_kernel": None,  # gated by census-match vs the production cubin
