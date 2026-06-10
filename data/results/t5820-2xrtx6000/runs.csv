@@ -64,3 +64,7 @@ run_id,timestamp_utc,host,bench,gpu_index,gpu_name,driver,cuda_toolkit,sm_clock_
 20260610T005933-30037,2026-06-10T00:59:33Z,yarn,l1bw,1,Quadro RTX 6000,610.43.02,13030,1455,6500,P2,Disabled,performance,1b7a3db,10
 20260610T005936-30048,2026-06-10T00:59:36Z,yarn,l1bw,0,Quadro RTX 6000,610.43.02,13030,1455,6500,P2,Disabled,performance,1b7a3db,10
 20260610T005938-30059,2026-06-10T00:59:38Z,yarn,l1bw,1,Quadro RTX 6000,610.43.02,13030,1455,6500,P2,Disabled,performance,1b7a3db,10
+20260610T010600-30414,2026-06-10T01:06:00Z,yarn,fa_mini,0,Quadro RTX 6000,610.43.02,13030,1455,6500,P2,Disabled,performance,4d6ac2a,10
+20260610T010601-30425,2026-06-10T01:06:01Z,yarn,fa_mini,1,Quadro RTX 6000,610.43.02,13030,1455,6500,P2,Disabled,performance,4d6ac2a,10
+20260610T010602-30437,2026-06-10T01:06:02Z,yarn,fa_mini,0,Quadro RTX 6000,610.43.02,13030,1455,6500,P2,Disabled,performance,4d6ac2a,10
+20260610T010603-30448,2026-06-10T01:06:03Z,yarn,fa_mini,1,Quadro RTX 6000,610.43.02,13030,1455,6500,P2,Disabled,performance,4d6ac2a,10
