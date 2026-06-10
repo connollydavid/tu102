@@ -28,3 +28,9 @@ mem.smem.lat.conflict32,85,cycles,jia2019turing:fig3.11,T4 curve 32-way point; f
 mem.l1.lat,32,cycles,jia2019turing:sec3.1.1,exact in text: L1 data cache hit latency 32 cycles on T4
 mem.smem.bw,64,B/clk/SM,jia2019turing:fig3.12,theoretical model min(P*Bs*ws*fg ...); T4 measured ~88 pct of theoretical
 sfu.mufu.ex2.lat,15,cycles,jia2019turing:tab4.1,Turing row: POPC/FLO/BREV/MUFU ~ 15 (approximate in source)
+atomics.shared.add.lat,8,cycles,jia2019turing:tab4.2,T4 shared atomicAdd no contention (exact)
+atomics.shared.add.lat.contention2,10,cycles,jia2019turing:tab4.2,
+atomics.shared.add.lat.contention4,14,cycles,jia2019turing:tab4.2,
+atomics.shared.add.lat.contention8,22,cycles,jia2019turing:tab4.2,
+atomics.shared.add.lat.contention16,37,cycles,jia2019turing:tab4.2,
+atomics.shared.add.lat.contention32,69,cycles,jia2019turing:tab4.2,
