@@ -77,6 +77,7 @@ EXPECT_FN = {
     "bar_kernel": {"primary": {"BAR"}, "min": 8},
     # composite probe: the differential runner projects from the EMITTED
     # census, so this gate is smoke only (loop exists, base work present)
+    "fa_mini_kernel": None,  # gated by census-match vs the production cubin
     "inject_kernel": {"primary": {"FFMA", "LOP3", "LDG"}, "min": 40,
                       "companions": {"IDP", "POPC", "SEL", "ISETP", "IMAD",
                                      "LEA", "MOV", "SHF", "FADD"}},
@@ -232,6 +233,10 @@ def main():
             body = instrs[loop[0]:loop[1] + 1]
             size = instrs[loop[1]][0] - instrs[loop[0]][0] + 16
             expect = EXPECT_FN[fn_key]
+            if expect is None:
+                print(f"PASS {label}: gated elsewhere (census-match), "
+                      f"{len(body)} instrs, {size} B")
+                continue
             primary = expect["primary"]
             allowed = primary | expect.get("companions", set()) | CONTROL
             min_primary = expect.get("min", args.min_primary)
