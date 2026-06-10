@@ -1,3 +1,104 @@
 \section{Methodology}
+\label{sec:methodology}
 
-% Drafted once the data for this section has been measured.
+All numbers come from one rig: a Dell T5820 (Xeon W-2140B) holding two
+Quadro RTX 6000 GPUs, both at PCIe 3.0~x16, bridged by a two-link NV2
+NVLink, driver 610.43.02, CUDA toolkit 13.3.33, ECC disabled on both
+devices, CPU governor pinned to \texttt{performance}. The table is a
+snapshot of this toolchain and driver pairing, not a living document; the
+append-only results layout admits later datasets without disturbing this
+one.
+
+\subsection{Clock contract}
+\label{sec:clocks}
+
+Cycle-domain rows require a fixed SM clock; the harness prechecks a
+1455~MHz lock (\texttt{nvidia-smi -lgc}) at startup and exits otherwise.
+The memory clock cannot be locked on this part: \texttt{-lmc} reports
+unsupported and the applications-clock interface is deprecated in this
+driver. What holds instead, measured on both GPUs, is that CUDA compute
+always executes in the P2 performance state with the memory clock at
+6500~MHz. The harness ramps into P2 with a warmup kernel, verifies the
+memory clock under load, and samples both clocks around every repetition,
+rejecting any where either is off target. Bandwidth expectations are
+therefore stated against the P2 memory clock --- a 624~GB/s DRAM ceiling
+rather than the 672 implied by the unreachable P0 point.
+
+\subsection{Timing}
+
+Latency rows use \texttt{clock64()} around dependent chains, with loop
+overhead cancelled by a doubled-trip-count slope and the loop body
+verified by size to fit the L0 instruction cache. Pointer-chase rows
+embed full 64-bit pointers (or byte offsets, in shared and constant
+windows) so the timed step is a single dependent load with no address
+arithmetic \citep{wong2010demystifying,mei2017dissecting}. Throughput
+rows are also timed in actual SM cycles, by one block on one SM:
+wall-clock event timing normalised by the nominal locked clock showed a
+0.3--1.0\% between-run spread that grew with region length --- real-clock
+thermal sag under the lock --- where on-device cycle counts are immune.
+Host-domain rows (launches, events, NCCL calls) use
+\texttt{steady\_clock} over a thousand repetitions with a device-event
+cross-check, reported as median with the 10th and 90th percentiles.
+
+\subsection{SASS verification}
+\label{sec:sass}
+
+Operation selection is pinned by PTX inline assembly, and
+\texttt{check\_sass.py} disassembles every benchmark binary, locates each
+timed loop, and enforces that it contains the intended instructions and
+nothing unexplained. The gate is not a formality. Working through the
+table, \texttt{ptxas} or the NVVM front end variously: constant-folded
+integer chains built on literal operands; moved warp-uniform integer
+chains onto the uniform datapath (\texttt{UPOPC} on \texttt{UR}
+registers); strength-reduced dependent add chains into \texttt{IMAD} and
+\texttt{LEA} through both a dead carry-out pin and cross-coupled
+accumulators; deleted six of eight independent accumulator chains whose
+results a sink did not consume; folded \texttt{rcp.approx} compositions
+as exact algebra, twice; contracted a deliberately separate add into an
+\texttt{FFMA}; and lowered an f16 widening conversion to \texttt{HADD2}
+rather than the expected \texttt{F2F}. Every one of these was caught by
+counting emitted mnemonics against the design, not by a timing looking
+wrong --- several produced plausible numbers for the wrong instruction
+stream. Both gates carry negative tests: a deliberately unlocked clock
+and a deliberately miscompiled kernel must fail.
+
+\subsection{Statistics and gate taxonomy}
+
+Each row is the median of ten repetitions, with the coefficient of
+variation published; every published row further requires at least two
+independent process invocations on each GPU, and the between-run spread
+must not exceed the within-run variation beyond a domain floor (0.1\% for
+cycle rows, 0.5\% for wall-clock bandwidths, 5\% for host-domain times).
+SM-domain rows must agree across the two physical GPUs within their
+combined variation; interconnect rows differ by design and carry
+direction in the variant. Verification gates are of two kinds, and
+confusing them is how benchmark suites quietly tune themselves to the
+literature: \emph{methodology-sanity} gates (two independent methods must
+agree) block publication on failure, while \emph{prior-comparison} gates
+(against \citealp{jia2019turing} or whitepaper geometry) publish the
+deviation whatever it is. The table exists to report true deviations.
+
+\subsection{Pre-registration}
+\label{sec:prereg}
+
+The coverage manifest and measurement policy were committed to the public
+repository before any benchmark ran, and the three decision-grade
+hypotheses of \cref{sec:hypotheses} were committed --- predictions,
+operationalisations, and decision rules --- before their data existed
+(repository commit \texttt{a4fdd73}, 2026-06-10, preceding every
+measurement it governs). The commit history is the receipt. One
+registered rule fired mid-study and was honoured: a composed-prediction
+gate failed at its registered tolerance, and the affected comparison was
+blocked rather than re-derived, until independently measured constituents
+allowed a documented remediation (\cref{sec:hyp-exchange-outcome}).
+
+\subsection{A worked row}
+
+The discipline end to end, for \texttt{alu.ffma.lat}: a 128-deep
+dependent \texttt{fma.rn.f32} chain on runtime operands compiles to
+exactly 128 \texttt{FFMA} in the timed loop (gate: pass); ten
+repetitions at two trip counts give a slope of 4.07 cycles with zero
+within-run variation; four invocations across both GPUs agree within the
+0.1\% floor; the prior is 4 cycles \citep[tab.~4.1]{jia2019turing}; the
+row publishes as 4.07, deviation $+1.8\%$, flag \texttt{ok}, with
+provenance naming the benchmark file, commit, and results lines.

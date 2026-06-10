@@ -87,3 +87,59 @@ Decision rule: the consuming project's capture work is prioritised by the
 predicted ceiling; a composed prediction outside \(\pm20\%\) blocks the
 use of these rows for that prioritisation and is published as a model
 failure.
+
+\subsection{Outcomes}
+\label{sec:hypotheses-outcomes}
+
+Recorded after the data, against the rules as registered.
+
+\emph{Issue coupling} (\cref{sec:hyp-coupling}): prediction (i) was
+confirmed --- additive-model differential error is larger for fma-pipe
+injections than alu-pipe ones --- but prediction (ii) was refuted on its
+registered metric, because the additive model is so uniformly poor
+(93--480\% differential error) that its between-pipe gap is small; the
+per-pipe-max model shows the coupling structure instead, with 3--5\%
+differential error on uncontended injections against 21--28\% on
+fma-coupled ones. Prediction (iii) failed: the bound does not
+discriminate 10\% deltas. The decision rule then fired on the real pair:
+the projection put the dp4a attention variant at $-3.9\%$ where
+measurement says $+18.9\%$ --- the wrong sign, because both variants
+project issue-bound while reality charges the fma-pipe coupling --- and
+that variant's arbitration fell back to implement-and-measure as
+registered. The staged variant's projection, by contrast, landed within
+5\% of measurement (a single resource, shared memory, binds it), and
+projection arbitrates that branch.
+
+\emph{The NVLink exchange} (\cref{sec:hyp-exchange}): the composed gate
+passed flag-only ($-14\%$) and failed with payload, because the
+registered composition charged the payload at streaming bandwidth a
+single warp cannot reach --- the same floor-row failure mode as the
+dispatch hypothesis below, observed independently. With the constituents
+re-measured at the right width (a single-warp store burst and a
+single-warp consumption row), the remediated gate passes at 4~KiB
+($-10\%$) and the registered comparison applies there: 4.92~\textmu s
+against a bar of 10.78 (half the pinned NCCL floor at that size) ---
+\textbf{confirmed at 4~KiB and below, margin 2.2$\times$}. At 20~KiB the
+remediated composition still under-predicts by 28\%: about 2.3~\textmu s
+of round trip is a first-read-after-peer-write visibility cost with no
+table row yet, so the formal comparison stays blocked there, with the
+raw 1.6$\times$ margin published as observational.
+
+\emph{Dispatch composition} (\cref{sec:hyp-dispatch}): refuted. A
+production-shaped decode dispatches 4{,}614 kernels per token; composed
+against the empty-launch row this predicts 7.2~ms of per-token dispatch
+against 14.9~ms measured ($-52\%$). The empty-launch row is a floor:
+in-situ launches average 3.13~\textmu s against the row's 1.56, and four
+candidate mechanisms for the gap --- argument marshalling, kernel-identity
+variety, cross-device alternation, and submission-queue backpressure ---
+were each measured and exonerated, leaving driver-state interaction as
+the documented residual. Per the registered rule the rows are barred
+from driving the capture prioritisation, which instead takes the direct
+measurement: a 29.9\% launch share at this shape, and a graph-replay row
+(0.91~\textmu s per node, 42\% below eager) bracketing the capture
+uplift at $+15$ to $+27\%$.
+
+One sentence of synthesis the three outcomes share: \emph{primitive rows
+are floors, and composition is trustworthy exactly where one resource
+binds}. The registration discipline did not make the models better; it
+made their failures unignorable, cheap to localise, and safe to publish.

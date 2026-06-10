@@ -1,3 +1,48 @@
 \section{Introduction}
+\label{sec:introduction}
 
-% Drafted once the data for this section has been measured.
+A used Quadro RTX 6000 sells for roughly a tenth of its launch price, and
+two of them bridged by NVLink put 48~GB of GPU memory and a measured
+1.2~TB/s of aggregate DRAM bandwidth on a desk. Whether that hardware can
+carry a modern inference workload is not answerable from marketing
+geometry: it depends on instruction latencies, cache behaviour, and
+interconnect costs that NVIDIA does not publish and that existing
+microbenchmark studies cover only for neighbouring chips. Jia et
+al.\ dissected the TU104-based Tesla T4 \citep{jia2019turing}; the larger
+TU102, with its different L2, DRAM system, and NVLink, has no equivalent
+public characterisation.
+
+This paper measures one. In the style of Agner Fog's x86 instruction
+tables \citep{fog2025instruction}, it builds a complete operation table
+for the TU102 at compute capability 7.5 (instruction latency and
+throughput with measured issue-pipe bindings, the full memory hierarchy
+from the register file to DRAM, and the NVLink, PCIe, and NCCL
+interconnect costs) from microbenchmarks whose every timed loop is
+verified at the SASS level and whose every published row carries its
+provenance.
+
+The research question is operational rather than encyclopaedic:
+\emph{can a table of independently measured primitive costs predict the
+behaviour of real composite kernels well enough to drive engineering
+decisions?} The answer, developed through three pre-registered hypotheses
+(\cref{sec:hypotheses}), is sharply split. Composed predictions are
+excellent where a single resource binds, within 3.5\% on
+single-resource kernels and within 10\% on a latency-dominated
+interconnect primitive, and fail systematically where work couples across issue
+pipes or where a primitive row turns out to be a floor rather than a
+typical cost. Both failure modes are measured, diagnosed, and published.
+
+The contributions are: (i) the table itself, 238 rows with per-row
+provenance, priors, and deviation flags, regenerable from a fresh clone;
+(ii) the measurement methodology, including a SASS-gated benchmark
+discipline that caught every compiler-induced measurement defect before a
+number shipped, and a clock-domain contract for a GPU whose memory clock
+cannot be locked; (iii) findings absent from public documentation, among
+them the fma-pipe binding of \texttt{IDP.4A}, the full-rate
+f32-accumulate of Quadro-positioned TU102 tensor cores, the L1-retention
+semantics of \texttt{.cs} loads, and the request-path saturation of the
+L2; and (iv) a worked demonstration that pre-registration --- gates,
+metrics, and decision rules committed to a public repository before data
+collection --- transfers from empirical software engineering to
+microbenchmarking, where the temptation to tune until numbers match
+priors is the central threat to validity.

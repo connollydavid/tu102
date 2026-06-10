@@ -1,3 +1,72 @@
-\section{SM Pipelines}
+\section{SM pipelines}
+\label{sec:sm}
 
-% Drafted once the data for this section has been measured.
+\subsection{The core table}
+
+The four-cycle class \citep[tab.~4.1]{jia2019turing} reproduces:
+\texttt{FFMA}, \texttt{FADD}, \texttt{FMUL}, \texttt{LOP3}, \texttt{SHF},
+\texttt{SEL}, and the derived \texttt{IADD3}, \texttt{ISETP}, and
+\texttt{FSETP} all measure between 3.96 and 4.13 cycles. \texttt{POPC}
+and \texttt{FLO} measure exactly 15, \texttt{HFMA2} 6.19, both on prior.
+Three deviations publish: \texttt{IMAD} at 4.11 cycles against a prior of
+5 ($-17.8\%$), \texttt{DADD} at 44.0 against ${\sim}48$, and
+\texttt{DFMA} at 48.0 against ${\sim}54$. Rows with no published prior
+are contributions: \texttt{PRMT} at 4.13 cycles, \texttt{IDP.4A} at 4.11
+cycles and the full 2.0 warp-instructions per SM per cycle, and the
+emulated \texttt{u32} divide at 55.5 cycles per sequence. Throughput
+saturates at 2.0 warp-instructions per SM per cycle for both the FP32 and
+INT32 classes --- 64 lanes of each per SM --- with the FFMA anchor
+landing within 0.005\% of the geometric 2.0.
+
+Some rows are measurable only as pairs from PTX: a predicate cannot be
+chained, so \texttt{ISETP} latency derives from a compare-plus-select
+chain minus the select chain; a pure dependent add chain cannot be
+pinned at all (every guard was strength-reduced), so \texttt{IADD3}
+derives from an add-xor pair minus the \texttt{LOP3} row. Each derived
+row names its construction.
+
+\subsection{Pipe bindings}
+
+Contention probes (\cref{sec:methodology}) bind each operation to its
+issue pipe by mixing it 50/50 with a known reference and comparing the
+combined rate against same-pipe (harmonic) and distinct-pipe (maximum,
+capped at the 4-per-SM-cycle issue rate) predictions. The probe
+self-tests pass --- FFMA against itself reads same-pipe, FFMA against
+LOP3 reads distinct --- and the map follows: \texttt{IMAD} issues on the
+fma pipe, confirming the Turing arrangement by measurement;
+\texttt{SHF}, \texttt{SEL}, and \texttt{PRMT} on the alu pipe;
+\texttt{POPC} and \texttt{FLO} on a quarter-rate unit that further
+\emph{partially} contends with the load path (a mixed POPC-and-load
+stream runs at 0.68 of the distinct-pipe prediction); and ---
+consequentially for quantised inference kernels --- \textbf{\texttt{IDP.4A}
+issues on the fma pipe}, competing with \texttt{FFMA} for issue slots
+rather than riding the integer pipe.
+
+\subsection{Tensor cores}
+
+The m16n8k8 \texttt{HMMA} with f16 accumulate measures 0.50000
+warp-instructions per SM per cycle, exactly the whitepaper-derived 512
+FMA per SM per cycle \citep{nvidia2018turing}; \texttt{IMMA} m8n8k16
+likewise lands exactly on its derived 1.0. The f32-accumulate prior of
+half rate is \emph{refuted on this part}: measured 0.49996, identical to
+f16 accumulate. The half-rate figure describes GeForce-positioned TU102s;
+the Quadro runs full-rate f32 accumulation --- a market-segmentation
+fact rather than a microarchitectural one, and worth a row precisely
+because the whitepaper does not say it. A dependent accumulate chain puts
+\texttt{HMMA} latency at 14.0 cycles, and a contention probe confirms
+that \texttt{HFMA2} shares the tensor unit (mixed rate 0.76 against a
+shared-unit prediction of 0.80): FP16 math runs through the tensor
+cores, measured rather than inferred.
+
+\subsection{SFU, shuffle, divergence}
+
+The remaining \texttt{MUFU} set sits at 15 cycles (\texttt{RSQ},
+\texttt{LG2}) with \texttt{SIN} and \texttt{COS} as 21-cycle pairs
+carrying an \texttt{FMUL} range scale, all at the quarter rate;
+\texttt{RCP} derives at ${\sim}17$ cycles after the approximate-algebra
+deletions of \cref{sec:sass}. \texttt{SHFL.IDX} chains at 25 cycles and
+0.5 per cycle. Branch divergence is exactly linear: a $k$-way divergent
+switch costs $k$ times the uniform path (16.7 cycles to 528 for 1-way to
+32-way), and the predicated equivalent costs precisely the uniform 16.7
+--- if-conversion is free at this shape, with reconvergence visible as
+\texttt{BSSY}/\texttt{BSYNC} in the SASS.

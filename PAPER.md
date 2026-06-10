@@ -1,4 +1,26 @@
 ---
+abstract: |
+  We present an Agner-Fog-style operation table for the NVIDIA TU102 GPU
+  (compute capability 7.5): 238 measured rows covering instruction
+  latency and throughput with contention-probed issue-pipe bindings, the
+  complete memory hierarchy, and the NVLink/PCIe/NCCL interconnect, on a
+  locked-clock two-GPU rig. Every timed loop is SASS-verified — the
+  public toolchain rewrote or deleted measurement kernels seven distinct
+  ways, each caught by the gate — and every row carries provenance,
+  priors where they apply, and published deviations. Three
+  decision-grade questions were pre-registered in the repository before
+  their data existed. Their outcomes split sharply: compositions of
+  table rows predict single-resource kernels within 3.5% but fail with
+  the wrong sign on an issue-coupled kernel pair, under-predict a
+  payload-bearing interconnect primitive until single-warp width rows
+  replace streaming floors, and under-predict production dispatch cost
+  by half against an empty-launch floor whose gap survives four
+  exonerated mechanisms. Findings new to the public record include the
+  fma-pipe binding of dp4a, full-rate f32-accumulate tensor cores on
+  Quadro-positioned TU102, evict-first loads that still allocate in L1,
+  and an L2 whose request path saturates below the DRAM streaming rate.
+  The table, benchmarks, and registration history are public and
+  regenerable.
 author:
 - |
   David Connolly  
@@ -13,9 +35,196 @@ title: |
 
 # Introduction
 
-# Related Work
+A used Quadro RTX 6000 sells for roughly a tenth of its launch price,
+and two of them bridged by NVLink put 48 GB of GPU memory and a measured
+1.2 TB/s of aggregate DRAM bandwidth on a desk. Whether that hardware
+can carry a modern inference workload is not answerable from marketing
+geometry: it depends on instruction latencies, cache behaviour, and
+interconnect costs that NVIDIA does not publish and that existing
+microbenchmark studies cover only for neighbouring chips. Jia et
+al. dissected the TU104-based Tesla T4 (Jia et al. 2019); the larger
+TU102, with its different L2, DRAM system, and NVLink, has no equivalent
+public characterisation.
+
+This paper measures one. In the style of Agner Fog’s x86 instruction
+tables (Fog 2025a), it builds a complete operation table for the TU102
+at compute capability 7.5 (instruction latency and throughput with
+measured issue-pipe bindings, the full memory hierarchy from the
+register file to DRAM, and the NVLink, PCIe, and NCCL interconnect
+costs) from microbenchmarks whose every timed loop is verified at the
+SASS level and whose every published row carries its provenance.
+
+The research question is operational rather than encyclopaedic: *can a
+table of independently measured primitive costs predict the behaviour of
+real composite kernels well enough to drive engineering decisions?* The
+answer, developed through three pre-registered hypotheses
+(<a href="#sec:hypotheses" data-reference-type="ref+label"
+data-reference="sec:hypotheses">4</a>), is sharply split. Composed
+predictions are excellent where a single resource binds, within 3.5% on
+single-resource kernels and within 10% on a latency-dominated
+interconnect primitive, and fail systematically where work couples
+across issue pipes or where a primitive row turns out to be a floor
+rather than a typical cost. Both failure modes are measured, diagnosed,
+and published.
+
+The contributions are: (i) the table itself, 238 rows with per-row
+provenance, priors, and deviation flags, regenerable from a fresh clone;
+(ii) the measurement methodology, including a SASS-gated benchmark
+discipline that caught every compiler-induced measurement defect before
+a number shipped, and a clock-domain contract for a GPU whose memory
+clock cannot be locked; (iii) findings absent from public documentation,
+among them the fma-pipe binding of `IDP.4A`, the full-rate
+f32-accumulate of Quadro-positioned TU102 tensor cores, the L1-retention
+semantics of `.cs` loads, and the request-path saturation of the L2; and
+(iv) a worked demonstration that pre-registration — gates, metrics, and
+decision rules committed to a public repository before data collection —
+transfers from empirical software engineering to microbenchmarking,
+where the temptation to tune until numbers match priors is the central
+threat to validity.
+
+# Related work
+
+Agner Fog’s instruction tables (Fog 2025a) are the model for the
+artefact: exhaustive per-instruction latency and throughput for x86
+microarchitectures, maintained as data rather than narrative, with the
+measurement method documented separately (Fog 2025b). This work
+transplants the form to a GPU and adds two things the x86 tables do not
+carry: per-row provenance binding each number to the benchmark commit
+and results line that produced it, and an explicit deviation column
+against published priors.
+
+GPU microbenchmarking begins for our purposes with Wong et al. (Wong et
+al. 2010), who established pointer-chase latency measurement on GT200,
+and Mei and Chu (Mei and Chu 2017), whose fine-grained pointer chase
+resolved cache geometry on Kepler and Maxwell. Jia et al. characterised
+Volta (Jia et al. 2018) and then Turing via the Tesla T4 (Jia et al.
+2019); their instruction-latency tables are the priors this paper
+compares against, row by row, where the prior applies. The applicability
+boundary matters: the T4’s TU104 shares the TU102’s streaming
+multiprocessor, so core-domain priors transfer, but its L2, DRAM system,
+and lack of NVLink make memory-system and interconnect priors
+non-binding — a distinction this paper records per row rather than per
+paper.
+
+Two methodological differences from Jia et al. are deliberate. First,
+their measurements were taken with a custom SASS assembler, giving
+direct control of the instruction stream; this work stays within the
+public toolchain (PTX inline assembly under `nvcc` 13.3) and instead
+*verifies* the emitted stream, gating every benchmark on a disassembly
+check. The compiler fights this approach — constant folding,
+uniform-datapath conversion, strength reduction, and
+approximate-arithmetic algebra each deleted or rewrote measurement
+kernels during development — and
+<a href="#sec:methodology" data-reference-type="ref+label"
+data-reference="sec:methodology">3</a> catalogues the countermeasures,
+because any future toolchain-bound measurement effort will face the same
+opponents. Second, where their report states results, this one also
+pre-registers the decision-grade questions
+(<a href="#sec:hypotheses" data-reference-type="ref+label"
+data-reference="sec:hypotheses">4</a>) and publishes the failures.
 
 # Methodology
+
+All numbers come from one rig: a Dell T5820 (Xeon W-2140B) holding two
+Quadro RTX 6000 GPUs, both at PCIe 3.0 x16, bridged by a two-link NV2
+NVLink, driver 610.43.02, CUDA toolkit 13.3.33, ECC disabled on both
+devices, CPU governor pinned to `performance`. The table is a snapshot
+of this toolchain and driver pairing, not a living document; the
+append-only results layout admits later datasets without disturbing this
+one.
+
+## Clock contract
+
+Cycle-domain rows require a fixed SM clock; the harness prechecks a
+1455 MHz lock (`nvidia-smi -lgc`) at startup and exits otherwise. The
+memory clock cannot be locked on this part: `-lmc` reports unsupported
+and the applications-clock interface is deprecated in this driver. What
+holds instead, measured on both GPUs, is that CUDA compute always
+executes in the P2 performance state with the memory clock at 6500 MHz.
+The harness ramps into P2 with a warmup kernel, verifies the memory
+clock under load, and samples both clocks around every repetition,
+rejecting any where either is off target. Bandwidth expectations are
+therefore stated against the P2 memory clock — a 624 GB/s DRAM ceiling
+rather than the 672 implied by the unreachable P0 point.
+
+## Timing
+
+Latency rows use `clock64()` around dependent chains, with loop overhead
+cancelled by a doubled-trip-count slope and the loop body verified by
+size to fit the L0 instruction cache. Pointer-chase rows embed full
+64-bit pointers (or byte offsets, in shared and constant windows) so the
+timed step is a single dependent load with no address arithmetic (Wong
+et al. 2010; Mei and Chu 2017). Throughput rows are also timed in actual
+SM cycles, by one block on one SM: wall-clock event timing normalised by
+the nominal locked clock showed a 0.3–1.0% between-run spread that grew
+with region length — real-clock thermal sag under the lock — where
+on-device cycle counts are immune. Host-domain rows (launches, events,
+NCCL calls) use `steady_clock` over a thousand repetitions with a
+device-event cross-check, reported as median with the 10th and 90th
+percentiles.
+
+## SASS verification
+
+Operation selection is pinned by PTX inline assembly, and
+`check_sass.py` disassembles every benchmark binary, locates each timed
+loop, and enforces that it contains the intended instructions and
+nothing unexplained. The gate is not a formality. Working through the
+table, `ptxas` or the NVVM front end variously: constant-folded integer
+chains built on literal operands; moved warp-uniform integer chains onto
+the uniform datapath (`UPOPC` on `UR` registers); strength-reduced
+dependent add chains into `IMAD` and `LEA` through both a dead carry-out
+pin and cross-coupled accumulators; deleted six of eight independent
+accumulator chains whose results a sink did not consume; folded
+`rcp.approx` compositions as exact algebra, twice; contracted a
+deliberately separate add into an `FFMA`; and lowered an f16 widening
+conversion to `HADD2` rather than the expected `F2F`. Every one of these
+was caught by counting emitted mnemonics against the design, not by a
+timing looking wrong — several produced plausible numbers for the wrong
+instruction stream. Both gates carry negative tests: a deliberately
+unlocked clock and a deliberately miscompiled kernel must fail.
+
+## Statistics and gate taxonomy
+
+Each row is the median of ten repetitions, with the coefficient of
+variation published; every published row further requires at least two
+independent process invocations on each GPU, and the between-run spread
+must not exceed the within-run variation beyond a domain floor (0.1% for
+cycle rows, 0.5% for wall-clock bandwidths, 5% for host-domain times).
+SM-domain rows must agree across the two physical GPUs within their
+combined variation; interconnect rows differ by design and carry
+direction in the variant. Verification gates are of two kinds, and
+confusing them is how benchmark suites quietly tune themselves to the
+literature: *methodology-sanity* gates (two independent methods must
+agree) block publication on failure, while *prior-comparison* gates
+(against (Jia et al. 2019) or whitepaper geometry) publish the deviation
+whatever it is. The table exists to report true deviations.
+
+## Pre-registration
+
+The coverage manifest and measurement policy were committed to the
+public repository before any benchmark ran, and the three decision-grade
+hypotheses of <a href="#sec:hypotheses" data-reference-type="ref+label"
+data-reference="sec:hypotheses">4</a> were committed — predictions,
+operationalisations, and decision rules — before their data existed
+(repository commit `a4fdd73`, 2026-06-10, preceding every measurement it
+governs). The commit history is the receipt. One registered rule fired
+mid-study and was honoured: a composed-prediction gate failed at its
+registered tolerance, and the affected comparison was blocked rather
+than re-derived, until independently measured constituents allowed a
+documented remediation
+(<a href="#sec:hyp-exchange-outcome" data-reference-type="ref+label"
+data-reference="sec:hyp-exchange-outcome">[sec:hyp-exchange-outcome]</a>).
+
+## A worked row
+
+The discipline end to end, for `alu.ffma.lat`: a 128-deep dependent
+`fma.rn.f32` chain on runtime operands compiles to exactly 128 `FFMA` in
+the timed loop (gate: pass); ten repetitions at two trip counts give a
+slope of 4.07 cycles with zero within-run variation; four invocations
+across both GPUs agree within the 0.1% floor; the prior is 4 cycles (Jia
+et al. 2019, tab. 4.1); the row publishes as 4.07, deviation $`+1.8\%`$,
+flag `ok`, with provenance naming the benchmark file, commit, and
+results lines.
 
 # Registered hypotheses
 
@@ -105,15 +314,286 @@ the predicted ceiling; a composed prediction outside $`\pm20\%`$ blocks
 the use of these rows for that prioritisation and is published as a
 model failure.
 
-# SM Pipelines
+## Outcomes
 
-# Memory Hierarchy
+Recorded after the data, against the rules as registered.
+
+*Issue coupling*
+(<a href="#sec:hyp-coupling" data-reference-type="ref+label"
+data-reference="sec:hyp-coupling">4.1</a>): prediction (i) was confirmed
+— additive-model differential error is larger for fma-pipe injections
+than alu-pipe ones — but prediction (ii) was refuted on its registered
+metric, because the additive model is so uniformly poor (93–480%
+differential error) that its between-pipe gap is small; the per-pipe-max
+model shows the coupling structure instead, with 3–5% differential error
+on uncontended injections against 21–28% on fma-coupled ones. Prediction
+(iii) failed: the bound does not discriminate 10% deltas. The decision
+rule then fired on the real pair: the projection put the dp4a attention
+variant at $`-3.9\%`$ where measurement says $`+18.9\%`$ — the wrong
+sign, because both variants project issue-bound while reality charges
+the fma-pipe coupling — and that variant’s arbitration fell back to
+implement-and-measure as registered. The staged variant’s projection, by
+contrast, landed within 5% of measurement (a single resource, shared
+memory, binds it), and projection arbitrates that branch.
+
+*The NVLink exchange*
+(<a href="#sec:hyp-exchange" data-reference-type="ref+label"
+data-reference="sec:hyp-exchange">4.2</a>): the composed gate passed
+flag-only ($`-14\%`$) and failed with payload, because the registered
+composition charged the payload at streaming bandwidth a single warp
+cannot reach — the same floor-row failure mode as the dispatch
+hypothesis below, observed independently. With the constituents
+re-measured at the right width (a single-warp store burst and a
+single-warp consumption row), the remediated gate passes at 4 KiB
+($`-10\%`$) and the registered comparison applies there: 4.92 s against
+a bar of 10.78 (half the pinned NCCL floor at that size) — **confirmed
+at 4 KiB and below, margin 2.2$`\times`$**. At 20 KiB the remediated
+composition still under-predicts by 28%: about 2.3 s of round trip is a
+first-read-after-peer-write visibility cost with no table row yet, so
+the formal comparison stays blocked there, with the raw 1.6$`\times`$
+margin published as observational.
+
+*Dispatch composition*
+(<a href="#sec:hyp-dispatch" data-reference-type="ref+label"
+data-reference="sec:hyp-dispatch">4.3</a>): refuted. A production-shaped
+decode dispatches 4,614 kernels per token; composed against the
+empty-launch row this predicts 7.2 ms of per-token dispatch against
+14.9 ms measured ($`-52\%`$). The empty-launch row is a floor: in-situ
+launches average 3.13 s against the row’s 1.56, and four candidate
+mechanisms for the gap — argument marshalling, kernel-identity variety,
+cross-device alternation, and submission-queue backpressure — were each
+measured and exonerated, leaving driver-state interaction as the
+documented residual. Per the registered rule the rows are barred from
+driving the capture prioritisation, which instead takes the direct
+measurement: a 29.9% launch share at this shape, and a graph-replay row
+(0.91 s per node, 42% below eager) bracketing the capture uplift at
+$`+15`$ to $`+27\%`$.
+
+One sentence of synthesis the three outcomes share: *primitive rows are
+floors, and composition is trustworthy exactly where one resource
+binds*. The registration discipline did not make the models better; it
+made their failures unignorable, cheap to localise, and safe to publish.
+
+# SM pipelines
+
+## The core table
+
+The four-cycle class (Jia et al. 2019, tab. 4.1) reproduces: `FFMA`,
+`FADD`, `FMUL`, `LOP3`, `SHF`, `SEL`, and the derived `IADD3`, `ISETP`,
+and `FSETP` all measure between 3.96 and 4.13 cycles. `POPC` and `FLO`
+measure exactly 15, `HFMA2` 6.19, both on prior. Three deviations
+publish: `IMAD` at 4.11 cycles against a prior of 5 ($`-17.8\%`$),
+`DADD` at 44.0 against $`{\sim}48`$, and `DFMA` at 48.0 against
+$`{\sim}54`$. Rows with no published prior are contributions: `PRMT` at
+4.13 cycles, `IDP.4A` at 4.11 cycles and the full 2.0 warp-instructions
+per SM per cycle, and the emulated `u32` divide at 55.5 cycles per
+sequence. Throughput saturates at 2.0 warp-instructions per SM per cycle
+for both the FP32 and INT32 classes — 64 lanes of each per SM — with the
+FFMA anchor landing within 0.005% of the geometric 2.0.
+
+Some rows are measurable only as pairs from PTX: a predicate cannot be
+chained, so `ISETP` latency derives from a compare-plus-select chain
+minus the select chain; a pure dependent add chain cannot be pinned at
+all (every guard was strength-reduced), so `IADD3` derives from an
+add-xor pair minus the `LOP3` row. Each derived row names its
+construction.
+
+## Pipe bindings
+
+Contention probes
+(<a href="#sec:methodology" data-reference-type="ref+label"
+data-reference="sec:methodology">3</a>) bind each operation to its issue
+pipe by mixing it 50/50 with a known reference and comparing the
+combined rate against same-pipe (harmonic) and distinct-pipe (maximum,
+capped at the 4-per-SM-cycle issue rate) predictions. The probe
+self-tests pass — FFMA against itself reads same-pipe, FFMA against LOP3
+reads distinct — and the map follows: `IMAD` issues on the fma pipe,
+confirming the Turing arrangement by measurement; `SHF`, `SEL`, and
+`PRMT` on the alu pipe; `POPC` and `FLO` on a quarter-rate unit that
+further *partially* contends with the load path (a mixed POPC-and-load
+stream runs at 0.68 of the distinct-pipe prediction); and —
+consequentially for quantised inference kernels — **`IDP.4A` issues on
+the fma pipe**, competing with `FFMA` for issue slots rather than riding
+the integer pipe.
+
+## Tensor cores
+
+The m16n8k8 `HMMA` with f16 accumulate measures 0.50000
+warp-instructions per SM per cycle, exactly the whitepaper-derived 512
+FMA per SM per cycle (NVIDIA Corporation 2018); `IMMA` m8n8k16 likewise
+lands exactly on its derived 1.0. The f32-accumulate prior of half rate
+is *refuted on this part*: measured 0.49996, identical to f16
+accumulate. The half-rate figure describes GeForce-positioned TU102s;
+the Quadro runs full-rate f32 accumulation — a market-segmentation fact
+rather than a microarchitectural one, and worth a row precisely because
+the whitepaper does not say it. A dependent accumulate chain puts `HMMA`
+latency at 14.0 cycles, and a contention probe confirms that `HFMA2`
+shares the tensor unit (mixed rate 0.76 against a shared-unit prediction
+of 0.80): FP16 math runs through the tensor cores, measured rather than
+inferred.
+
+## SFU, shuffle, divergence
+
+The remaining `MUFU` set sits at 15 cycles (`RSQ`, `LG2`) with `SIN` and
+`COS` as 21-cycle pairs carrying an `FMUL` range scale, all at the
+quarter rate; `RCP` derives at $`{\sim}17`$ cycles after the
+approximate-algebra deletions of
+<a href="#sec:sass" data-reference-type="ref+label"
+data-reference="sec:sass">3.3</a>. `SHFL.IDX` chains at 25 cycles and
+0.5 per cycle. Branch divergence is exactly linear: a $`k`$-way
+divergent switch costs $`k`$ times the uniform path (16.7 cycles to 528
+for 1-way to 32-way), and the predicated equivalent costs precisely the
+uniform 16.7 — if-conversion is free at this shape, with reconvergence
+visible as `BSSY`/`BSYNC` in the SASS.
+
+# Memory hierarchy
+
+## Levels
+
+Dependent chases place the levels at: L1 data 23.4 ns (34 cycles; the
+read-only `__ldg` path measures the same 34, one physical array); L2
+161.5 ns (235 cycles), flat from 128 KiB to 5 MiB with the cliff binding
+between 5 and 8 MiB against the 6 MB L2; DRAM 299.9 ns. Bandwidths: DRAM
+streams at 608 GB/s read (97.5% of the P2 ceiling, and within 0.3% of an
+independent estimate from the sector experiment below), 474 write, 507
+copy. The L2’s own service rate is lower than the DRAM streaming rate: a
+4 MiB footprint read entirely from L2 via `.cg` sustains 382 GB/s (the
+request-serving path saturates before the line-fill path), while the
+same footprint under the default policy reads at 1.11 TB/s because it
+nearly fits the *aggregate* L1 capacity (72 SMs $`\times`$ 64 KiB).
+Shared memory and L1 share one 64-byte per-cycle-per-SM datapath (both
+measure the same ceiling by two load widths), and the 96 KiB carveout
+moves the L1 chase cliff exactly as the split predicts. One hazard row:
+`float4` shared-memory access compiles to paired `LDS.64` whose 16-byte
+stride self-conflicts two-way, halving bandwidth — tiles built on
+`float4` pay it.
+
+## TLBs, constant path, instruction caches
+
+With `.cg` loads (the virtually indexed L1 otherwise hides TLB behaviour
+entirely), both TLB cliffs land on the T4 priors: $`+7.0`$ ns past
+32 MiB of reach and $`+5.9`$ ns past 8 GiB (Jia et al. 2019, 38), small
+penalties on a 160 ns L2 baseline. The constant path resolves into three
+measured levels: a warp-uniform chain lowers to the uniform datapath at
+5.1 cycles, divergent-register chains hit the constant cache at 26.1,
+and a 32-address indexed read shows the same per-step *latency*
+(serialisation costs throughput, not dependent-chain time).
+Instruction-fetch cost stays at the single-warp issue floor through
+16 KiB loop bodies, softens at 32 KiB, and steps at 64 and 128 KiB —
+bracketing the L0 and L1I capacities.
+
+## The sector model, load policies, atomics
+
+The quantised-block stride experiment binds the row that motivated it: a
+warp of byte loads at stride 18 (the q4_0 block layout) requests 18
+32-byte sectors, and measured useful bandwidth times sectors reproduces
+the DRAM peak — 610 GB/s of fetched sectors at stride 18 and 32, the
+fetch-bound regime exactly where the model predicts it. Small strides
+are request-rate-bound instead, and stride 128 additionally loses DRAM
+row locality. Load-policy probes refute a common assumption: `.cs`
+(evict-first) lines still enter the L1 and re-read at 23.4 ns — the hint
+sets priority, not eviction — while `.lu` genuinely evicts and `.cg`
+never allocates (both 161 ns re-read). Keeping weights resident against
+streamed data therefore means marking the *streamed* side `.cg`, not the
+weights `.cs`. Shared-memory atomics reproduce the T4 contention deltas
+exactly ($`+2/+4/+8/+16/+32`$ cycles for 2- to 32-way) atop a constant
+17-cycle offset attributable to the return-value chain this method times
+and the prior’s stall-counting method does not; global atomics sit at
+$`{\sim}310`$ cycles through the L2 with a real 2% spread between the
+two physical GPUs.
 
 # Interconnect
 
-# Worked Examples
+The T4 has no NVLink, so this half of the table has no published prior
+to deviate from; whitepaper geometry (two NV2 links, $`{\sim}50`$ GB/s
+per direction aggregate) supplies the sanity gates.
+
+A pointer chase into the peer’s memory costs 472 ns — a 172 ns NVLink
+hop over the local DRAM latency — and the default and `.cg` chases
+measure identically: peer lines do not enter the local L1 at all.
+SM-path streaming sustains 43.4 GB/s reading and 45.8 writing per
+direction (inside the $`\pm15\%`$ gate; posted writes faster), and a
+peer `atomicAdd` chains at 541 ns. With one GPU streaming inbound writes
+at full NVLink rate, the victim’s local DRAM read bandwidth degrades
+15.1% at the defined operating point.
+
+The exchange primitive of
+<a href="#sec:hyp-exchange" data-reference-type="ref+label"
+data-reference="sec:hyp-exchange">4.2</a> — peer store,
+`__threadfence_system` (which lowers to `MEMBAR.SYS`+`CCTL`+`ERRBAR`),
+flag write, remote spin and acknowledge — round-trips between
+concurrently resident kernels in 3.90 s empty, 4.92 at 4 KiB, and 7.94
+at 20 KiB, with a data-check litmus run before any timing is trusted.
+The NCCL comparator, environment pinned (Ring, LL, two channels, NCCL
+2.30.4), holds a steady-state two-rank all-reduce floor of 21.6–28.2 s
+across 4–64 KiB, with a 4.98 ms cold first call; the in-situ production
+figure this study set out to explain is retired in favour of these
+standalone numbers. PCIe rows complete the picture: 12.2/13.2 GB/s
+pinned in each direction on both x16 GPUs, and a 4.1 s pinned
+small-transfer floor.
+
+# Worked examples
+
+The table’s consumers are decisions in a production inference stack; the
+registration outcomes of
+<a href="#sec:hypotheses-outcomes" data-reference-type="ref+label"
+data-reference="sec:hypotheses-outcomes">4.4</a> carried the three
+largest, and three smaller memos show the rows at work.
+
+*Attention-variant staging.* At decode shape, each staged element of the
+key tile is reused once, so staging into shared memory pays a store, a
+reload, and a synchronisation against the dequantisation it saves; with
+the measured shared-memory ceiling the saving cannot reach the cost
+below a reuse factor of about two, and the projection route — validated
+at 5% on the staged pair — prices the alternative directly. The verdict
+is shape-dependent and stated as such: staging loses at decode, can win
+at prefill-like reuse, and must avoid `float4` tiles (the measured
+split-conflict halves their bandwidth).
+
+*A serial merge step.* A 196-step dependent merge costs at most
+$`196 \times 299.9`$ ns $`= 58.8`$ s if every step missed to DRAM and
+31.7 s at L2 residency — against a $`{\sim}50`$ ms decode token, at
+worst 0.1%. “Negligible” is now a number with a stated worst case.
+
+*Streaming loads in a quantised matrix-vector kernel.* The policy rows
+direct the lever precisely: the streamed operand takes `.cg` (it never
+pollutes the L1), the resident weights keep the default policy, and
+`.cs` on either does nothing the default does not.
 
 # Conclusion
+
+*Can a table of independently measured primitive costs predict the
+behaviour of real composite kernels well enough to drive engineering
+decisions?* Where a single resource binds, yes, and tightly: the
+per-pipe-max projection sits within 3.5% on every single-resource
+anchor, the smem-bound attention variant within 5%, the latency-regime
+exchange primitive within 10–14%. Where work couples across issue pipes,
+or where a primitive row is a floor rather than a typical cost, no — and
+both failure modes were caught by pre-registered gates rather than
+discovered in production. The practical reading for anyone pricing
+similar hardware: trust the table’s rows, trust compositions in
+single-resource regimes, and measure directly anywhere pipes couple.
+
+## Limitations
+
+One rig, one toolchain-and-driver snapshot, and rows therefore
+confounded with both: a different `nvcc` emits different SASS for the
+same PTX (this paper catalogues seven distinct rewrites), and a
+different driver may move the host-domain rows. T4 priors transfer only
+core-domain, as recorded per row. Several rows are single-method and
+flagged `UNVERIFIED` pending a second construction; several more
+(enumerated in the public coverage manifest) remain open, among them
+`LDSM`, vote, atomic throughputs, and the peer-write visibility row that
+blocks the 20 KiB exchange comparison. The chain-method atomics offset
+shows that even agreeing contention structure can ride a method
+constant. No independent replication exists yet; the repository is
+arranged so that one requires a clone and a locked clock.
+
+## Future work
+
+The named rows above; a width-aware launch row that would let the
+dispatch composition bind; and the same table for the second
+architecture this rig’s market segment offers cheaply, GA102.
 
 # Acknowledgements
 
@@ -124,3 +604,69 @@ record this assistance at commit granularity. All measurements were
 executed, validated, and interpreted on the author’s hardware under the
 author’s direction; the author takes sole responsibility for the
 content.
+
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+
+<div id="ref-fog2025instruction" class="csl-entry">
+
+Fog, Agner. 2025a. “Instruction Tables: Lists of Instruction Latencies,
+Throughputs and Micro-Operation Breakdowns for Intel, AMD and VIA CPUs.”
+Technical University of Denmark;
+<https://www.agner.org/optimize/instruction_tables.pdf>.
+
+</div>
+
+<div id="ref-fog2025microarch" class="csl-entry">
+
+———. 2025b. “The Microarchitecture of Intel, AMD and VIA CPUs: An
+Optimization Guide for Assembly Programmers and Compiler Makers.”
+Technical University of Denmark;
+<https://www.agner.org/optimize/microarchitecture.pdf>.
+
+</div>
+
+<div id="ref-jia2019turing" class="csl-entry">
+
+Jia, Zhe, Marco Maggioni, Jeffrey Smith, and Daniele P. Scarpazza. 2019.
+“Dissecting the NVidia Turing T4 GPU via Microbenchmarking.”
+<https://arxiv.org/abs/1903.07486>.
+
+</div>
+
+<div id="ref-jia2018volta" class="csl-entry">
+
+Jia, Zhe, Marco Maggioni, Benjamin Staiger, and Daniele P. Scarpazza.
+2018. “Dissecting the NVIDIA Volta GPU Architecture via
+Microbenchmarking.” <https://arxiv.org/abs/1804.06826>.
+
+</div>
+
+<div id="ref-mei2017dissecting" class="csl-entry">
+
+Mei, Xinxin, and Xiaowen Chu. 2017. “Dissecting GPU Memory Hierarchy
+Through Microbenchmarking.” *IEEE Transactions on Parallel and
+Distributed Systems* 28 (1): 72–86.
+<https://doi.org/10.1109/TPDS.2016.2549523>.
+
+</div>
+
+<div id="ref-nvidia2018turing" class="csl-entry">
+
+NVIDIA Corporation. 2018. “NVIDIA Turing GPU Architecture.”
+WP-09183-001_v01. NVIDIA Corporation.
+<https://images.nvidia.com/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf>.
+
+</div>
+
+<div id="ref-wong2010demystifying" class="csl-entry">
+
+Wong, Henry, Misel-Myrto Papadopoulou, Maryam Sadooghi-Alvandi, and
+Andreas Moshovos. 2010. “Demystifying GPU Microarchitecture Through
+Microbenchmarking.” In *2010 IEEE International Symposium on Performance
+Analysis of Systems & Software (ISPASS)*, 235–46.
+<https://doi.org/10.1109/ISPASS.2010.5452013>.
+
+</div>
+
+</div>

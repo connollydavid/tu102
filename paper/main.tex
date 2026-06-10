@@ -112,12 +112,26 @@
 
 \begin{abstract}
 \noindent
-% Drafted last, once the table is complete. One paragraph: Agner-style op
-% table for TU102 (sm_75),
-% methodology (dependent chains, fine-grained P-chase, SASS-gated benches,
-% locked clocks), priors from Jia et al. T4 with per-row deviation tracking,
-% additive NVLink/PCIe/NCCL characterisation, and worked examples driving
-% real kernel decisions in a production inference stack.
+We present an Agner-Fog-style operation table for the NVIDIA TU102 GPU
+(compute capability 7.5): 238 measured rows covering instruction latency
+and throughput with contention-probed issue-pipe bindings, the complete
+memory hierarchy, and the NVLink/PCIe/NCCL interconnect, on a locked-clock
+two-GPU rig. Every timed loop is SASS-verified --- the public toolchain
+rewrote or deleted measurement kernels seven distinct ways, each caught by
+the gate --- and every row carries provenance, priors where they apply,
+and published deviations. Three decision-grade questions were
+pre-registered in the repository before their data existed. Their
+outcomes split sharply: compositions of table rows predict
+single-resource kernels within 3.5\% but fail with the wrong sign on an
+issue-coupled kernel pair, under-predict a payload-bearing interconnect
+primitive until single-warp width rows replace streaming floors, and
+under-predict production dispatch cost by half against an empty-launch
+floor whose gap survives four exonerated mechanisms. Findings new to the
+public record include the fma-pipe binding of dp4a, full-rate
+f32-accumulate tensor cores on Quadro-positioned TU102, evict-first loads
+that still allocate in L1, and an L2 whose request path saturates below
+the DRAM streaming rate. The table, benchmarks, and registration history
+are public and regenerable.
 \end{abstract}
 
 \input{sections/01-introduction}

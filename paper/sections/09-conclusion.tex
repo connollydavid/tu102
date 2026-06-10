@@ -1,3 +1,35 @@
 \section{Conclusion}
+\label{sec:conclusion}
 
-% Drafted once the data for this section has been measured.
+\emph{Can a table of independently measured primitive costs predict the
+behaviour of real composite kernels well enough to drive engineering
+decisions?} Where a single resource binds, yes, and tightly: the
+per-pipe-max projection sits within 3.5\% on every single-resource
+anchor, the smem-bound attention variant within 5\%, the latency-regime
+exchange primitive within 10--14\%. Where work couples across issue
+pipes, or where a primitive row is a floor rather than a typical cost,
+no --- and both failure modes were caught by pre-registered gates rather
+than discovered in production. The practical reading for anyone pricing
+similar hardware: trust the table's rows, trust compositions in
+single-resource regimes, and measure directly anywhere pipes couple.
+
+\subsection{Limitations}
+
+One rig, one toolchain-and-driver snapshot, and rows therefore
+confounded with both: a different \texttt{nvcc} emits different SASS for
+the same PTX (this paper catalogues seven distinct rewrites), and a
+different driver may move the host-domain rows. T4 priors transfer only
+core-domain, as recorded per row. Several rows are single-method and
+flagged \texttt{UNVERIFIED} pending a second construction; several more
+(enumerated in the public coverage manifest) remain open, among them
+\texttt{LDSM}, vote, atomic throughputs, and the peer-write visibility
+row that blocks the 20~KiB exchange comparison. The chain-method atomics
+offset shows that even agreeing contention structure can ride a method
+constant. No independent replication exists yet; the repository is
+arranged so that one requires a clone and a locked clock.
+
+\subsection{Future work}
+
+The named rows above; a width-aware launch row that would let the
+dispatch composition bind; and the same table for the second
+architecture this rig's market segment offers cheaply, GA102.
