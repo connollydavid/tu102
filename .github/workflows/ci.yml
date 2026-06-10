@@ -16,6 +16,12 @@ jobs:
         run: cd tools && python3 test_project.py
       - name: COVERAGE manifest vs table
         run: python3 tools/check_complete.py
+      - name: Paper tables regenerate from the table CSV
+        # figures are exempt: matplotlib version drift makes PDF/SVG bytes
+        # non-deterministic across runners; tables are plain text
+        run: |
+          python3 tools/mk_paper_tables.py
+          git diff --exit-code paper/tables
       - name: Lint table CSVs
         run: |
           python3 - <<'EOF'

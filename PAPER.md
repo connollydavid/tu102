@@ -212,8 +212,8 @@ mid-study and was honoured: a composed-prediction gate failed at its
 registered tolerance, and the affected comparison was blocked rather
 than re-derived, until independently measured constituents allowed a
 documented remediation
-(<a href="#sec:hyp-exchange-outcome" data-reference-type="ref+label"
-data-reference="sec:hyp-exchange-outcome">[sec:hyp-exchange-outcome]</a>).
+(<a href="#sec:hypotheses-outcomes" data-reference-type="ref+label"
+data-reference="sec:hypotheses-outcomes">4.4</a>).
 
 ## A worked row
 
@@ -390,6 +390,44 @@ per SM per cycle, and the emulated `u32` divide at 55.5 cycles per
 sequence. Throughput saturates at 2.0 warp-instructions per SM per cycle
 for both the FP32 and INT32 classes — 64 lanes of each per SM — with the
 FFMA anchor landing within 0.005% of the geometric 2.0.
+<a href="#tab:core" data-reference-type="ref+Label"
+data-reference="tab:core">1</a> collects these rows; the repository
+table carries the remaining variants and the provenance columns.
+
+<div id="tab:core">
+
+|             |      | latency (cycles) |       |           |  throughput |
+|:------------|:-----|-----------------:|------:|----------:|------------:|
+| 3-5 op      | pipe |            meas. | prior |    dev. % | (wi/SM/clk) |
+| `FFMA`      | fma  |              4.1 |     4 |  $`+1.8`$ |        2.00 |
+| `FADD`      | fma  |              4.1 |     4 |  $`+2.9`$ |        2.00 |
+| `FMUL`      | fma  |              4.1 |     4 |  $`+2.9`$ |        2.00 |
+| `IMAD`      | fma  |              4.1 |     5 | $`-17.8`$ |        2.00 |
+| `IADD3*`    | –    |              4.0 |     4 |  $`-1.0`$ |        1.98 |
+| `LOP3`      | alu  |              4.1 |     4 |  $`+2.7`$ |        1.97 |
+| `SHF`       | alu  |              4.1 |     4 |  $`+2.7`$ |        1.97 |
+| `SEL`       | alu  |              4.1 |     4 |  $`+2.5`$ |        1.95 |
+| `PRMT`      | alu  |              4.1 |     – |         – |        1.97 |
+| `ISETP*`    | –    |              4.0 |     4 |  $`-0.8`$ |        1.98 |
+| `IDP.4A.S8` | fma  |              4.1 |     – |         – |        2.00 |
+| `HFMA2`     | own  |              6.2 |     6 |  $`+3.1`$ |        1.96 |
+| `DADD`      | own  |             44.0 |    48 |  $`-8.3`$ |        0.05 |
+| `DFMA`      | own  |             48.0 |    54 | $`-11.1`$ |        0.05 |
+| `POPC`      | own  |             15.0 |    15 |  $`+0.0`$ |        0.50 |
+| `FLO`       | own  |             15.0 |    15 |  $`+0.0`$ |        0.50 |
+| `MUFU.EX2`  | –    |             15.0 |    15 |  $`+0.0`$ |        0.50 |
+| `MUFU.RSQ`  | –    |             15.0 |     – |         – |        0.50 |
+| `MUFU.SIN`  | –    |             21.0 |     – |         – |        0.50 |
+| `SHFL.IDX`  | –    |             25.0 |     – |         – |        0.50 |
+
+Core instruction rows. Latency by dependent `clock64` chain, throughput
+at the peak of the warps-per-SM sweep, pipe bindings by contention probe
+(<a href="#sec:methodology" data-reference-type="ref+label"
+data-reference="sec:methodology">3</a>); *own* marks a dedicated unit.
+Starred rows derive from pair constructions. Latency priors from Jia et
+al. (Jia et al. 2019).
+
+</div>
 
 Some rows are measurable only as pairs from PTX: a predicate cannot be
 chained, so `ISETP` latency derives from a compare-plus-select chain
@@ -430,7 +468,23 @@ the whitepaper does not say it. A dependent accumulate chain puts `HMMA`
 latency at 14.0 cycles, and a contention probe confirms that `HFMA2`
 shares the tensor unit (mixed rate 0.76 against a shared-unit prediction
 of 0.80): FP16 math runs through the tensor cores, measured rather than
-inferred.
+inferred. <a href="#tab:tensor" data-reference-type="ref+Label"
+data-reference="tab:tensor">2</a> summarises.
+
+<div id="tab:tensor">
+
+| op                            | tput (wi/SM/clk) | prior |   dev. % |
+|:------------------------------|-----------------:|------:|---------:|
+| `HMMA.1688`, f16 accumulate   |            0.500 |     – |        – |
+| `HMMA.1688`, f32 accumulate   |            0.500 |     – |        – |
+| `IMMA.8816`, s8               |            1.000 |   1.0 | $`-0.0`$ |
+| `HMMA.1688` dependent latency |      14.0 cycles |       |          |
+
+Tensor-core rows. The f32-accumulate rate equals the f16-accumulate rate
+on this Quadro-positioned part; the half-rate figure in circulation
+describes GeForce-positioned TU102s.
+
+</div>
 
 ## SFU, shuffle, divergence
 
@@ -454,8 +508,8 @@ Dependent chases place the levels at: L1 data 23.4 ns (34 cycles; the
 read-only `__ldg` path measures the same 34, one physical array); L2
 161.5 ns (235 cycles), flat from 128 KiB to 5 MiB with the cliff binding
 between 5 and 8 MiB against the 6 MB L2; DRAM 299.9 ns. Bandwidths: DRAM
-streams at 608 GB/s read (97.5% of the P2 ceiling, and within 0.3% of an
-independent estimate from the sector experiment below), 474 write, 507
+streams at 609 GB/s read (97.5% of the P2 ceiling, and within 0.3% of an
+independent estimate from the sector experiment below), 477 write, 507
 copy. The L2’s own service rate is lower than the DRAM streaming rate: a
 4 MiB footprint read entirely from L2 via `.cg` sustains 382 GB/s (the
 request-serving path saturates before the line-fill path), while the
@@ -467,6 +521,52 @@ moves the L1 chase cliff exactly as the split predicts. One hazard row:
 `float4` shared-memory access compiles to paired `LDS.64` whose 16-byte
 stride self-conflicts two-way, halving bandwidth — tiles built on
 `float4` pay it.
+<a href="#fig:hierarchy" data-reference-type="ref+Label"
+data-reference="fig:hierarchy">1</a> traces both chases and
+<a href="#tab:memory" data-reference-type="ref+label"
+data-reference="tab:memory">3</a> summarises the levels; conflict
+serialisation is exactly linear at two cycles per additional way, and
+`BAR.SYNC` obeys the same $`22 + 2(n{-}1)`$ law in warps per block
+(<a href="#fig:laws" data-reference-type="ref+label"
+data-reference="fig:laws">2</a>).
+
+<div id="tab:memory">
+
+| level                                |  latency |            bandwidth |
+|:-------------------------------------|---------:|---------------------:|
+| shared memory (no conflict)          |   22 cyc |        64.0 B/clk/SM |
+| L1 data, hit (= `__ldg` path)        |   34 cyc |        63.9 B/clk/SM |
+| constant, cbank hit                  | 26.1 cyc |                    – |
+| constant, uniform path (`ULDC`)      |  5.1 cyc |                    – |
+| L2, hit (`.cg` service)              |   161 ns |           382.6 GB/s |
+| L2 aggregate via L1 (default policy) |        – |            1110 GB/s |
+| DRAM (read / write / copy)           |   300 ns | 609 / 477 / 507 GB/s |
+
+Memory-hierarchy summary. Cycle-domain rows at the locked 1455 MHz;
+bandwidth rows against the P2 memory state
+(<a href="#sec:methodology" data-reference-type="ref+label"
+data-reference="sec:methodology">3</a>). The L2 row pair separates the
+request-serving `.cg` path from the aggregate-L1 effect under the
+default policy.
+
+</div>
+
+<figure id="fig:hierarchy">
+<img src="paper/figures/fig_hierarchy.svg" />
+<figcaption>Left: dependent pointer-chase latency by footprint — the
+three plateaus are the levels of <a href="#tab:memory"
+data-reference-type="ref+label" data-reference="tab:memory">3</a>.
+Right: the same chase held L2-resident while page reach grows; both TLB
+cliffs land on the T4 priors.</figcaption>
+</figure>
+
+<figure id="fig:laws">
+<img src="paper/figures/fig_laws.svg" />
+<figcaption>One law, two mechanisms: shared-memory conflict latency by
+ways and <code>BAR.SYNC</code> latency by warps per block coincide on
+<span class="math inline">22 + 2(<em>n</em> − 1)</span> cycles
+(dashed).</figcaption>
+</figure>
 
 ## TLBs, constant path, instruction caches
 
@@ -488,17 +588,28 @@ The quantised-block stride experiment binds the row that motivated it: a
 warp of byte loads at stride 18 (the q4_0 block layout) requests 18
 32-byte sectors, and measured useful bandwidth times sectors reproduces
 the DRAM peak — 610 GB/s of fetched sectors at stride 18 and 32, the
-fetch-bound regime exactly where the model predicts it. Small strides
-are request-rate-bound instead, and stride 128 additionally loses DRAM
-row locality. Load-policy probes refute a common assumption: `.cs`
-(evict-first) lines still enter the L1 and re-read at 23.4 ns — the hint
-sets priority, not eviction — while `.lu` genuinely evicts and `.cg`
-never allocates (both 161 ns re-read). Keeping weights resident against
-streamed data therefore means marking the *streamed* side `.cg`, not the
-weights `.cs`. Shared-memory atomics reproduce the T4 contention deltas
-exactly ($`+2/+4/+8/+16/+32`$ cycles for 2- to 32-way) atop a constant
-17-cycle offset attributable to the return-value chain this method times
-and the prior’s stall-counting method does not; global atomics sit at
+fetch-bound regime exactly where the model predicts it
+(<a href="#fig:stride" data-reference-type="ref+label"
+data-reference="fig:stride">3</a>). Small strides are request-rate-bound
+instead, and stride 128 additionally loses DRAM row locality.
+
+<figure id="fig:stride">
+<img src="paper/figures/fig_stride.svg" />
+<figcaption>The sector model. Useful bandwidth for byte loads by stride,
+and the implied fetched traffic; at strides 18 and 32 the fetched
+sectors reproduce the DRAM streaming rate, independently of the
+bandwidth benches.</figcaption>
+</figure>
+
+Load-policy probes refute a common assumption: `.cs` (evict-first) lines
+still enter the L1 and re-read at 23.4 ns — the hint sets priority, not
+eviction — while `.lu` genuinely evicts and `.cg` never allocates (both
+161 ns re-read). Keeping weights resident against streamed data
+therefore means marking the *streamed* side `.cg`, not the weights
+`.cs`. Shared-memory atomics reproduce the T4 contention deltas exactly
+($`+2/+4/+8/+16/+32`$ cycles for 2- to 32-way) atop a constant 17-cycle
+offset attributable to the return-value chain this method times and the
+prior’s stall-counting method does not; global atomics sit at
 $`{\sim}310`$ cycles through the L2 with a real 2% spread between the
 two physical GPUs.
 
@@ -525,12 +636,54 @@ flag write, remote spin and acknowledge — round-trips between
 concurrently resident kernels in 3.90 s empty, 4.92 at 4 KiB, and 7.94
 at 20 KiB, with a data-check litmus run before any timing is trusted.
 The NCCL comparator, environment pinned (Ring, LL, two channels, NCCL
-2.30.4), holds a steady-state two-rank all-reduce floor of 21.6–28.2 s
-across 4–64 KiB, with a 4.98 ms cold first call; the in-situ production
-figure this study set out to explain is retired in favour of these
-standalone numbers. PCIe rows complete the picture: 12.2/13.2 GB/s
-pinned in each direction on both x16 GPUs, and a 4.1 s pinned
-small-transfer floor.
+2.30.4), holds a steady-state two-rank all-reduce floor of 21.1–28.3 s
+across 4–64 KiB, with a cold first call in the milliseconds (5–10 ms
+across four fresh-communicator samples; the row is flagged for its
+spread); the in-situ production figure this study set out to explain is
+retired in favour of these standalone numbers. PCIe rows complete the
+picture: 12.2/13.2 GB/s pinned in each direction on both x16 GPUs, and a
+$`{\sim}4`$ s pinned small-transfer floor.
+<a href="#tab:interconnect" data-reference-type="ref+Label"
+data-reference="tab:interconnect">4</a> collects the rows;
+<a href="#fig:exchange" data-reference-type="ref+label"
+data-reference="fig:exchange">4</a> sets the primitive against the
+registered bar of
+<a href="#sec:hyp-exchange" data-reference-type="ref+label"
+data-reference="sec:hyp-exchange">4.2</a>.
+
+<div id="tab:interconnect">
+
+| quantity                            |            value |
+|:------------------------------------|-----------------:|
+| peer load latency (NVLink hop)      |           472 ns |
+| peer `atomicAdd` latency            |           541 ns |
+| peer read bandwidth                 |        43.4 GB/s |
+| peer write bandwidth                |        45.8 GB/s |
+| one-way message, flag only          |           1.20 s |
+| exchange round trip, flag only      |           3.93 s |
+| exchange round trip, 4 KiB          |           4.91 s |
+| exchange round trip, 20 KiB         |           7.94 s |
+| NCCL all-reduce, 4 KiB steady       |           21.1 s |
+| NCCL all-reduce, 20 KiB steady      |           25.0 s |
+| NCCL all-reduce, first call (cold)  |          8.14 ms |
+| PCIe 3.0 x16 pinned H2D / D2H       | 12.2 / 13.2 GB/s |
+| PCIe small-transfer floor (4 B H2D) |           3.89 s |
+
+Interconnect rows, GPU0$`\to`$GPU1 direction (the reverse direction
+agrees within 1% throughout). The cold NCCL row is the median of four
+fresh-communicator samples spanning 5–10 ms and carries a spread flag in
+the table.
+
+</div>
+
+<figure id="fig:exchange">
+<img src="paper/figures/fig_exchange.svg" />
+<figcaption>The exchange primitive against the NCCL per-call floor. The
+registered comparison applies where the composed-prediction gate passes
+(4 KiB and below); at 20 KiB the margin is observational (<a
+href="#sec:hypotheses-outcomes" data-reference-type="ref+label"
+data-reference="sec:hypotheses-outcomes">4.4</a>).</figcaption>
+</figure>
 
 # Worked examples
 

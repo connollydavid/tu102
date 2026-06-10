@@ -8,7 +8,7 @@ LDLIBS    := -lnvidia-ml
 BENCH_SRCS := $(wildcard bench/*/*.cu)
 BENCH_BINS := $(BENCH_SRCS:.cu=.bin)
 
-.PHONY: all bins sass table verify paper paper-md clean
+.PHONY: all bins sass table verify tables figures paper paper-md clean
 
 all: bins
 
@@ -36,13 +36,22 @@ table:
 verify:
 	bash tools/verify_projection.sh
 
-paper:
+# paper tables and figures are generated from table/tu102_ops.csv so the
+# paper cannot drift from the published data
+tables:
+	python3 tools/mk_paper_tables.py
+
+figures:
+	python3 tools/mk_figures.py
+
+paper: tables figures
 	cd paper && latexmk -pdf main.tex
 
 # GitHub-readable mirror of the paper; main.tex is the source of truth
 paper-md:
 	cd paper && pandoc -s main.tex --citeproc --bibliography=references.bib \
 		-t gfm -o ../PAPER.md
+	sed -i 's|<embed src="figures/\(fig_[a-z_]*\)\.pdf" />|<img src="paper/figures/\1.svg" />|g' PAPER.md
 
 clean:
 	rm -f $(BENCH_BINS) $(BENCH_BINS:.bin=.sass)
