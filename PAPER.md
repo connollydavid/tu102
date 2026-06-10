@@ -514,11 +514,12 @@ data-reference="sec:sass">3.3</a>. `SHFL.IDX` chains at 25 cycles and
 lane-shifted to keep the chain off the uniform datapath. A barrier in a
 192-thread block costs 32.3 cycles whether or not a second 192-thread
 block is resident on the same SM: the barrier unit serves two concurrent
-CTAs without serialising them. Branch divergence is exactly linear: a
-$`k`$-way divergent switch costs $`k`$ times the uniform path (16.7
-cycles to 528 for 1-way to 32-way), and the predicated equivalent costs
-precisely the uniform 16.7. If-conversion is free at this shape, with
-reconvergence visible as `BSSY`/`BSYNC` in the SASS.
+CTAs without serialising them. Branch divergence is linear: a $`k`$-way
+divergent switch costs close to $`k`$ times the uniform path (16.7
+cycles to 528 for 1-way to 32-way, within 5% of $`k\times`$ throughout),
+and the predicated equivalent costs precisely the uniform 16.7.
+If-conversion is free at this shape, with reconvergence visible as
+`BSSY`/`BSYNC` in the SASS.
 
 # Memory hierarchy
 
@@ -727,7 +728,7 @@ the table.
 <img src="paper/figures/fig_exchange.svg" />
 <figcaption>The exchange primitive against the NCCL per-call floor. The
 visibility-aware composed gate passes at both payload sizes, so the
-registered comparison applies across its domain: margins 2.2<span
+registered comparison applies across its domain: margins 2.1<span
 class="math inline">×</span> at 4 KiB and 1.6<span
 class="math inline">×</span> at 20 KiB (<a
 href="#sec:hypotheses-outcomes" data-reference-type="ref+label"

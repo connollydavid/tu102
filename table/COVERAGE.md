@@ -73,7 +73,7 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [x] `sync.bar.tput` — a co-resident 192-thread CTA per SM leaves block 0's per-barrier cost unchanged (32.34 cyc = the solo w6 row): the barrier unit serves two concurrent CTAs without serialising
 - [x] `sync.shfl.{lat,tput}`
 - [x] `sync.vote.{lat,tput}` — ballot chain 16.2 cyc (VOTE.ANY; lane-shifted predicate keeps the chain off the uniform datapath); four independent chains sustain 0.96 warpinst/SM/clk
-- [x] `branch.divergent` (variants 1/2/4/32way), `branch.predicated` — exactly linear serialisation; predication free
+- [x] `branch.divergent` (variants 1/2/4/32way), `branch.predicated` — linear serialisation (within 5% of k×); predication free
 - [x] `launch.empty_kernel.{lat}` (back-to-back, stream)
 - [x] `launch.graph_node.replay` — 0.906 µs/node by the 2K−K slope (the stale 736 ns anchor re-baselined: 29.9% launch share at the 16k shape)
 - [x] `launch.event.{record,query,sync}`
@@ -86,7 +86,7 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [x] `x.nvlink.peer_atom.add.lat` (541 ns, native over NVLink)
 - [x] `x.nvlink.peer_atom.cas` + throughput rows — peer CAS 552-558 ns (+16 on peer add); independent non-returning adds (RED over NVLink) sustain ~800 Mop/s from a single warp, peak at w1 (more warps contend)
 - [x] `x.nvlink.msg.oneway` (variants 0b..20480b) — store-burst+fence curve 1.20→1.80 µs
-- [x] `x.nvlink.fence_roundtrip` (variants 0b/4096b/20480b) — litmus-checked 3.90/4.91/7.94 µs; visibility-aware composed gate (v3) passes at 4 AND 20 KiB (−4.5/−10.3%); hypothesis #2 confirmed at ≤20 KiB
+- [x] `x.nvlink.fence_roundtrip` (variants 0b/4096b/20480b) — litmus-checked 3.90/4.91/7.94 µs; visibility-aware composed gate (v3) passes at 4 AND 20 KiB (−4.5/−10.3%); hypothesis #2 confirmed at ≤20 KiB (margins 2.1×/1.6× against half the published NCCL floor)
 - [x] `x.nvlink.peer_write_visibility` (variants 4096b/20480b) — single-warp
       first-read-after-peer-write, 0.61/2.59 µs vs the 0.32/1.14 µs
       steady-state consume rows: the formerly named ~2.3 µs residual is now

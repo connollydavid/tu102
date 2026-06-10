@@ -100,9 +100,10 @@ sustains 0.96 per cycle across independent chains, with the predicate
 lane-shifted to keep the chain off the uniform datapath. A barrier in a
 192-thread block costs 32.3 cycles whether or not a second 192-thread
 block is resident on the same SM: the barrier unit serves two
-concurrent CTAs without serialising them. Branch divergence is exactly
-linear: a $k$-way divergent switch costs $k$ times the uniform path
-(16.7 cycles to 528 for 1-way to 32-way), and the predicated equivalent
+concurrent CTAs without serialising them. Branch divergence is linear:
+a $k$-way divergent switch costs close to $k$ times the uniform path
+(16.7 cycles to 528 for 1-way to 32-way, within 5\% of $k\times$
+throughout), and the predicated equivalent
 costs precisely the uniform 16.7. If-conversion is free at this
 shape, with reconvergence visible as \texttt{BSSY}/\texttt{BSYNC} in the
 SASS.

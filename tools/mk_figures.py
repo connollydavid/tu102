@@ -160,7 +160,7 @@ def fig_exchange(rows):
                 color=GREY)
     ax.annotate("exchange round trip\n(store + fence + poll)", (20, rt[2]),
                 textcoords="offset points", xytext=(10, -4), color=ACCENT)
-    ax.annotate("2.2×", (4, rt[1]), textcoords="offset points",
+    ax.annotate("2.1×", (4, rt[1]), textcoords="offset points",
                 xytext=(2, -14), color=ACCENT)
     ax.annotate("1.6× under the bar", (20, rt[2]), textcoords="offset points",
                 xytext=(2, -16), color=ACCENT)
