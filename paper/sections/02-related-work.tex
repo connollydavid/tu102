@@ -1,3 +1,38 @@
-\section{Related Work}
+\section{Related work}
+\label{sec:related}
 
-% Drafted once the data for this section has been measured.
+Agner Fog's instruction tables \citep{fog2025instruction} are the model
+for the artefact: exhaustive per-instruction latency and throughput for
+x86 microarchitectures, maintained as data rather than narrative, with
+the measurement method documented separately \citep{fog2025microarch}.
+This work transplants the form to a GPU and adds two things the x86
+tables do not carry: per-row provenance binding each number to the
+benchmark commit and results line that produced it, and an explicit
+deviation column against published priors.
+
+GPU microbenchmarking begins for our purposes with Wong et
+al.\ \citep{wong2010demystifying}, who established pointer-chase latency
+measurement on GT200, and Mei and Chu \citep{mei2017dissecting}, whose
+fine-grained pointer chase resolved cache geometry on Kepler and Maxwell.
+Jia et al.\ characterised Volta \citep{jia2018volta} and then Turing via
+the Tesla T4 \citep{jia2019turing}; their instruction-latency tables are
+the priors this paper compares against, row by row, where the prior
+applies. The applicability boundary matters: the T4's TU104 shares the
+TU102's streaming multiprocessor, so core-domain priors transfer, but its
+L2, DRAM system, and lack of NVLink make memory-system and interconnect
+priors non-binding --- a distinction this paper records per row rather
+than per paper.
+
+Two methodological differences from Jia et al.\ are deliberate. First,
+their measurements were taken with a custom SASS assembler, giving direct
+control of the instruction stream; this work stays within the public
+toolchain (PTX inline assembly under \texttt{nvcc} 13.3) and instead
+\emph{verifies} the emitted stream, gating every benchmark on a
+disassembly check. The compiler fights this approach --- constant
+folding, uniform-datapath conversion, strength reduction, and
+approximate-arithmetic algebra each deleted or rewrote measurement
+kernels during development --- and \cref{sec:methodology} catalogues the
+countermeasures, because any future toolchain-bound measurement effort
+will face the same opponents. Second, where their report states results,
+this one also pre-registers the decision-grade questions
+(\cref{sec:hypotheses}) and publishes the failures.
