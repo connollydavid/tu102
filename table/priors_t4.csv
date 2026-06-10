@@ -34,3 +34,6 @@ atomics.shared.add.lat.contention4,14,cycles,jia2019turing:tab4.2,
 atomics.shared.add.lat.contention8,22,cycles,jia2019turing:tab4.2,
 atomics.shared.add.lat.contention16,37,cycles,jia2019turing:tab4.2,
 atomics.shared.add.lat.contention32,69,cycles,jia2019turing:tab4.2,
+tensor.hmma.1688.tput.sweepf16acc,0.5,warpinst/SM/clk,nvidia2018turing:sec-tc,8 TC/SM x 64 FP16-FMA/clk = 512 FMA/SM/clk over 1024 MAC/inst
+tensor.hmma.1688.tput.sweepf32acc,0.25,warpinst/SM/clk,nvidia2018turing:sec-tc,f32 accumulate at half the f16 rate
+tensor.imma.8816.tput,1.0,warpinst/SM/clk,nvidia2018turing:sec-tc,INT8 at 2x FP16 ops over 1024 MAC/inst
