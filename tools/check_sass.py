@@ -116,16 +116,92 @@ def hot_loop(instrs):
     return best
 
 
+# pipe-class groups for the census-match mode (proxy-validity gate)
+MATCH_GROUPS = {
+    "fma": {"FFMA", "FADD", "FMUL", "IMAD", "IDP", "FSETP", "FMNMX"},
+    "half": {"HADD2", "HMUL2", "HFMA2", "HMNMX2"},
+    "alu": {"IADD3", "LOP3", "SHF", "SEL", "ISETP", "PRMT", "LEA", "MOV",
+            "FLO", "POPC", "BFE", "BFI", "IABS", "IMNMX"},
+    "xu": {"MUFU", "F2F", "F2I", "I2F", "I2I"},
+    "lsu": {"LDG", "STG", "LDS", "STS", "LDC", "LDSM", "LDL", "STL"},
+    "control": {"BRA", "NOP", "EXIT", "BSSY", "BSYNC", "CS2R", "S2R", "BAR",
+                "DEPBAR", "YIELD", "WARPSYNC", "RET"},
+}
+
+
+def loop_mix(binary, kernel_regex):
+    """op-count Counter over the hot-loop bodies of matching kernels."""
+    import collections
+    kre = re.compile(kernel_regex)
+    if binary.endswith(".sass"):  # cached disassembly (cuobjdump on a full
+        sass = open(binary).read()  # libggml.so costs ~8 minutes)
+    else:
+        sass = subprocess.run([CUOBJDUMP, "-sass", binary],
+                              capture_output=True, text=True, check=True).stdout
+    mix = collections.Counter()
+    matched = 0
+    for name, instrs in parse_functions(sass):
+        if not kre.search(name):
+            continue
+        loop = hot_loop(instrs)
+        if loop is None:
+            continue
+        matched += 1
+        for _, base, _ in instrs[loop[0]:loop[1] + 1]:
+            mix[base] += 1
+    return mix, matched
+
+
+def census_match(spec_a, spec_b, tolerance_pp):
+    """spec: 'binary:kernel_regex'. Group shares within tolerance -> exit 0."""
+    def shares(spec):
+        binary, _, regex = spec.partition(":")
+        mix, matched = loop_mix(binary, regex or ".*")
+        if matched == 0:
+            print(f"FAIL census-match: no kernels matched in {spec}")
+            sys.exit(1)
+        total = sum(mix.values())
+        g = {k: 0.0 for k in MATCH_GROUPS}
+        g["other"] = 0.0
+        for base, n in mix.items():
+            grp = next((k for k, ops in MATCH_GROUPS.items() if base in ops), "other")
+            g[grp] += 100.0 * n / total
+        return g, matched
+
+    ga, na = shares(spec_a)
+    gb, nb = shares(spec_b)
+    print(f"census-match: A={na} kernel(s), B={nb} kernel(s); tolerance +-{tolerance_pp}pp")
+    worst, fail = 0.0, 0
+    for grp in list(MATCH_GROUPS) + ["other"]:
+        d = abs(ga[grp] - gb[grp])
+        worst = max(worst, d)
+        status = "ok" if d <= tolerance_pp else "EXCEEDS"
+        if d > tolerance_pp:
+            fail = 1
+        print(f"  {grp:8s} A {ga[grp]:5.1f}%  B {gb[grp]:5.1f}%  |d| {d:5.1f}pp  {status}")
+    print(f"census-match: {'FAIL' if fail else 'PASS'} (worst {worst:.1f}pp)")
+    return fail
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("binary", help=".bin (cuobjdump is run) or .sass text file")
+    ap.add_argument("binary", nargs="?", help=".bin (cuobjdump is run) or .sass text file")
     ap.add_argument("--min-primary", type=int, default=64,
                     help="minimum primary-op count in the loop body")
     ap.add_argument("--l0-bytes", type=int, default=8192,
                     help="loop-body size budget (L0 i-cache fit)")
     ap.add_argument("--staging-budget", type=int, default=6,
                     help="max non-primary non-control instrs tolerated in the loop")
+    ap.add_argument("--census-match", nargs=2, metavar="BIN:REGEX",
+                    help="compare hot-loop op-mix shares of two kernels")
+    ap.add_argument("--tolerance-pp", type=float, default=10.0)
     args = ap.parse_args()
+
+    if args.census_match:
+        return census_match(args.census_match[0], args.census_match[1],
+                            args.tolerance_pp)
+    if not args.binary:
+        ap.error("binary required unless --census-match is used")
 
     if args.binary.endswith(".sass"):
         sass = open(args.binary).read()

@@ -200,7 +200,10 @@ int main(int argc, char** argv) {
         std::snprintf(variant, sizeof variant, "w%d_%s", w, wname);
         report_row(r, "mem", "mem.smem.bw", "bandwidth", variant, median(vals),
                    "B/clk/SM", cv_pct(vals), (int)vals.size(),
-                   (int)r.rejected_total, SRC, "streaming; conflict-free per phase",
+                   (int)r.rejected_total, SRC,
+                   vbytes == 16
+                       ? "ptxas splits float4 into 2x LDS.64 whose 16 B stride self-conflicts 2-way; f32/f64 reach the ceiling"
+                       : "streaming; conflict-free per phase",
                    &vals);
     }
     };
