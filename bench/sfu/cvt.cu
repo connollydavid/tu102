@@ -42,6 +42,22 @@ __global__ void cvt_i2f_lat_kernel(unsigned trips, float a, long long* out, floa
     if (threadIdx.x == 0) { *out = t1 - t0; *sink = x; }
 }
 
+// second method for the latency rows: a pair+FADD chain (the derived-row
+// construction used for IADD3/ISETP) — per-link minus the measured FADD
+// row gives the pair by a different decomposition than the pure chain
+template <void PAIR(float&)>
+__global__ void cvt_derived_lat_kernel(unsigned trips, float a, float b,
+                                       long long* out, float* sink) {
+    float x = a;
+    long long t0 = clock64();
+    for (unsigned t = 0; t < trips; t++) {
+#pragma unroll
+        for (int u = 0; u < UNROLL; u++) { PAIR(x); x += b; }
+    }
+    long long t1 = clock64();
+    if (threadIdx.x == 0) { *out = t1 - t0; *sink = x; }
+}
+
 template <void PAIR(float&)>
 __global__ void cvt_tput_kernel(unsigned trips, float a, long long* out, float* sink) {
     float x[ILP];
@@ -107,6 +123,47 @@ int main(int argc, char** argv) {
         "per-convert avg of F2F+HADD2 pair: ptxas lowers f16-to-f32 widening to HADD2 (half pipe) not F2F");
     lat(cvt_i2f_lat_kernel, "cvt.i2f_f2i.lat",
         "per-convert avg of f32-to-s32-to-f32 pair");
+
+    // second method: pair+FADD chain minus the FADD row (4.12 cyc)
+    auto lat2 = [&](auto kern, const char* row, const char* notes) {
+        unsigned trips = 1024;
+        auto launch = [&](unsigned t) {
+            kern<<<1, 32>>>(t, 1.25f, 0.0078125f, d_cyc, d_sink);
+        };
+        for (;;) {
+            cudaEvent_t e0, e1;
+            TU102_CUDA_CHECK(cudaEventCreate(&e0));
+            TU102_CUDA_CHECK(cudaEventCreate(&e1));
+            TU102_CUDA_CHECK(cudaEventRecord(e0));
+            launch(trips);
+            TU102_CUDA_CHECK(cudaEventRecord(e1));
+            TU102_CUDA_CHECK(cudaEventSynchronize(e1));
+            float ms = 0;
+            TU102_CUDA_CHECK(cudaEventElapsedTime(&ms, e0, e1));
+            cudaEventDestroy(e0);
+            cudaEventDestroy(e1);
+            if (ms >= MIN_TIMED_MS * 1.1) break;
+            trips *= 2;
+            calib_guard(trips);
+        }
+        auto vals = run_reps(r, [&] {
+            long long s1 = 0, s2 = 0;
+            launch(trips);
+            TU102_CUDA_CHECK(cudaMemcpy(&s1, d_cyc, 8, cudaMemcpyDeviceToHost));
+            launch(2 * trips);
+            TU102_CUDA_CHECK(cudaMemcpy(&s2, d_cyc, 8, cudaMemcpyDeviceToHost));
+            // per-link minus the measured FADD row, halved for per-convert
+            double link = (double)(s2 - s1) / ((double)trips * UNROLL);
+            return (link - 4.12) / 2.0;
+        });
+        report_row(r, "cvt", row, "latency_cycles", "roundtrip_pair_derived",
+                   median(vals), "cycles", cv_pct(vals), (int)vals.size(),
+                   (int)r.rejected_total, SRC, notes, &vals);
+    };
+    lat2(cvt_derived_lat_kernel<f2f_pair>, "cvt.f2f.lat",
+         "second method: pair+FADD chain minus the FADD row (4.12); corroborates roundtrip_pair");
+    lat2(cvt_derived_lat_kernel<i2f_pair>, "cvt.i2f_f2i.lat",
+         "second method: pair+FADD chain minus the FADD row (4.12); corroborates roundtrip_pair");
 
     auto tput = [&](auto launcher, const char* row) {
         for (int w : {1, 2, 4, 8, 16, 32}) {

@@ -1,7 +1,7 @@
 ---
 abstract: |
   We present an Agner-Fog-style operation table for the NVIDIA TU102 GPU
-  (compute capability 7.5): 243 measured rows covering instruction
+  (compute capability 7.5): 264 measured rows covering instruction
   latency and throughput with contention-probed issue-pipe bindings, the
   complete memory hierarchy, and the NVLink/PCIe/NCCL interconnect, on a
   locked-clock two-GPU rig. Every timed loop is SASS-verified — the
@@ -67,7 +67,7 @@ across issue pipes or where a primitive row turns out to be a floor
 rather than a typical cost. Both failure modes are measured, diagnosed,
 and published.
 
-The contributions are: (i) the table itself, 243 rows with per-row
+The contributions are: (i) the table itself, 264 rows with per-row
 provenance, priors, and deviation flags, regenerable from a fresh clone;
 (ii) the measurement methodology, including a SASS-gated benchmark
 discipline that caught every compiler-induced measurement defect before
@@ -476,7 +476,14 @@ the whitepaper does not say it. A dependent accumulate chain puts `HMMA`
 latency at 14.0 cycles, and a contention probe confirms that `HFMA2`
 shares the tensor unit (mixed rate 0.76 against a shared-unit prediction
 of 0.80): FP16 math runs through the tensor cores, measured rather than
-inferred. <a href="#tab:tensor" data-reference-type="ref+Label"
+inferred. The operand-staging load, `LDSM` (`ldmatrix`), chains at 30
+cycles through an address perturbation and peaks at 0.125
+warp-instructions per SM per cycle in its four-tile form — 512 bytes per
+instruction, exactly the 64-byte-per-cycle unified-datapath ceiling of
+<a href="#sec:memory" data-reference-type="ref+label"
+data-reference="sec:memory">6</a>: feeding the tensor cores is
+bandwidth-bound on the same path as every other shared-memory access.
+<a href="#tab:tensor" data-reference-type="ref+Label"
 data-reference="tab:tensor">2</a> summarises.
 
 <div id="tab:tensor">
@@ -502,11 +509,16 @@ quarter rate; `RCP` derives at $`{\sim}17`$ cycles after the
 approximate-algebra deletions of
 <a href="#sec:sass" data-reference-type="ref+label"
 data-reference="sec:sass">3.3</a>. `SHFL.IDX` chains at 25 cycles and
-0.5 per cycle. Branch divergence is exactly linear: a $`k`$-way
-divergent switch costs $`k`$ times the uniform path (16.7 cycles to 528
-for 1-way to 32-way), and the predicated equivalent costs precisely the
-uniform 16.7 — if-conversion is free at this shape, with reconvergence
-visible as `BSSY`/`BSYNC` in the SASS.
+0.5 per cycle; a ballot (`VOTE.ANY`) chains at 16.2 cycles and sustains
+0.96 per cycle across independent chains, with the predicate
+lane-shifted to keep the chain off the uniform datapath. A barrier in a
+192-thread block costs 32.3 cycles whether or not a second 192-thread
+block is resident on the same SM — the barrier unit serves two
+concurrent CTAs without serialising them. Branch divergence is exactly
+linear: a $`k`$-way divergent switch costs $`k`$ times the uniform path
+(16.7 cycles to 528 for 1-way to 32-way), and the predicated equivalent
+costs precisely the uniform 16.7 — if-conversion is free at this shape,
+with reconvergence visible as `BSSY`/`BSYNC` in the SASS.
 
 # Memory hierarchy
 
@@ -525,11 +537,15 @@ same footprint under the default policy reads at 1.11 TB/s because it
 nearly fits the *aggregate* L1 capacity (72 SMs $`\times`$ 64 KiB).
 Shared memory and L1 share one 64-byte per-cycle-per-SM datapath (both
 measure the same ceiling by two load widths), and the 96 KiB carveout
-moves the L1 chase cliff exactly as the split predicts. One hazard row:
-`float4` shared-memory access compiles to paired `LDS.64` whose 16-byte
-stride self-conflicts two-way, halving bandwidth — tiles built on
-`float4` pay it.
-<a href="#fig:hierarchy" data-reference-type="ref+Label"
+moves the L1 chase cliff exactly as the split predicts. A
+fill-granularity probe (a capacity-evicted ring chased at growing byte
+strides) reads the promotion unit directly: strides of 32 and above all
+pay the full 235-cycle miss while stride 16 pays exactly the mean of a
+miss and a hit and stride 8 one miss in four — the L1 fills 32-byte
+sectors and prefetches nothing within the line. One hazard row: `float4`
+shared-memory access compiles to paired `LDS.64` whose 16-byte stride
+self-conflicts two-way, halving bandwidth — tiles built on `float4` pay
+it. <a href="#fig:hierarchy" data-reference-type="ref+Label"
 data-reference="fig:hierarchy">1</a> traces both chases and
 <a href="#tab:memory" data-reference-type="ref+label"
 data-reference="tab:memory">3</a> summarises the levels; conflict
@@ -619,7 +635,12 @@ therefore means marking the *streamed* side `.cg`, not the weights
 offset attributable to the return-value chain this method times and the
 prior’s stall-counting method does not; global atomics sit at
 $`{\sim}310`$ cycles through the L2 with a real 2% spread between the
-two physical GPUs.
+two physical GPUs. A shared-memory CAS chains 12 cycles dearer than the
+add; on the throughput side, independent shared adds sustain half a
+warp-instruction per cycle (the non-returning form stays `ATOMS.ADD` —
+there is no shared reduction opcode), while global reductions from a
+single SM peak at one warp in flight: the L2 service path, not warp
+count, binds.
 
 # Interconnect
 
@@ -631,15 +652,18 @@ A pointer chase into the peer’s memory costs 472 ns — a 172 ns NVLink
 hop over the local DRAM latency — and the default and `.cg` chases
 measure identically: peer lines do not enter the local L1 at all.
 SM-path streaming sustains 43.4 GB/s reading and 45.8 writing per
-direction (inside the $`\pm15\%`$ gate; posted writes faster), and a
-peer `atomicAdd` chains at 541 ns. With one GPU streaming inbound writes
-at full NVLink rate, the victim’s local DRAM read bandwidth degrades
-16.4% at the defined operating point. Freshly peer-written lines also
-read back dearer than warm ones: a single warp’s first read of 20 KiB
-its peer has just written, fenced, and flagged costs 2.59 s against 1.14
-for the same bytes at steady state — a visibility cost with its own
-table row, measured by timing only the responder’s read section inside
-the litmus-checked handshake.
+direction (inside the $`\pm15\%`$ gate; posted writes faster). A peer
+`atomicAdd` chains at 541 ns and a peer CAS at 552–558; the
+non-returning form (`RED` over NVLink) sustains about 800 million
+operations per second from a single warp, and adding warps loses rather
+than gains — the fabric, not issue width, binds. With one GPU streaming
+inbound writes at full NVLink rate, the victim’s local DRAM read
+bandwidth degrades 16.4% at the defined operating point. Freshly
+peer-written lines also read back dearer than warm ones: a single warp’s
+first read of 20 KiB its peer has just written, fenced, and flagged
+costs 2.59 s against 1.14 for the same bytes at steady state — a
+visibility cost with its own table row, measured by timing only the
+responder’s read section inside the litmus-checked handshake.
 
 The exchange primitive of
 <a href="#sec:hyp-exchange" data-reference-type="ref+label"
@@ -755,13 +779,18 @@ One rig, one toolchain-and-driver snapshot, and rows therefore
 confounded with both: a different `nvcc` emits different SASS for the
 same PTX (this paper catalogues eight distinct rewrites), and a
 different driver may move the host-domain rows. T4 priors transfer only
-core-domain, as recorded per row. Several rows are single-method and
-flagged `UNVERIFIED` pending a second construction; several more
-(enumerated in the public coverage manifest) remain open, among them
-`LDSM`, vote, and atomic throughputs. The chain-method atomics offset
-shows that even agreeing contention structure can ride a method
-constant. No independent replication exists yet; the repository is
-arranged so that one requires a clone and a locked clock.
+core-domain, as recorded per row. Some rows carry an honest `UNVERIFIED`
+flag — chiefly spread flags on host-domain and refresh-sensitive
+quantities, where the flag is the documentation; the open remainder of
+the coverage manifest is down to the store-path rows and the copy-engine
+transfer curve. The chain-method atomics offset shows that even agreeing
+contention structure can ride a method constant. No independent
+replication exists yet. Within this rig every SM-domain row is
+replicated across the two physical boards as a publication gate, which
+catches die-level variation but not method or toolchain artefacts;
+replication on another TU102 is a documented one-evening procedure
+(`REPRODUCING.md` in the repository), and the append-only results layout
+accepts additional datasets without touching the reference one.
 
 ## Future work
 

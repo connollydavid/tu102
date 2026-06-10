@@ -149,6 +149,34 @@ __global__ void consume_kernel(unsigned trips, const float* payload,
     if (threadIdx.x == 0) { *out = t1 - t0; *sink = acc; }
 }
 
+__global__ void peer_cas_chase(unsigned trips, unsigned* peer_slot,
+                               long long* out, unsigned* sink) {
+    // per-lane dependent CAS chains on peer lines (ATOMG.CAS over NVLink)
+    unsigned* target = &peer_slot[(threadIdx.x & 31) * 32];
+    unsigned v = peer_slot[(threadIdx.x & 31) * 32];
+    long long t0 = clock64();
+    for (unsigned t = 0; t < trips; t++) {
+#pragma unroll
+        for (int u = 0; u < 16; u++) v = atomicCAS(target, v, v + 1);
+    }
+    long long t1 = clock64();
+    if (threadIdx.x == 0) { *out = t1 - t0; *sink = v; }
+}
+
+__global__ void peer_atom_tput(unsigned trips, unsigned* peer_slots,
+                               long long* out) {
+    // independent non-returning adds to distinct peer lines (RED over
+    // NVLink) — the sustained-rate companion to the dependent .lat chase
+    unsigned* target = &peer_slots[threadIdx.x * 32];
+    long long t0 = clock64();
+    for (unsigned t = 0; t < trips; t++) {
+#pragma unroll
+        for (int u = 0; u < 16; u++) atomicAdd(target, 1u);
+    }
+    long long t1 = clock64();
+    if (threadIdx.x == 0) *out = t1 - t0;
+}
+
 __global__ void peer_atom_chase(unsigned trips, unsigned* peer_slot,
                                 long long* out, unsigned* sink) {
     unsigned* target = &peer_slot[(threadIdx.x & 31) * 32];
@@ -493,6 +521,89 @@ int main(int argc, char** argv) {
                    median(vals), "ns", cv_pct(vals), (int)vals.size(),
                    (int)r.rejected_total, SRC,
                    "per-lane dependent atomicAdd chains on peer lines", &vals);
+    }
+
+    // peer CAS latency + peer atomic sustained rate
+    {
+        unsigned trips = 256;
+        auto launch = [&](unsigned t) {
+            peer_cas_chase<<<1, 32>>>(t, atom_slots1, d_cyc, d_sink);
+        };
+        for (;;) {
+            cudaEvent_t e0, e1;
+            TU102_CUDA_CHECK(cudaEventCreate(&e0));
+            TU102_CUDA_CHECK(cudaEventCreate(&e1));
+            TU102_CUDA_CHECK(cudaEventRecord(e0));
+            launch(trips);
+            TU102_CUDA_CHECK(cudaEventRecord(e1));
+            TU102_CUDA_CHECK(cudaEventSynchronize(e1));
+            float ms = 0;
+            TU102_CUDA_CHECK(cudaEventElapsedTime(&ms, e0, e1));
+            cudaEventDestroy(e0);
+            cudaEventDestroy(e1);
+            if (ms >= MIN_TIMED_MS * 1.1) break;
+            trips *= 2;
+            calib_guard(trips);
+        }
+        auto vals = run_reps(r, [&] {
+            long long s1 = 0, s2 = 0;
+            launch(trips);
+            TU102_CUDA_CHECK(cudaMemcpy(&s1, d_cyc, 8, cudaMemcpyDeviceToHost));
+            launch(2 * trips);
+            TU102_CUDA_CHECK(cudaMemcpy(&s2, d_cyc, 8, cudaMemcpyDeviceToHost));
+            return (double)(s2 - s1) / ((double)trips * 16) / 1.455;
+        });
+        char av[16];
+        std::snprintf(av, sizeof av, "gpu%dto%d", self, other);
+        report_row(r, "x", "x.nvlink.peer_atom.cas.lat", "latency_ns", av,
+                   median(vals), "ns", cv_pct(vals), (int)vals.size(),
+                   (int)r.rejected_total, SRC,
+                   "per-lane dependent CAS chains on peer lines", &vals);
+    }
+    {
+        unsigned* tput_slots1;
+        TU102_CUDA_CHECK(cudaSetDevice(other));
+        TU102_CUDA_CHECK(cudaMalloc(&tput_slots1, 256 * 32 * 4));
+        TU102_CUDA_CHECK(cudaMemset(tput_slots1, 1, 256 * 32 * 4));
+        TU102_CUDA_CHECK(cudaSetDevice(self));
+        for (int w : {1, 4, 8}) {
+            unsigned trips = 256;
+            auto launch = [&](unsigned t) {
+                peer_atom_tput<<<1, 32 * w>>>(t, tput_slots1, d_cyc);
+            };
+            for (;;) {
+                cudaEvent_t e0, e1;
+                TU102_CUDA_CHECK(cudaEventCreate(&e0));
+                TU102_CUDA_CHECK(cudaEventCreate(&e1));
+                TU102_CUDA_CHECK(cudaEventRecord(e0));
+                launch(trips);
+                TU102_CUDA_CHECK(cudaEventRecord(e1));
+                TU102_CUDA_CHECK(cudaEventSynchronize(e1));
+                float ms = 0;
+                TU102_CUDA_CHECK(cudaEventElapsedTime(&ms, e0, e1));
+                cudaEventDestroy(e0);
+                cudaEventDestroy(e1);
+                if (ms >= MIN_TIMED_MS * 1.1) break;
+                trips *= 2;
+                calib_guard(trips);
+            }
+            auto vals = run_reps(r, [&] {
+                long long s1 = 0, s2 = 0;
+                launch(trips);
+                TU102_CUDA_CHECK(cudaMemcpy(&s1, d_cyc, 8, cudaMemcpyDeviceToHost));
+                launch(2 * trips);
+                TU102_CUDA_CHECK(cudaMemcpy(&s2, d_cyc, 8, cudaMemcpyDeviceToHost));
+                double secs = (double)(s2 - s1) / 1.455e9;
+                return (double)trips * 16 * 32 * w / secs / 1e6;  // Mop/s
+            });
+            char av[24];
+            std::snprintf(av, sizeof av, "w%d_gpu%dto%d", w, self, other);
+            report_row(r, "x", "x.nvlink.peer_atom.add.tput", "bandwidth", av,
+                       median(vals), "Mop/s", cv_pct(vals), (int)vals.size(),
+                       (int)r.rejected_total, SRC,
+                       "independent non-returning adds (RED over NVLink), distinct line per lane",
+                       &vals);
+        }
     }
 
     // contention: local DRAM read while the peer streams writes at full rate

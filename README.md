@@ -6,7 +6,7 @@ interconnect (NVLink/PCIe/NCCL) characterisation for the NVIDIA TU102 GPU
 NVLink bridge. In the style of Agner Fog's x86 instruction tables, with the
 methodology of Jia et al.'s Volta/Turing dissections.
 
-**Status: measured; audit in progress.** 243 rows across every family:
+**Status: measured; audit in progress.** 264 rows across every family:
 ALU with contention-probed pipe bindings, the full memory hierarchy
 (smem/L1/L2/DRAM/TLB/constant/instruction caches, carveout, policies,
 atomics), tensor cores, SFU, shuffle/branch/barrier, the launch family,
@@ -61,6 +61,13 @@ Latency measurement uses dependent-chain timing and fine-grained pointer-chase
 from Jia et al.'s T4 dissection [jia2019turing], with the Volta report
 [jia2018volta] and the NVIDIA Turing whitepaper as secondary sources. Full
 citations in `paper/references.bib`.
+
+## Reproducing
+
+`REPRODUCING.md` is the fresh-clone runbook: lock the clocks, run
+`bench/common/run_all.sh`, regenerate the table, compare within the
+per-domain floors in `table/SCHEMA.md`. Replication datasets are welcome
+as pull requests adding `data/results/<your-host>/`.
 
 ## Citing
 
