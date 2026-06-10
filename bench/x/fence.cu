@@ -76,6 +76,23 @@ __global__ void rt_responder(unsigned trips, const float* payload,
     if (threadIdx.x == 0) local_box->litmus = acc;
 }
 
+// the responder's payload consumption as a standalone row: one warp reads
+// K L2-resident bytes and folds them (exactly the litmus loop)
+template <int K>
+__global__ void consume_kernel(unsigned trips, const float* payload,
+                               long long* out, float* sink) {
+    constexpr int NVEC = K / 4;
+    float acc = 0;
+    long long t0 = clock64();
+    for (unsigned t = 0; t < trips; t++) {
+        float s = 0;
+        for (int i = (int)threadIdx.x; i < NVEC; i += 32) s += payload[i];
+        acc += s;
+    }
+    long long t1 = clock64();
+    if (threadIdx.x == 0) { *out = t1 - t0; *sink = acc; }
+}
+
 __global__ void peer_atom_chase(unsigned trips, unsigned* peer_slot,
                                 long long* out, unsigned* sink) {
     unsigned* target = &peer_slot[(threadIdx.x & 31) * 32];
@@ -216,6 +233,59 @@ int main(int argc, char** argv) {
         rt_responder<20480><<<1, 32, 0, s>>>(t, payload1, box1, box0);
     });
 
+    // the consumption rows (single-warp local read of the payload)
+    double cons4k, cons20k;
+    {
+        auto consume_row = [&](auto kern, int kb) {
+            unsigned trips = 256;
+            auto launch = [&](unsigned t) { kern(t); };
+            for (;;) {
+                cudaEvent_t e0, e1;
+                TU102_CUDA_CHECK(cudaEventCreate(&e0));
+                TU102_CUDA_CHECK(cudaEventCreate(&e1));
+                TU102_CUDA_CHECK(cudaEventRecord(e0));
+                launch(trips);
+                TU102_CUDA_CHECK(cudaEventRecord(e1));
+                TU102_CUDA_CHECK(cudaEventSynchronize(e1));
+                float ms = 0;
+                TU102_CUDA_CHECK(cudaEventElapsedTime(&ms, e0, e1));
+                cudaEventDestroy(e0);
+                cudaEventDestroy(e1);
+                if (ms >= MIN_TIMED_MS * 1.1) break;
+                trips *= 2;
+                calib_guard(trips);
+            }
+            auto vals = run_reps(r, [&] {
+                long long s1 = 0, s2 = 0;
+                launch(trips);
+                TU102_CUDA_CHECK(cudaMemcpy(&s1, d_cyc, 8, cudaMemcpyDeviceToHost));
+                launch(2 * trips);
+                TU102_CUDA_CHECK(cudaMemcpy(&s2, d_cyc, 8, cudaMemcpyDeviceToHost));
+                return (double)(s2 - s1) / (double)trips / 1.455 / 1000.0;
+            });
+            char variant[24];
+            std::snprintf(variant, sizeof variant, "%dkb_singlewarp", kb);
+            report_row(r, "x", "x.consume.local", "time_us", variant, median(vals),
+                       "us", cv_pct(vals), (int)vals.size(), (int)r.rejected_total,
+                       SRC, "one-warp L2-resident read+fold (the responder loop)", &vals);
+            return median(vals);
+        };
+        // payload lives on the OTHER device where the responder runs; measure there
+        TU102_CUDA_CHECK(cudaSetDevice(other));
+        long long* d_cyc2;
+        float* d_sink2;
+        TU102_CUDA_CHECK(cudaMalloc(&d_cyc2, 8));
+        TU102_CUDA_CHECK(cudaMalloc(&d_sink2, 4));
+        // reuse d_cyc on self for readback simplicity: run on other, copy out
+        cons4k = consume_row([&](unsigned t) {
+            consume_kernel<4096><<<1, 32>>>(t, payload1, d_cyc, (float*)d_sink2);
+        }, 4);
+        cons20k = consume_row([&](unsigned t) {
+            consume_kernel<20480><<<1, 32>>>(t, payload1, d_cyc, (float*)d_sink2);
+        }, 20);
+        TU102_CUDA_CHECK(cudaSetDevice(self));
+    }
+
     // composed-prediction gate (a-priori formula and ±25% tolerance)
     {
         double pred0 = 2.0 * (1.20 + 0.472);
@@ -237,6 +307,26 @@ int main(int argc, char** argv) {
         report_row(r, "x", "x.nvlink.fence_roundtrip.composed", "na", "gate",
                    e0, "pct_err", 0.0, 2, 0, SRC, notes, &d);
         std::fprintf(stderr, "  %s\n", notes);
+
+        // REMEDIATED gate: every constituent independently measured
+        // (burst-row delta = single-warp store width; consume row = the
+        // responder's single-warp read) — the revision the registered
+        // block anticipated, documented as such
+        double r4 = rt0 + (1.35 - 1.20) + cons4k;
+        double r20 = rt0 + (1.80 - 1.20) + cons20k;
+        double f4 = 100.0 * (r4 - rt4k) / rt4k;
+        double f20 = 100.0 * (r20 - rt20k) / rt20k;
+        char n2[240];
+        std::snprintf(n2, sizeof n2,
+                      "remediated gate (width-aware constituents): pred %0.2f/%0.2f vs "
+                      "meas %0.2f/%0.2f us; err %+.1f/%+.1f%% vs +-25%% -> 4K %s, 20K %s",
+                      r4, r20, rt4k, rt20k, f4, f20,
+                      std::fabs(f4) <= 25 ? "PASS" : "FAIL",
+                      std::fabs(f20) <= 25 ? "PASS" : "FAIL");
+        std::vector<double> d2{f4, f20};
+        report_row(r, "x", "x.nvlink.fence_roundtrip.composed", "na", "gate_v2",
+                   f20, "pct_err", 0.0, 2, 0, SRC, n2, &d2);
+        std::fprintf(stderr, "  %s\n", n2);
     }
 
     // peer atomics
