@@ -193,6 +193,22 @@ def main():
                 "clock_mhz": "1455", "notes": all_notes,
             })
 
+    # explicit-absence rows: features that do not exist on sm_75 are real
+    # rows (kind=na, flag=NA_SM75), never missing keys
+    na_path = os.path.join(ROOT, "table", "na_sm75.csv")
+    if os.path.exists(na_path):
+        with open(na_path) as f:
+            for row in csv.DictReader(f):
+                out_rows.append({
+                    "row_id": row["row_id"], "class": row["row_id"].split(".")[0],
+                    "instruction": row["instruction"], "variant": "", "kind": "na",
+                    "value": "", "unit": "", "cv_pct": "", "pipe": "",
+                    "prior_value": "", "prior_src": row["prior_src"],
+                    "deviation_pct": "", "flag": "NA_SM75",
+                    "measured_by": "table/na_sm75.csv", "clock_mhz": "",
+                    "notes": row["notes"],
+                })
+
     fields = ["row_id", "class", "instruction", "variant", "kind", "value",
               "unit", "cv_pct", "pipe", "prior_value", "prior_src",
               "deviation_pct", "flag", "measured_by", "clock_mhz", "notes"]
