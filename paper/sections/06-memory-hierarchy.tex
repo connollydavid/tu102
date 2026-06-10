@@ -3,8 +3,8 @@
 
 \subsection{Levels}
 
-Dependent chases place the levels at: L1 data 23.4~ns (34 cycles; the
-read-only \texttt{\_\_ldg} path measures the same 34, one physical
+Dependent chases place the levels at: L1 data 23.4~ns (34 cycles,
+matched by the read-only \texttt{\_\_ldg} path: one physical
 array); L2 161.5~ns (235 cycles), flat from 128~KiB to 5~MiB with the
 cliff binding between 5 and 8~MiB against the 6~MB L2; DRAM 299.9~ns.
 Bandwidths: DRAM streams at 609~GB/s read (97.5\% of the P2 ceiling, and
@@ -26,14 +26,14 @@ One hazard row: \texttt{float4} shared-memory access
 compiles to paired \texttt{LDS.64} whose 16-byte stride self-conflicts
 two-way, halving bandwidth, and tiles built on \texttt{float4} pay it.
 \Cref{fig:hierarchy} traces both chases and \cref{tab:memory} summarises
-the levels; conflict serialisation is exactly linear at two cycles per
+the levels. Conflict serialisation is exactly linear at two cycles per
 additional way, and \texttt{BAR.SYNC} obeys the same
 $22 + 2(n{-}1)$ law in warps per block (\cref{fig:laws}).
 
 \begin{table}[t]
 \centering
 \caption{Memory-hierarchy summary. Cycle-domain rows at the locked
-1455~MHz; bandwidth rows against the P2 memory state
+1455~MHz, bandwidth rows against the P2 memory state
 (\cref{sec:methodology}). The L2 row pair separates the request-serving
 \texttt{.cg} path from the aggregate-L1 effect under the default policy.}
 \label{tab:memory}
@@ -44,9 +44,9 @@ $22 + 2(n{-}1)$ law in warps per block (\cref{fig:laws}).
 \begin{figure}[t]
 \centering
 \includegraphics{figures/fig_hierarchy}
-\caption{Left: dependent pointer-chase latency by footprint; the
-three plateaus are the levels of \cref{tab:memory}. Right: the same
-chase held L2-resident while page reach grows; both TLB cliffs land on
+\caption{Left: dependent pointer-chase latency by footprint, with the
+three plateaus the levels of \cref{tab:memory}. Right: the same
+chase held L2-resident while page reach grows. Both TLB cliffs land on
 the T4 priors.}
 \label{fig:hierarchy}
 \end{figure}
@@ -88,7 +88,7 @@ stride 128 additionally loses DRAM row locality.
 \centering
 \includegraphics{figures/fig_stride}
 \caption{The sector model. Useful bandwidth for byte loads by stride,
-and the implied fetched traffic; at strides 18 and 32 the fetched
+and the implied fetched traffic. At strides 18 and 32 the fetched
 sectors reproduce the DRAM streaming rate, independently of the
 bandwidth benches.}
 \label{fig:stride}
@@ -107,9 +107,9 @@ cycles are short-scoreboard stalls waiting on the returned value,
 about 21 of the 25, with one cycle issuing (Nsight Compute 2026.2,
 corroboration-only, record in the repository). Global atomics sit at
 ${\sim}310$ cycles through the L2 with a real 2\% spread between the two
-physical GPUs. A shared-memory CAS chains 12 cycles dearer than the add;
-on the throughput side, independent shared adds sustain half a
+physical GPUs. A shared-memory CAS chains 12 cycles dearer than the add.
+On the throughput side, independent shared adds sustain half a
 warp-instruction per cycle (the non-returning form stays
-\texttt{ATOMS.ADD}; there is no shared reduction opcode), while
+\texttt{ATOMS.ADD}, as there is no shared reduction opcode), while
 global reductions from a single SM peak at one warp in flight: the L2
 service path, not warp count, binds.

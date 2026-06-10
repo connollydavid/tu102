@@ -17,15 +17,15 @@ emulated \texttt{u32} divide at 55.5 cycles per sequence. Throughput
 saturates at 2.0 warp-instructions per SM per cycle for both the FP32 and
 INT32 classes (64 lanes of each per SM), with the FFMA anchor
 landing within 0.005\% of the geometric 2.0. \Cref{tab:core} collects
-these rows; the repository table carries the remaining variants and the
+these rows. The repository table carries the remaining variants and the
 provenance columns.
 
 \begin{table}[t]
 \centering
 \caption{Core instruction rows. Latency by dependent \texttt{clock64}
 chain, throughput at the peak of the warps-per-SM sweep, pipe bindings by
-contention probe (\cref{sec:methodology}); \emph{own} denotes a dedicated
-unit. Starred rows derive from pair constructions. Latency priors from
+contention probe (\cref{sec:methodology}). The pipe \emph{own} denotes a
+dedicated unit. Starred rows derive from pair constructions. Latency priors from
 Jia et al.\ \citep{jia2019turing}.}
 \label{tab:core}
 \small
@@ -34,7 +34,7 @@ Jia et al.\ \citep{jia2019turing}.}
 
 Some rows are measurable only as pairs from PTX: a predicate cannot be
 chained, so \texttt{ISETP} latency derives from a compare-plus-select
-chain minus the select chain; a pure dependent add chain cannot be
+chain minus the select chain. A pure dependent add chain cannot be
 pinned at all (every guard was strength-reduced), so \texttt{IADD3}
 derives from an add-xor pair minus the \texttt{LOP3} row. Each derived
 row names its construction.
@@ -47,11 +47,11 @@ combined rate against same-pipe (harmonic) and distinct-pipe (maximum,
 capped at the 4-per-SM-cycle issue rate) predictions. The probe
 self-tests pass: FFMA against itself reads same-pipe, FFMA against
 LOP3 reads distinct. The map follows. \texttt{IMAD} issues on the
-fma pipe, confirming the Turing arrangement by measurement;
-\texttt{SHF}, \texttt{SEL}, and \texttt{PRMT} on the alu pipe;
-\texttt{POPC} and \texttt{FLO} on a quarter-rate unit that further
+fma pipe, confirming the Turing arrangement by measurement.
+\texttt{SHF}, \texttt{SEL}, and \texttt{PRMT} sit on the alu pipe.
+\texttt{POPC} and \texttt{FLO} run on a quarter-rate unit that further
 \emph{partially} contends with the load path (a mixed POPC-and-load
-stream runs at 0.68 of the distinct-pipe prediction); and,
+stream runs at 0.68 of the distinct-pipe prediction). And,
 consequentially for quantised inference kernels, \textbf{\texttt{IDP.4A}
 issues on the fma pipe}, competing with \texttt{FFMA} for issue slots
 rather than riding the integer pipe.
@@ -60,11 +60,11 @@ rather than riding the integer pipe.
 
 The m16n8k8 \texttt{HMMA} with f16 accumulate measures 0.50000
 warp-instructions per SM per cycle, exactly the whitepaper-derived 512
-FMA per SM per cycle \citep{nvidia2018turing}; \texttt{IMMA} m8n8k16
+FMA per SM per cycle \citep{nvidia2018turing}. \texttt{IMMA} m8n8k16
 likewise lands exactly on its derived 1.0. The f32-accumulate prior of
 half rate is \emph{refuted on this part}: measured 0.49996, identical to
-f16 accumulate. The half-rate figure describes GeForce-positioned TU102s;
-the Quadro runs full-rate f32 accumulation: a market-segmentation
+f16 accumulate. The half-rate figure describes GeForce-positioned TU102s.
+The Quadro runs full-rate f32 accumulation: a market-segmentation
 fact rather than a microarchitectural one, and worth a row precisely
 because the whitepaper does not say it. A dependent accumulate chain puts
 \texttt{HMMA} latency at 14.0 cycles, and a contention probe confirms
@@ -81,7 +81,7 @@ other shared-memory access. \Cref{tab:tensor} summarises.
 \begin{table}[t]
 \centering
 \caption{Tensor-core rows. The f32-accumulate rate equals the
-f16-accumulate rate on this Quadro-positioned part; the half-rate figure
+f16-accumulate rate on this Quadro-positioned part. The half-rate figure
 in circulation describes GeForce-positioned TU102s.}
 \label{tab:tensor}
 \small
@@ -92,10 +92,10 @@ in circulation describes GeForce-positioned TU102s.}
 
 The remaining \texttt{MUFU} set sits at 15 cycles (\texttt{RSQ},
 \texttt{LG2}) with \texttt{SIN} and \texttt{COS} as 21-cycle pairs
-carrying an \texttt{FMUL} range scale, all at the quarter rate;
+carrying an \texttt{FMUL} range scale, all at the quarter rate.
 \texttt{RCP} derives at ${\sim}17$ cycles after the approximate-algebra
 deletions of \cref{sec:sass}. \texttt{SHFL.IDX} chains at 25 cycles and
-0.5 per cycle; a ballot (\texttt{VOTE.ANY}) chains at 16.2 cycles and
+0.5 per cycle. A ballot (\texttt{VOTE.ANY}) chains at 16.2 cycles and
 sustains 0.96 per cycle across independent chains, with the predicate
 lane-shifted to keep the chain off the uniform datapath. A barrier in a
 192-thread block costs 32.3 cycles whether or not a second 192-thread

@@ -1,13 +1,13 @@
 \section{Worked examples}
 \label{sec:worked}
 
-The table's consumers are decisions in a production inference stack; the
+The table's consumers are decisions in a production inference stack. The
 registration outcomes of \cref{sec:hypotheses-outcomes} carried the three
 largest, and three smaller memos show the rows at work.
 
 \emph{Attention-variant staging.} At decode shape, each staged element of
 the key tile is reused once, so staging into shared memory pays a store,
-a reload, and a synchronisation against the dequantisation it saves; with
+a reload, and a synchronisation against the dequantisation it saves. With
 the measured shared-memory ceiling the saving cannot reach the cost below
 a reuse factor of about two, and the projection route (validated at
 5\% on the staged pair) prices the alternative directly. The verdict

@@ -15,7 +15,7 @@ al.\ \citep{wong2010demystifying}, who established pointer-chase latency
 measurement on GT200, and Mei and Chu \citep{mei2017dissecting}, whose
 fine-grained pointer chase resolved cache geometry on Kepler and Maxwell.
 Jia et al.\ characterised Volta \citep{jia2018volta} and then Turing via
-the Tesla T4 \citep{jia2019turing}; their instruction-latency tables are
+the Tesla T4 \citep{jia2019turing}. Their instruction-latency tables are
 the priors this paper compares against, row by row, where the prior
 applies. The applicability boundary matters: the T4's TU104 shares the
 TU102's streaming multiprocessor, so core-domain priors transfer, but its
@@ -25,7 +25,7 @@ than per paper.
 
 Two methodological differences from Jia et al.\ are deliberate. First,
 their measurements were taken with a custom SASS assembler, giving direct
-control of the instruction stream; this work stays within the public
+control of the instruction stream. This work stays within the public
 toolchain (PTX inline assembly under \texttt{nvcc} 13.3) and instead
 \emph{verifies} the emitted stream, gating every benchmark on a
 disassembly check. The compiler fights this approach: constant

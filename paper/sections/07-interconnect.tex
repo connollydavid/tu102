@@ -2,15 +2,15 @@
 \label{sec:interconnect}
 
 The T4 has no NVLink, so this half of the table has no published prior to
-deviate from; whitepaper geometry (two NV2 links, ${\sim}50$~GB/s per
+deviate from. Whitepaper geometry (two NV2 links, ${\sim}50$~GB/s per
 direction aggregate) supplies the sanity gates.
 
 A pointer chase into the peer's memory costs 472~ns, a 172~ns NVLink
 hop over the local DRAM latency, and the default and \texttt{.cg}
 chases measure identically: peer lines do not enter the local L1 at all.
 SM-path streaming sustains 43.4~GB/s reading and 45.8 writing per
-direction (inside the $\pm15\%$ gate; posted writes faster). A peer
-\texttt{atomicAdd} chains at 541~ns and a peer CAS at 552--558; the
+direction (inside the $\pm15\%$ gate, posted writes faster). A peer
+\texttt{atomicAdd} chains at 541~ns and a peer CAS at 552--558. The
 non-returning form (\texttt{RED} over NVLink) sustains about 800
 million operations per second from a single warp, and adding warps
 loses rather than gains: the fabric, not issue width, binds. With one
@@ -32,12 +32,12 @@ a data-check litmus run before any timing is trusted. The NCCL
 comparator, environment pinned (Ring, LL, two channels, NCCL 2.30.4),
 holds a steady-state two-rank all-reduce floor of 21.1--28.3~\textmu s
 across 4--64~KiB, with a cold first call in the milliseconds (5--10~ms
-across four fresh-communicator samples; the row is flagged for its
-spread); the in-situ production figure this study set out to explain is
+across four fresh-communicator samples, and the row is flagged for its
+spread). The in-situ production figure this study set out to explain is
 retired in favour of these standalone numbers. PCIe rows complete the
 picture: 12.2/13.2~GB/s pinned in each direction on both x16 GPUs, and a
 ${\sim}4$~\textmu s pinned small-transfer floor. \Cref{tab:interconnect}
-collects the rows; \cref{fig:exchange} sets the primitive against the
+collects the rows, and \cref{fig:exchange} sets the primitive against the
 registered bar of \cref{sec:hyp-exchange}, whose comparison now applies
 at both payload sizes (\cref{sec:hypotheses-outcomes}).
 
