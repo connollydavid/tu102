@@ -5,8 +5,8 @@ A message-only history rewrite applied the repository's prose rules
 labels) to every commit message, titles included. Trees, author dates,
 and committer dates are byte-for-byte identical pairwise, so the
 pre-registration receipts (what each file said on what date) are
-unchanged. The original history remains on the `main-original`
-branch. SHAs embedded in raw results (`git_sha` build stamps), the
+unchanged. The original history remains on the `archive/pre-reword`
+branch, locked read-only. SHAs embedded in raw results (`git_sha` build stamps), the
 table's `measured_by` provenance, and dated external records resolve
 through this map.
 
