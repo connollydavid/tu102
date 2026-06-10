@@ -45,15 +45,28 @@ cvt.f2f.lat,cvt,,roundtrip_pair,latency_cycles,11.5625,cycles,0.000,,,,,ok,bench
 cvt.f2f.tput,cvt,,w32_pair,recip_tput,0.99982,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,round-trip pair stream
 cvt.i2f_f2i.lat,cvt,,roundtrip_pair,latency_cycles,15.0078,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,per-convert avg of f32-to-s32-to-f32 pair
 cvt.i2f_f2i.tput,cvt,,w16_pair,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,round-trip pair stream
+mem.dram.bw,mem,,copy,bandwidth,507.085,GB/s,0.209,,,,,ok,bench/mem/drambw.cu@9cea8e3 n_runs=4,1455,float4 copy within the buffer; bytes counted read+write
+mem.dram.bw,mem,,read,bandwidth,608.621,GB/s,0.069,,,,,ok,bench/mem/drambw.cu@9cea8e3 n_runs=4,1455,coalesced float4 read; 512 MiB footprint
+mem.dram.bw,mem,,write,bandwidth,477.438,GB/s,0.418,,,,,UNVERIFIED,bench/mem/drambw.cu@9cea8e3 n_runs=4,1455,coalesced float4 write; between-run spread 0.86% exceeds within-run cv 0.42%
+mem.dram.lat,mem,,fp262144k,latency_ns,299.949,ns,0.076,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,designated DRAM row (256 MiB footprint); ns = cycles/1.455 at the locked SM clock; 136 B chase step
 mem.l1.bw,mem,,w4_f128,bandwidth,31.9997,B/clk/SM,0.002,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
 mem.l1.bw,mem,,w16_f32,bandwidth,63.9111,B/clk/SM,0.018,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
 mem.l1.bw,mem,,w32_f64,bandwidth,63.9862,B/clk/SM,0.012,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
 mem.l1.lat,mem,,l1hit,latency_cycles,34,cycles,0.000,,32,jia2019turing:sec3.1.1,6.2,ok,bench/mem/l1.cu@a4fdd73 n_runs=5,1455,pointer chase; embedded 64-bit pointers; pure LDG chain
+mem.l2.lat,mem,,fp4096k,latency_ns,161.47,ns,0.004,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,designated L2 row (4 MiB footprint within the 6 MB L2); ns = cycles/1.455 at the locked SM clock; 136 B chase step
 mem.ldg.u8.stride.tput,mem,,stride1,bandwidth,151.334,GB/s,0.423,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 1 sectors per warp request predicted
 mem.ldg.u8.stride.tput,mem,,stride128,bandwidth,9.61647,GB/s,0.153,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 32 sectors per warp request predicted
 mem.ldg.u8.stride.tput,mem,,stride18,bandwidth,33.9054,GB/s,0.118,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 18 sectors per warp request predicted
 mem.ldg.u8.stride.tput,mem,,stride32,bandwidth,19.1139,GB/s,0.024,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 32 sectors per warp request predicted
 mem.ldg.u8.stride.tput,mem,,stride4,bandwidth,119.499,GB/s,0.142,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 4 sectors per warp request predicted
+mem.pchase.lat,mem,,fp1024k,latency_ns,161.474,ns,0.005,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp128k,latency_ns,161.549,ns,0.005,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp32768k,latency_ns,299.954,ns,0.097,,,,,UNVERIFIED,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step; between-run spread 0.11% exceeds within-run cv 0.10%
+mem.pchase.lat,mem,,fp32k,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp5120k,latency_ns,161.457,ns,0.005,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp64k,latency_ns,89.3135,ns,0.300,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp8192k,latency_ns,299.605,ns,0.081,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp8k,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
 mem.smem.bw,mem,,w4_f128,bandwidth,32.0065,B/clk/SM,0.012,,64,jia2019turing:fig3.12,-50.0,DEV>25%,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=9,1455,ptxas splits float4 into 2x LDS.64 whose 16 B stride self-conflicts 2-way; f32/f64 reach the ceiling
 mem.smem.bw,mem,,w8_f32,bandwidth,64.0265,B/clk/SM,0.003,,64,jia2019turing:fig3.12,0.0,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=9,1455,streaming; conflict-free per phase
 mem.smem.bw,mem,,w4_f64,bandwidth,63.9957,B/clk/SM,0.001,,64,jia2019turing:fig3.12,-0.0,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=9,1455,streaming; conflict-free per phase
