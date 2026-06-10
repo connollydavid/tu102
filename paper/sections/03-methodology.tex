@@ -21,7 +21,7 @@ always executes in the P2 performance state with the memory clock at
 6500~MHz. The harness ramps into P2 with a warmup kernel, verifies the
 memory clock under load, and samples both clocks around every repetition,
 rejecting any where either is off target. Bandwidth expectations are
-therefore stated against the P2 memory clock --- a 624~GB/s DRAM ceiling
+therefore stated against the P2 memory clock: a 624~GB/s DRAM ceiling
 rather than the 672 implied by the unreachable P0 point.
 
 \subsection{Timing}
@@ -34,8 +34,8 @@ windows) so the timed step is a single dependent load with no address
 arithmetic \citep{wong2010demystifying,mei2017dissecting}. Throughput
 rows are also timed in actual SM cycles, by one block on one SM:
 wall-clock event timing normalised by the nominal locked clock showed a
-0.3--1.0\% between-run spread that grew with region length --- real-clock
-thermal sag under the lock --- where on-device cycle counts are immune.
+0.3--1.0\% between-run spread that grew with region length (real-clock
+thermal sag under the lock), where on-device cycle counts are immune.
 Host-domain rows (launches, events, NCCL calls) use
 \texttt{steady\_clock} over a thousand repetitions with a device-event
 cross-check, reported as median with the 10th and 90th percentiles.
@@ -59,11 +59,11 @@ as exact algebra, twice; contracted a deliberately separate add into an
 rather than the expected \texttt{F2F}; and expanded a 64-bit remainder
 into a division subroutine call whose float-reciprocal emulation put
 \texttt{MUFU} and conversion traffic inside a bandwidth loop. Every one
-of these was caught by
-counting emitted mnemonics against the design, not by a timing looking
-wrong --- several produced plausible numbers for the wrong instruction
-stream. Both gates carry negative tests: a deliberately unlocked clock
-and a deliberately miscompiled kernel must fail.
+of these was caught by counting emitted mnemonics against the design,
+not by a timing looking wrong; several produced plausible numbers for
+the wrong instruction stream. Both gates carry negative tests: a
+deliberately unlocked clock and a deliberately miscompiled kernel must
+fail.
 
 \subsection{Statistics and gate taxonomy}
 
@@ -86,10 +86,10 @@ deviation whatever it is. The table exists to report true deviations.
 
 The coverage manifest and measurement policy were committed to the public
 repository before any benchmark ran, and the three decision-grade
-hypotheses of \cref{sec:hypotheses} were committed --- predictions,
-operationalisations, and decision rules --- before their data existed
-(repository commit \texttt{a4fdd73}, 2026-06-10, preceding every
-measurement it governs). The commit history is the receipt. One
+hypotheses of \cref{sec:hypotheses}, with their predictions,
+operationalisations, and decision rules, were committed before their
+data existed (repository commit \texttt{a4fdd73}, 2026-06-10, preceding
+every measurement it governs). The commit history is the receipt. One
 registered rule fired mid-study and was honoured: a composed-prediction
 gate failed at its registered tolerance, and the affected comparison was
 blocked rather than re-derived, until independently measured constituents

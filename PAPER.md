@@ -4,9 +4,9 @@ abstract: |
   (compute capability 7.5): 264 measured rows covering instruction
   latency and throughput with contention-probed issue-pipe bindings, the
   complete memory hierarchy, and the NVLink/PCIe/NCCL interconnect, on a
-  locked-clock two-GPU rig. Every timed loop is SASS-verified — the
+  locked-clock two-GPU rig. Every timed loop is SASS-verified: the
   public toolchain rewrote or deleted measurement kernels eight distinct
-  ways, each caught by the gate — and every row carries provenance,
+  ways, and the gate caught each one. Every row carries provenance,
   priors where they apply, and published deviations. Three
   decision-grade questions were pre-registered in the repository before
   their data existed. Their outcomes split sharply: compositions of
@@ -76,8 +76,8 @@ clock cannot be locked; (iii) findings absent from public documentation,
 among them the fma-pipe binding of `IDP.4A`, the full-rate
 f32-accumulate of Quadro-positioned TU102 tensor cores, the L1-retention
 semantics of `.cs` loads, and the request-path saturation of the L2; and
-(iv) a worked demonstration that pre-registration — gates, metrics, and
-decision rules committed to a public repository before data collection —
+(iv) a worked demonstration that pre-registration (gates, metrics, and
+decision rules committed to a public repository before data collection)
 transfers from empirical software engineering to microbenchmarking,
 where the temptation to tune until numbers match priors is the central
 threat to validity.
@@ -103,7 +103,7 @@ compares against, row by row, where the prior applies. The applicability
 boundary matters: the T4’s TU104 shares the TU102’s streaming
 multiprocessor, so core-domain priors transfer, but its L2, DRAM system,
 and lack of NVLink make memory-system and interconnect priors
-non-binding — a distinction this paper records per row rather than per
+non-binding, a distinction this paper records per row rather than per
 paper.
 
 Two methodological differences from Jia et al. are deliberate. First,
@@ -111,11 +111,11 @@ their measurements were taken with a custom SASS assembler, giving
 direct control of the instruction stream; this work stays within the
 public toolchain (PTX inline assembly under `nvcc` 13.3) and instead
 *verifies* the emitted stream, gating every benchmark on a disassembly
-check. The compiler fights this approach — constant folding,
+check. The compiler fights this approach: constant folding,
 uniform-datapath conversion, strength reduction, and
 approximate-arithmetic algebra each deleted or rewrote measurement
-kernels during development — and
-<a href="#sec:methodology" data-reference-type="ref+label"
+kernels during development.
+<a href="#sec:methodology" data-reference-type="ref+Label"
 data-reference="sec:methodology">3</a> catalogues the countermeasures,
 because any future toolchain-bound measurement effort will face the same
 opponents. Second, where their report states results, this one also
@@ -144,7 +144,7 @@ executes in the P2 performance state with the memory clock at 6500 MHz.
 The harness ramps into P2 with a warmup kernel, verifies the memory
 clock under load, and samples both clocks around every repetition,
 rejecting any where either is off target. Bandwidth expectations are
-therefore stated against the P2 memory clock — a 624 GB/s DRAM ceiling
+therefore stated against the P2 memory clock: a 624 GB/s DRAM ceiling
 rather than the 672 implied by the unreachable P0 point.
 
 ## Timing
@@ -157,7 +157,7 @@ timed step is a single dependent load with no address arithmetic (Wong
 et al. 2010; Mei and Chu 2017). Throughput rows are also timed in actual
 SM cycles, by one block on one SM: wall-clock event timing normalised by
 the nominal locked clock showed a 0.3–1.0% between-run spread that grew
-with region length — real-clock thermal sag under the lock — where
+with region length (real-clock thermal sag under the lock), where
 on-device cycle counts are immune. Host-domain rows (launches, events,
 NCCL calls) use `steady_clock` over a thousand repetitions with a
 device-event cross-check, reported as median with the 10th and 90th
@@ -181,7 +181,7 @@ conversion to `HADD2` rather than the expected `F2F`; and expanded a
 64-bit remainder into a division subroutine call whose float-reciprocal
 emulation put `MUFU` and conversion traffic inside a bandwidth loop.
 Every one of these was caught by counting emitted mnemonics against the
-design, not by a timing looking wrong — several produced plausible
+design, not by a timing looking wrong; several produced plausible
 numbers for the wrong instruction stream. Both gates carry negative
 tests: a deliberately unlocked clock and a deliberately miscompiled
 kernel must fail.
@@ -207,14 +207,14 @@ whatever it is. The table exists to report true deviations.
 The coverage manifest and measurement policy were committed to the
 public repository before any benchmark ran, and the three decision-grade
 hypotheses of <a href="#sec:hypotheses" data-reference-type="ref+label"
-data-reference="sec:hypotheses">4</a> were committed — predictions,
-operationalisations, and decision rules — before their data existed
-(repository commit `a4fdd73`, 2026-06-10, preceding every measurement it
-governs). The commit history is the receipt. One registered rule fired
-mid-study and was honoured: a composed-prediction gate failed at its
-registered tolerance, and the affected comparison was blocked rather
-than re-derived, until independently measured constituents allowed a
-documented remediation
+data-reference="sec:hypotheses">4</a>, with their predictions,
+operationalisations, and decision rules, were committed before their
+data existed (repository commit `a4fdd73`, 2026-06-10, preceding every
+measurement it governs). The commit history is the receipt. One
+registered rule fired mid-study and was honoured: a composed-prediction
+gate failed at its registered tolerance, and the affected comparison was
+blocked rather than re-derived, until independently measured
+constituents allowed a documented remediation
 (<a href="#sec:hypotheses-outcomes" data-reference-type="ref+label"
 data-reference="sec:hypotheses-outcomes">4.4</a>).
 
@@ -233,8 +233,8 @@ results lines.
 
 Three questions in this work are decision-grade: their answers change
 what the consuming inference project builds next. Each is registered
-here — hypothesis, operationalisation, predictions, decision rule —
-before the corresponding data is gathered, with this repository’s commit
+here (hypothesis, operationalisation, predictions, decision rule) before
+the corresponding data is gathered, with this repository’s commit
 history as the receipt. The remaining verification gates in the paper
 are ordinary methodology checks and are deliberately not elevated to
 this status.
@@ -289,7 +289,7 @@ taken at steady state (cold-channel rows are separate). Before the
 comparison is made, a composed prediction of the primitive’s round trip
 from its constituent table rows (peer-store latency, fence cost, poll
 read) must agree with the end-to-end measurement within a stated
-tolerance — the interconnect analogue of the projection gate.
+tolerance. This is the interconnect analogue of the projection gate.
 
 Decision rule: the deterministic peer-exchange mechanism in the
 consuming project proceeds only if the validated primitive beats half
@@ -307,7 +307,7 @@ rows predict the decode-rate ceiling that full capture would unlock.*
 
 Operationalisation: per-token dispatch overhead is node count $`\times`$
 the relevant per-node row, compared against a profiler baseline measured
-freshly on the same host and driver — prior-session anchors are
+freshly on the same host and driver; prior-session anchors are
 re-measured, never reused. The ceiling prediction divides measured
 compute time by the sum of compute time and predicted captured dispatch
 time.
@@ -323,21 +323,22 @@ Recorded after the data, against the rules as registered.
 
 *Issue coupling*
 (<a href="#sec:hyp-coupling" data-reference-type="ref+label"
-data-reference="sec:hyp-coupling">4.1</a>): prediction (i) was confirmed
-— additive-model differential error is larger for fma-pipe injections
-than alu-pipe ones — but prediction (ii) was refuted on its registered
-metric, because the additive model is so uniformly poor (93–480%
-differential error) that its between-pipe gap is small; the per-pipe-max
-model shows the coupling structure instead, with 3–5% differential error
-on uncontended injections against 21–28% on fma-coupled ones. Prediction
-(iii) failed: the bound does not discriminate 10% deltas. The decision
-rule then fired on the real pair: the projection put the dp4a attention
-variant at $`-3.9\%`$ where measurement says $`+18.9\%`$ — the wrong
-sign, because both variants project issue-bound while reality charges
-the fma-pipe coupling — and that variant’s arbitration fell back to
-implement-and-measure as registered. The staged variant’s projection, by
-contrast, landed within 5% of measurement (a single resource, shared
-memory, binds it), and projection arbitrates that branch.
+data-reference="sec:hyp-coupling">4.1</a>): prediction (i) was
+confirmed, with additive-model differential error larger for fma-pipe
+injections than alu-pipe ones, but prediction (ii) was refuted on its
+registered metric, because the additive model is so uniformly poor
+(93–480% differential error) that its between-pipe gap is small; the
+per-pipe-max model shows the coupling structure instead, with 3–5%
+differential error on uncontended injections against 21–28% on
+fma-coupled ones. Prediction (iii) failed: the bound does not
+discriminate 10% deltas. The decision rule then fired on the real pair:
+the projection put the dp4a attention variant at $`-3.9\%`$ where
+measurement says $`+18.9\%`$. The sign is wrong because both variants
+project issue-bound while reality charges the fma-pipe coupling, and
+that variant’s arbitration fell back to implement-and-measure as
+registered. The staged variant’s projection, by contrast, landed within
+5% of measurement (a single resource, shared memory, binds it), and
+projection arbitrates that branch.
 
 *The NVLink exchange*
 (<a href="#sec:hyp-exchange" data-reference-type="ref+label"
@@ -345,21 +346,20 @@ data-reference="sec:hyp-exchange">4.2</a>): **confirmed across the
 registered domain**, in three documented steps. The composed gate passed
 flag-only ($`-14\%`$) and failed with payload, because the registered
 composition charged the payload at streaming bandwidth a single warp
-cannot reach — the same floor-row failure mode as the dispatch
-hypothesis below, observed independently. With the constituents
-re-measured at the right width (a single-warp store burst and a
-single-warp consumption row), the remediated gate passed at 4 KiB
-($`-10\%`$) but still under-predicted 20 KiB by 28%; the residual was
-named — a first-read-after-peer-write visibility cost with no table row
-— and the comparison stayed blocked there until the row existed.
-Measured by its own instrument (the responder times only its read
-section), the visibility row puts the first read of 20 KiB of freshly
-peer-written lines at 2.59 s against 1.14 steady-state, and the
-visibility-aware composition closes the gate at both sizes ($`-4.5\%`$
-at 4 KiB, $`-10.3\%`$ at 20). The registered comparison therefore
-applies across its stated domain: 4.92 s against a bar of 10.78 at 4 KiB
-(margin 2.2$`\times`$), 7.94 against 12.51 at 20 KiB (margin
-1.6$`\times`$).
+cannot reach: the same floor-row failure mode as the dispatch hypothesis
+below, observed independently. With the constituents re-measured at the
+right width (a single-warp store burst and a single-warp consumption
+row), the remediated gate passed at 4 KiB ($`-10\%`$) but still
+under-predicted 20 KiB by 28%; the residual was named (a
+first-read-after-peer-write visibility cost with no table row) and the
+comparison stayed blocked there until the row existed. Measured by its
+own instrument (the responder times only its read section), the
+visibility row puts the first read of 20 KiB of freshly peer-written
+lines at 2.59 s against 1.14 steady-state, and the visibility-aware
+composition closes the gate at both sizes ($`-4.5\%`$ at 4 KiB,
+$`-10.3\%`$ at 20). The registered comparison therefore applies across
+its stated domain: 4.92 s against a bar of 10.78 at 4 KiB (margin
+2.2$`\times`$), 7.94 against 12.51 at 20 KiB (margin 1.6$`\times`$).
 
 *Dispatch composition*
 (<a href="#sec:hyp-dispatch" data-reference-type="ref+label"
@@ -368,8 +368,8 @@ decode dispatches 4,614 kernels per token; composed against the
 empty-launch row this predicts 7.2 ms of per-token dispatch against
 14.9 ms measured ($`-52\%`$). The empty-launch row is a floor: in-situ
 launches average 3.13 s against the row’s 1.56, and four candidate
-mechanisms for the gap — argument marshalling, kernel-identity variety,
-cross-device alternation, and submission-queue backpressure — were each
+mechanisms for the gap (argument marshalling, kernel-identity variety,
+cross-device alternation, and submission-queue backpressure) were each
 measured and exonerated, leaving driver-state interaction as the
 documented residual. Per the registered rule the rows are barred from
 driving the capture prioritisation, which instead takes the direct
@@ -379,8 +379,8 @@ $`+15`$ to $`+27\%`$.
 
 One sentence of synthesis the three outcomes share: *primitive rows are
 floors, and composition is trustworthy exactly where one resource
-binds*. The registration discipline did not make the models better; it
-made their failures unignorable, cheap to localise, and safe to publish.
+binds*. Registration left the models no better than they were; what it
+bought was failures cheap to localise and safe to publish.
 
 # SM pipelines
 
@@ -396,7 +396,7 @@ $`{\sim}54`$. Rows with no published prior are contributions: `PRMT` at
 4.13 cycles, `IDP.4A` at 4.11 cycles and the full 2.0 warp-instructions
 per SM per cycle, and the emulated `u32` divide at 55.5 cycles per
 sequence. Throughput saturates at 2.0 warp-instructions per SM per cycle
-for both the FP32 and INT32 classes — 64 lanes of each per SM — with the
+for both the FP32 and INT32 classes (64 lanes of each per SM), with the
 FFMA anchor landing within 0.005% of the geometric 2.0.
 <a href="#tab:core" data-reference-type="ref+Label"
 data-reference="tab:core">1</a> collects these rows; the repository
@@ -431,7 +431,7 @@ table carries the remaining variants and the provenance columns.
 Core instruction rows. Latency by dependent `clock64` chain, throughput
 at the peak of the warps-per-SM sweep, pipe bindings by contention probe
 (<a href="#sec:methodology" data-reference-type="ref+label"
-data-reference="sec:methodology">3</a>); *own* marks a dedicated unit.
+data-reference="sec:methodology">3</a>); *own* denotes a dedicated unit.
 Starred rows derive from pair constructions. Latency priors from Jia et
 al. (Jia et al. 2019).
 
@@ -452,13 +452,13 @@ data-reference="sec:methodology">3</a>) bind each operation to its issue
 pipe by mixing it 50/50 with a known reference and comparing the
 combined rate against same-pipe (harmonic) and distinct-pipe (maximum,
 capped at the 4-per-SM-cycle issue rate) predictions. The probe
-self-tests pass — FFMA against itself reads same-pipe, FFMA against LOP3
-reads distinct — and the map follows: `IMAD` issues on the fma pipe,
+self-tests pass: FFMA against itself reads same-pipe, FFMA against LOP3
+reads distinct. The map follows. `IMAD` issues on the fma pipe,
 confirming the Turing arrangement by measurement; `SHF`, `SEL`, and
 `PRMT` on the alu pipe; `POPC` and `FLO` on a quarter-rate unit that
 further *partially* contends with the load path (a mixed POPC-and-load
-stream runs at 0.68 of the distinct-pipe prediction); and —
-consequentially for quantised inference kernels — **`IDP.4A` issues on
+stream runs at 0.68 of the distinct-pipe prediction); and,
+consequentially for quantised inference kernels, **`IDP.4A` issues on
 the fma pipe**, competing with `FFMA` for issue slots rather than riding
 the integer pipe.
 
@@ -470,7 +470,7 @@ FMA per SM per cycle (NVIDIA Corporation 2018); `IMMA` m8n8k16 likewise
 lands exactly on its derived 1.0. The f32-accumulate prior of half rate
 is *refuted on this part*: measured 0.49996, identical to f16
 accumulate. The half-rate figure describes GeForce-positioned TU102s;
-the Quadro runs full-rate f32 accumulation — a market-segmentation fact
+the Quadro runs full-rate f32 accumulation: a market-segmentation fact
 rather than a microarchitectural one, and worth a row precisely because
 the whitepaper does not say it. A dependent accumulate chain puts `HMMA`
 latency at 14.0 cycles, and a contention probe confirms that `HFMA2`
@@ -478,9 +478,9 @@ shares the tensor unit (mixed rate 0.76 against a shared-unit prediction
 of 0.80): FP16 math runs through the tensor cores, measured rather than
 inferred. The operand-staging load, `LDSM` (`ldmatrix`), chains at 30
 cycles through an address perturbation and peaks at 0.125
-warp-instructions per SM per cycle in its four-tile form — 512 bytes per
-instruction, exactly the 64-byte-per-cycle unified-datapath ceiling of
-<a href="#sec:memory" data-reference-type="ref+label"
+warp-instructions per SM per cycle in its four-tile form. That is 512
+bytes per instruction, exactly the 64-byte-per-cycle unified-datapath
+ceiling of <a href="#sec:memory" data-reference-type="ref+label"
 data-reference="sec:memory">6</a>: feeding the tensor cores is
 bandwidth-bound on the same path as every other shared-memory access.
 <a href="#tab:tensor" data-reference-type="ref+Label"
@@ -513,12 +513,12 @@ data-reference="sec:sass">3.3</a>. `SHFL.IDX` chains at 25 cycles and
 0.96 per cycle across independent chains, with the predicate
 lane-shifted to keep the chain off the uniform datapath. A barrier in a
 192-thread block costs 32.3 cycles whether or not a second 192-thread
-block is resident on the same SM — the barrier unit serves two
-concurrent CTAs without serialising them. Branch divergence is exactly
-linear: a $`k`$-way divergent switch costs $`k`$ times the uniform path
-(16.7 cycles to 528 for 1-way to 32-way), and the predicated equivalent
-costs precisely the uniform 16.7 — if-conversion is free at this shape,
-with reconvergence visible as `BSSY`/`BSYNC` in the SASS.
+block is resident on the same SM: the barrier unit serves two concurrent
+CTAs without serialising them. Branch divergence is exactly linear: a
+$`k`$-way divergent switch costs $`k`$ times the uniform path (16.7
+cycles to 528 for 1-way to 32-way), and the predicated equivalent costs
+precisely the uniform 16.7. If-conversion is free at this shape, with
+reconvergence visible as `BSSY`/`BSYNC` in the SASS.
 
 # Memory hierarchy
 
@@ -541,11 +541,11 @@ moves the L1 chase cliff exactly as the split predicts. A
 fill-granularity probe (a capacity-evicted ring chased at growing byte
 strides) reads the promotion unit directly: strides of 32 and above all
 pay the full 235-cycle miss while stride 16 pays exactly the mean of a
-miss and a hit and stride 8 one miss in four — the L1 fills 32-byte
+miss and a hit and stride 8 one miss in four. The L1 fills 32-byte
 sectors and prefetches nothing within the line. One hazard row: `float4`
 shared-memory access compiles to paired `LDS.64` whose 16-byte stride
-self-conflicts two-way, halving bandwidth — tiles built on `float4` pay
-it. <a href="#fig:hierarchy" data-reference-type="ref+Label"
+self-conflicts two-way, halving bandwidth, and tiles built on `float4`
+pay it. <a href="#fig:hierarchy" data-reference-type="ref+Label"
 data-reference="fig:hierarchy">1</a> traces both chases and
 <a href="#tab:memory" data-reference-type="ref+label"
 data-reference="tab:memory">3</a> summarises the levels; conflict
@@ -577,7 +577,7 @@ default policy.
 
 <figure id="fig:hierarchy">
 <img src="paper/figures/fig_hierarchy.svg" />
-<figcaption>Left: dependent pointer-chase latency by footprint — the
+<figcaption>Left: dependent pointer-chase latency by footprint; the
 three plateaus are the levels of <a href="#tab:memory"
 data-reference-type="ref+label" data-reference="tab:memory">3</a>.
 Right: the same chase held L2-resident while page reach grows; both TLB
@@ -603,7 +603,7 @@ measured levels: a warp-uniform chain lowers to the uniform datapath at
 and a 32-address indexed read shows the same per-step *latency*
 (serialisation costs throughput, not dependent-chain time).
 Instruction-fetch cost stays at the single-warp issue floor through
-16 KiB loop bodies, softens at 32 KiB, and steps at 64 and 128 KiB —
+16 KiB loop bodies, softens at 32 KiB, and steps at 64 and 128 KiB,
 bracketing the L0 and L1I capacities.
 
 ## The sector model, load policies, atomics
@@ -611,7 +611,7 @@ bracketing the L0 and L1I capacities.
 The quantised-block stride experiment binds the row that motivated it: a
 warp of byte loads at stride 18 (the q4_0 block layout) requests 18
 32-byte sectors, and measured useful bandwidth times sectors reproduces
-the DRAM peak — 610 GB/s of fetched sectors at stride 18 and 32, the
+the DRAM peak: 610 GB/s of fetched sectors at stride 18 and 32, the
 fetch-bound regime exactly where the model predicts it
 (<a href="#fig:stride" data-reference-type="ref+label"
 data-reference="fig:stride">3</a>). Small strides are request-rate-bound
@@ -626,22 +626,22 @@ bandwidth benches.</figcaption>
 </figure>
 
 Load-policy probes refute a common assumption: `.cs` (evict-first) lines
-still enter the L1 and re-read at 23.4 ns — the hint sets priority, not
-eviction — while `.lu` genuinely evicts and `.cg` never allocates (both
+still enter the L1 and re-read at 23.4 ns (the hint sets priority, not
+eviction), while `.lu` genuinely evicts and `.cg` never allocates (both
 161 ns re-read). Keeping weights resident against streamed data
 therefore means marking the *streamed* side `.cg`, not the weights
 `.cs`. Shared-memory atomics reproduce the T4 contention deltas exactly
 ($`+2/+4/+8/+16/+32`$ cycles for 2- to 32-way) atop a constant 17-cycle
 offset attributable to the return-value chain this method times and the
-prior’s stall-counting method does not — a stall-attribution profile
+prior’s stall-counting method does not. A stall-attribution profile
 corroborates the placement: 83.6% of the uncontended chain’s cycles are
 short-scoreboard stalls waiting on the returned value, about 21 of the
 25, with one cycle issuing (Nsight Compute 2026.2, corroboration-only,
-record in the repository); global atomics sit at $`{\sim}310`$ cycles
+record in the repository). Global atomics sit at $`{\sim}310`$ cycles
 through the L2 with a real 2% spread between the two physical GPUs. A
 shared-memory CAS chains 12 cycles dearer than the add; on the
 throughput side, independent shared adds sustain half a warp-instruction
-per cycle (the non-returning form stays `ATOMS.ADD` — there is no shared
+per cycle (the non-returning form stays `ATOMS.ADD`; there is no shared
 reduction opcode), while global reductions from a single SM peak at one
 warp in flight: the L2 service path, not warp count, binds.
 
@@ -651,28 +651,28 @@ The T4 has no NVLink, so this half of the table has no published prior
 to deviate from; whitepaper geometry (two NV2 links, $`{\sim}50`$ GB/s
 per direction aggregate) supplies the sanity gates.
 
-A pointer chase into the peer’s memory costs 472 ns — a 172 ns NVLink
-hop over the local DRAM latency — and the default and `.cg` chases
-measure identically: peer lines do not enter the local L1 at all.
-SM-path streaming sustains 43.4 GB/s reading and 45.8 writing per
-direction (inside the $`\pm15\%`$ gate; posted writes faster). A peer
-`atomicAdd` chains at 541 ns and a peer CAS at 552–558; the
-non-returning form (`RED` over NVLink) sustains about 800 million
-operations per second from a single warp, and adding warps loses rather
-than gains — the fabric, not issue width, binds. With one GPU streaming
-inbound writes at full NVLink rate, the victim’s local DRAM read
-bandwidth degrades 16.4% at the defined operating point. Freshly
-peer-written lines also read back dearer than warm ones: a single warp’s
-first read of 20 KiB its peer has just written, fenced, and flagged
-costs 2.59 s against 1.14 for the same bytes at steady state — a
-visibility cost with its own table row, measured by timing only the
-responder’s read section inside the litmus-checked handshake.
+A pointer chase into the peer’s memory costs 472 ns, a 172 ns NVLink hop
+over the local DRAM latency, and the default and `.cg` chases measure
+identically: peer lines do not enter the local L1 at all. SM-path
+streaming sustains 43.4 GB/s reading and 45.8 writing per direction
+(inside the $`\pm15\%`$ gate; posted writes faster). A peer `atomicAdd`
+chains at 541 ns and a peer CAS at 552–558; the non-returning form
+(`RED` over NVLink) sustains about 800 million operations per second
+from a single warp, and adding warps loses rather than gains: the
+fabric, not issue width, binds. With one GPU streaming inbound writes at
+full NVLink rate, the victim’s local DRAM read bandwidth degrades 16.4%
+at the defined operating point. Freshly peer-written lines also read
+back dearer than warm ones: a single warp’s first read of 20 KiB its
+peer has just written, fenced, and flagged costs 2.59 s against 1.14 for
+the same bytes at steady state. This visibility cost has its own table
+row, measured by timing only the responder’s read section inside the
+litmus-checked handshake.
 
 The exchange primitive of
 <a href="#sec:hyp-exchange" data-reference-type="ref+label"
-data-reference="sec:hyp-exchange">4.2</a> — peer store,
-`__threadfence_system` (which lowers to `MEMBAR.SYS`+`CCTL`+`ERRBAR`),
-flag write, remote spin and acknowledge — round-trips between
+data-reference="sec:hyp-exchange">4.2</a> (peer store,
+`__threadfence_system`, which lowers to `MEMBAR.SYS`+`CCTL`+`ERRBAR`,
+flag write, remote spin and acknowledge) round-trips between
 concurrently resident kernels in 3.90 s empty, 4.92 at 4 KiB, and 7.94
 at 20 KiB, with a data-check litmus run before any timing is trusted.
 The NCCL comparator, environment pinned (Ring, LL, two channels, NCCL
@@ -745,16 +745,16 @@ largest, and three smaller memos show the rows at work.
 key tile is reused once, so staging into shared memory pays a store, a
 reload, and a synchronisation against the dequantisation it saves; with
 the measured shared-memory ceiling the saving cannot reach the cost
-below a reuse factor of about two, and the projection route — validated
-at 5% on the staged pair — prices the alternative directly. The verdict
+below a reuse factor of about two, and the projection route (validated
+at 5% on the staged pair) prices the alternative directly. The verdict
 is shape-dependent and stated as such: staging loses at decode, can win
 at prefill-like reuse, and must avoid `float4` tiles (the measured
 split-conflict halves their bandwidth).
 
 *A serial merge step.* A 196-step dependent merge costs at most
 $`196 \times 299.9`$ ns $`= 58.8`$ s if every step missed to DRAM and
-31.7 s at L2 residency — against a $`{\sim}50`$ ms decode token, at
-worst 0.1%. “Negligible” is now a number with a stated worst case.
+31.7 s at L2 residency: against a $`{\sim}50`$ ms decode token, at worst
+0.1%. “Negligible” is now a number with a stated worst case.
 
 *Streaming loads in a quantised matrix-vector kernel.* The policy rows
 direct the lever precisely: the streamed operand takes `.cg` (it never
@@ -770,11 +770,11 @@ per-pipe-max projection sits within 3.5% on every single-resource
 anchor, the smem-bound attention variant within 5%, the exchange
 primitive within 4–14% once its constituents are measured at the right
 width and freshness. Where work couples across issue pipes, or where a
-primitive row is a floor rather than a typical cost, no — and both
-failure modes were caught by pre-registered gates rather than discovered
-in production. The practical reading for anyone pricing similar
-hardware: trust the table’s rows, trust compositions in single-resource
-regimes, and measure directly anywhere pipes couple.
+primitive row is a floor rather than a typical cost, no; both failure
+modes were caught by pre-registered gates rather than discovered in
+production. The practical reading for anyone pricing similar hardware:
+trust the table’s rows, trust compositions in single-resource regimes,
+and measure directly anywhere pipes couple.
 
 ## Limitations
 
@@ -783,11 +783,11 @@ confounded with both: a different `nvcc` emits different SASS for the
 same PTX (this paper catalogues eight distinct rewrites), and a
 different driver may move the host-domain rows. T4 priors transfer only
 core-domain, as recorded per row. Some rows carry an honest `UNVERIFIED`
-flag — chiefly spread flags on host-domain and refresh-sensitive
+flag, chiefly spread flags on host-domain and refresh-sensitive
 quantities, where the flag is the documentation; the open remainder of
 the coverage manifest is down to the store-path rows and the copy-engine
 transfer curve. The chain-method atomics offset shows that even agreeing
-contention structure can ride a method constant — though a
+contention structure can ride a method constant, though a
 stall-attribution profile now places that constant in the return-value
 wait, where the chain interpretation put it. No independent replication
 exists yet. Within this rig every SM-domain row is replicated across the

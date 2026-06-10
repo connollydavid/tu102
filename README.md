@@ -10,8 +10,8 @@ methodology of Jia et al.'s Volta/Turing dissections.
 ALU with contention-probed pipe bindings, the full memory hierarchy
 (smem/L1/L2/DRAM/TLB/constant/instruction caches, carveout, policies,
 atomics), tensor cores, SFU, shuffle/branch/barrier, the launch family,
-and the NVLink/PCIe/NCCL interconnect — every row gated on locked clocks
-and SASS-verified loops, every flag carrying its investigation. All three
+and the NVLink/PCIe/NCCL interconnect. Every row gates on locked clocks
+and SASS-verified loops, and every flag carries its investigation. All three
 pre-registered hypotheses (`paper/` section 4) carry recorded outcomes: a
 fired kill criterion, a confirmation reached through two documented gate
 remediations (the second supplied by a first-read-after-peer-write
@@ -48,7 +48,7 @@ v1.0 close the work.
 | Toolchain | CUDA 13.3 (`nvcc -O2 -arch=sm_75`), driver 610.43.02 |
 
 Scope: compute path only. RT cores (not reachable from CUDA), NVENC/NVDEC,
-and the graphics pipe are out of scope — stated, not silent. The table is a
+and the graphics pipe are out of scope, stated rather than silent. The table is a
 **snapshot** of this toolchain/driver pairing, not a living document; run
 headers carry the exact versions, and the append-only results layout admits
 later datasets under newer toolchains.
@@ -67,7 +67,7 @@ citations in `paper/references.bib`.
 `REPRODUCING.md` is the fresh-clone runbook: lock the clocks, run
 `bench/common/run_all.sh`, regenerate the table, compare within the
 per-domain floors in `table/SCHEMA.md`. Replication datasets are welcome
-as pull requests adding `data/results/<your-host>/`.
+as pull requests adding a new `data/results/<host>/` directory.
 
 ## Citing
 

@@ -15,7 +15,7 @@ are contributions: \texttt{PRMT} at 4.13 cycles, \texttt{IDP.4A} at 4.11
 cycles and the full 2.0 warp-instructions per SM per cycle, and the
 emulated \texttt{u32} divide at 55.5 cycles per sequence. Throughput
 saturates at 2.0 warp-instructions per SM per cycle for both the FP32 and
-INT32 classes --- 64 lanes of each per SM --- with the FFMA anchor
+INT32 classes (64 lanes of each per SM), with the FFMA anchor
 landing within 0.005\% of the geometric 2.0. \Cref{tab:core} collects
 these rows; the repository table carries the remaining variants and the
 provenance columns.
@@ -24,7 +24,7 @@ provenance columns.
 \centering
 \caption{Core instruction rows. Latency by dependent \texttt{clock64}
 chain, throughput at the peak of the warps-per-SM sweep, pipe bindings by
-contention probe (\cref{sec:methodology}); \emph{own} marks a dedicated
+contention probe (\cref{sec:methodology}); \emph{own} denotes a dedicated
 unit. Starred rows derive from pair constructions. Latency priors from
 Jia et al.\ \citep{jia2019turing}.}
 \label{tab:core}
@@ -45,14 +45,14 @@ Contention probes (\cref{sec:methodology}) bind each operation to its
 issue pipe by mixing it 50/50 with a known reference and comparing the
 combined rate against same-pipe (harmonic) and distinct-pipe (maximum,
 capped at the 4-per-SM-cycle issue rate) predictions. The probe
-self-tests pass --- FFMA against itself reads same-pipe, FFMA against
-LOP3 reads distinct --- and the map follows: \texttt{IMAD} issues on the
+self-tests pass: FFMA against itself reads same-pipe, FFMA against
+LOP3 reads distinct. The map follows. \texttt{IMAD} issues on the
 fma pipe, confirming the Turing arrangement by measurement;
 \texttt{SHF}, \texttt{SEL}, and \texttt{PRMT} on the alu pipe;
 \texttt{POPC} and \texttt{FLO} on a quarter-rate unit that further
 \emph{partially} contends with the load path (a mixed POPC-and-load
-stream runs at 0.68 of the distinct-pipe prediction); and ---
-consequentially for quantised inference kernels --- \textbf{\texttt{IDP.4A}
+stream runs at 0.68 of the distinct-pipe prediction); and,
+consequentially for quantised inference kernels, \textbf{\texttt{IDP.4A}
 issues on the fma pipe}, competing with \texttt{FFMA} for issue slots
 rather than riding the integer pipe.
 
@@ -64,7 +64,7 @@ FMA per SM per cycle \citep{nvidia2018turing}; \texttt{IMMA} m8n8k16
 likewise lands exactly on its derived 1.0. The f32-accumulate prior of
 half rate is \emph{refuted on this part}: measured 0.49996, identical to
 f16 accumulate. The half-rate figure describes GeForce-positioned TU102s;
-the Quadro runs full-rate f32 accumulation --- a market-segmentation
+the Quadro runs full-rate f32 accumulation: a market-segmentation
 fact rather than a microarchitectural one, and worth a row precisely
 because the whitepaper does not say it. A dependent accumulate chain puts
 \texttt{HMMA} latency at 14.0 cycles, and a contention probe confirms
@@ -73,10 +73,10 @@ shared-unit prediction of 0.80): FP16 math runs through the tensor
 cores, measured rather than inferred. The operand-staging load,
 \texttt{LDSM} (\texttt{ldmatrix}), chains at 30 cycles through an
 address perturbation and peaks at 0.125 warp-instructions per SM per
-cycle in its four-tile form --- 512 bytes per instruction, exactly the
-64-byte-per-cycle unified-datapath ceiling of \cref{sec:memory}: feeding
-the tensor cores is bandwidth-bound on the same path as every other
-shared-memory access. \Cref{tab:tensor} summarises.
+cycle in its four-tile form. That is 512 bytes per instruction, exactly
+the 64-byte-per-cycle unified-datapath ceiling of \cref{sec:memory}:
+feeding the tensor cores is bandwidth-bound on the same path as every
+other shared-memory access. \Cref{tab:tensor} summarises.
 
 \begin{table}[t]
 \centering
@@ -99,10 +99,10 @@ deletions of \cref{sec:sass}. \texttt{SHFL.IDX} chains at 25 cycles and
 sustains 0.96 per cycle across independent chains, with the predicate
 lane-shifted to keep the chain off the uniform datapath. A barrier in a
 192-thread block costs 32.3 cycles whether or not a second 192-thread
-block is resident on the same SM --- the barrier unit serves two
+block is resident on the same SM: the barrier unit serves two
 concurrent CTAs without serialising them. Branch divergence is exactly
 linear: a $k$-way divergent switch costs $k$ times the uniform path
 (16.7 cycles to 528 for 1-way to 32-way), and the predicated equivalent
-costs precisely the uniform 16.7 --- if-conversion is free at this
+costs precisely the uniform 16.7. If-conversion is free at this
 shape, with reconvergence visible as \texttt{BSSY}/\texttt{BSYNC} in the
 SASS.

@@ -24,6 +24,10 @@
 % negative parallelism ("It's not X — it's Y"), "serves as", magic adverbs,
 % manufactured fragments, false ranges, signposted conclusions. Any one
 % pattern once may pass; clusters are a rewrite trigger.
+% Em-dashes (author feedback, 2026-06-10): pervasive use is terrible for
+% the reader. Where a dash would splice clauses, write a full sentence,
+% a colon, a comma, or parentheses. At most about one genuine
+% parenthetical dash per page.
 % Work-segmentation vocabulary is likewise banned from prose, headers, and
 % commit subjects: no numbered spans ("Phase 1", "Step 3 of 5", "M2") and
 % no deformed plan arithmetic ("5.5"); spans of work get proper names. See
@@ -116,9 +120,9 @@ We present an Agner-Fog-style operation table for the NVIDIA TU102 GPU
 (compute capability 7.5): 264 measured rows covering instruction latency
 and throughput with contention-probed issue-pipe bindings, the complete
 memory hierarchy, and the NVLink/PCIe/NCCL interconnect, on a locked-clock
-two-GPU rig. Every timed loop is SASS-verified --- the public toolchain
-rewrote or deleted measurement kernels eight distinct ways, each caught by
-the gate --- and every row carries provenance, priors where they apply,
+two-GPU rig. Every timed loop is SASS-verified: the public toolchain
+rewrote or deleted measurement kernels eight distinct ways, and the gate
+caught each one. Every row carries provenance, priors where they apply,
 and published deviations. Three decision-grade questions were
 pre-registered in the repository before their data existed. Their
 outcomes split sharply: compositions of table rows predict
