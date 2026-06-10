@@ -65,6 +65,8 @@ EXPECT_FN = {
     "pchase_kernel": {"primary": {"LDG"}},
     "policy_chase_kernel": {"primary": {"LDG"}},
     "policy_ring_init": None,
+    "carveout_chase_kernel": {"primary": {"LDG"}},
+    "carveout_ring_init": None,
     "pchase_ring_init": None,
     "tlb_chase_kernel": {"primary": {"LDG"}},
     "tlb_ring_init": None,
