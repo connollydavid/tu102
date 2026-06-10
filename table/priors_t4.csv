@@ -23,3 +23,8 @@ alu.lop3.tput,2.0,warpinst/SM/clk,nvidia2018turing:sec-sm,
 alu.hfma2.tput,2.0,warpinst/SM/clk,nvidia2018turing:sec-sm,FP16x2 at FP32 issue rate; 2x FLOPs per inst
 alu.dadd.tput,0.0625,warpinst/SM/clk,nvidia2018turing:sec-sm,2 FP64 lanes per SM = 1/32 of FP32
 alu.dfma.tput,0.0625,warpinst/SM/clk,nvidia2018turing:sec-sm,
+mem.smem.lat,22,cycles,jia2019turing:fig3.11,T4 curve conflict-free point; figure-read approximate (no scalar in text)
+mem.smem.lat.conflict32,85,cycles,jia2019turing:fig3.11,T4 curve 32-way point; figure-read approximate
+mem.l1.lat,32,cycles,jia2019turing:sec3.1.1,exact in text: L1 data cache hit latency 32 cycles on T4
+mem.smem.bw,64,B/clk/SM,jia2019turing:fig3.12,theoretical model min(P*Bs*ws*fg ...); T4 measured ~88 pct of theoretical
+sfu.mufu.ex2.lat,15,cycles,jia2019turing:tab4.1,Turing row: POPC/FLO/BREV/MUFU ~ 15 (approximate in source)

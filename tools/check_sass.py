@@ -52,6 +52,29 @@ EXPECT = {
     "OpIDIV_U32": None,
 }
 
+# Bespoke (non-template) bench kernels, matched by function-name substring.
+# Same loop-detection and purity rules as EXPECT.
+EXPECT_FN = {
+    "smem_chase_kernel": {"primary": {"LDS"}},
+    "smem_conflict_kernel": {"primary": {"LDS"}},
+    # bandwidth kernels legitimately carry per-load address generation; the
+    # LSU stays the bottleneck (LDS 0.5/clk vs 2/clk for the address ops)
+    "smem_bw_kernel": {"primary": {"LDS"},
+                       "companions": {"FADD", "FFMA", "IMAD", "LOP3", "LEA", "SHF", "MOV"}},
+    "l1_chase_kernel": {"primary": {"LDG"}},
+    "stride_kernel": {"primary": {"LDG"}, "min": 12,
+                      "companions": {"IMAD", "LEA", "SHF", "LOP3", "MOV", "IADD3"}},
+    # ptxas lowers the f16->f32 widening to HADD2 (verified): the pair is
+    # F2F (narrowing) + HADD2 (widening via the half pipe)
+    "cvt_f2f": {"primary": {"F2F", "HADD2"}},
+    "cvt_i2f": {"primary": {"F2I", "I2F"}},
+    # tput template instantiations carry the pair-fn symbol in their name
+    "f2f_pair": {"primary": {"F2F", "HADD2"}},
+    "i2f_pair": {"primary": {"F2I", "I2F"}},
+    "mufu_ex2": {"primary": {"MUFU"}},
+    "bar_kernel": {"primary": {"BAR"}, "min": 8},
+}
+
 INSTR_RE = re.compile(r"/\*([0-9a-f]+)\*/\s+((?:@!?P\d+\s+)?[A-Z][A-Z0-9.]*[^;]*)")
 FUNC_RE = re.compile(r"^\s*Function : (\S+)")
 
@@ -113,6 +136,39 @@ def main():
     failures = 0
     checked = 0
     for name, raw in parse_functions(sass):
+        fn_key = next((k for k in EXPECT_FN if k in name), None)
+        if fn_key is not None:
+            checked += 1
+            instrs = raw
+            loop = hot_loop(instrs)
+            label = f"fn<{fn_key}>"
+            if loop is None:
+                print(f"FAIL {label}: no loop found")
+                failures += 1
+                continue
+            body = instrs[loop[0]:loop[1] + 1]
+            size = instrs[loop[1]][0] - instrs[loop[0]][0] + 16
+            expect = EXPECT_FN[fn_key]
+            primary = expect["primary"]
+            allowed = primary | expect.get("companions", set()) | CONTROL
+            min_primary = expect.get("min", args.min_primary)
+            n_primary = sum(1 for _, base, _ in body if base in primary)
+            aliens = [base for _, base, _ in body if base not in allowed]
+            if size > args.l0_bytes:
+                print(f"FAIL {label}: loop body {size} B exceeds L0 budget")
+                failures += 1
+            elif n_primary < min_primary:
+                print(f"FAIL {label}: only {n_primary} primary ops in loop")
+                failures += 1
+            elif len(aliens) > args.staging_budget:
+                print(f"FAIL {label}: {len(aliens)} non-primary ops "
+                      f"(budget {args.staging_budget}): {' '.join(sorted(set(aliens)))}")
+                failures += 1
+            else:
+                extra = f" (+{len(aliens)} staging)" if aliens else ""
+                print(f"PASS {label}: {n_primary} primary, {len(body)} instrs, {size} B{extra}")
+            continue
+
         kind = next((k for k in ("lat_kernel", "tput_kernel", "pure_kernel",
                                  "mix_kernel") if k in name), None)
         if kind is None:
