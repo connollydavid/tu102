@@ -64,6 +64,11 @@ EXPECT_FN = {
     "l1_chase_kernel": {"primary": {"LDG"}},
     "pchase_kernel": {"primary": {"LDG"}},
     "peer_chase_kernel": {"primary": {"LDG"}},
+    "rt_initiator": None, "rt_responder": None,  # handshake structure; litmus-gated
+    "peer_atom_chase": {"primary": {"ATOMG"}, "min": 8},
+    "stream_writer": None,
+    "local_read_bw": {"primary": {"LDG"}, "min": 4,
+                      "companions": {"FADD", "IMAD", "LEA", "SHF", "MOV", "LOP3"}},
     "peer_ring_init": None,
     "peer_read_bw_kernel": {"primary": {"LDG"}, "min": 4,
                             "companions": {"FADD", "IMAD", "LEA", "SHF", "MOV", "LOP3"}},
