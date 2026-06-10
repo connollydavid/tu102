@@ -100,7 +100,11 @@ the \emph{streamed} side \texttt{.cg}, not the weights \texttt{.cs}.
 Shared-memory atomics reproduce the T4 contention deltas exactly
 ($+2/+4/+8/+16/+32$ cycles for 2- to 32-way) atop a constant
 17-cycle offset attributable to the return-value chain this method times
-and the prior's stall-counting method does not; global atomics sit at
+and the prior's stall-counting method does not --- a stall-attribution
+profile corroborates the placement: 83.6\% of the uncontended chain's
+cycles are short-scoreboard stalls waiting on the returned value,
+about 21 of the 25, with one cycle issuing (Nsight Compute 2026.2,
+corroboration-only, record in the repository); global atomics sit at
 ${\sim}310$ cycles through the L2 with a real 2\% spread between the two
 physical GPUs. A shared-memory CAS chains 12 cycles dearer than the add;
 on the throughput side, independent shared adds sustain half a

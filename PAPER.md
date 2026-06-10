@@ -633,14 +633,17 @@ therefore means marking the *streamed* side `.cg`, not the weights
 `.cs`. Shared-memory atomics reproduce the T4 contention deltas exactly
 ($`+2/+4/+8/+16/+32`$ cycles for 2- to 32-way) atop a constant 17-cycle
 offset attributable to the return-value chain this method times and the
-prior’s stall-counting method does not; global atomics sit at
-$`{\sim}310`$ cycles through the L2 with a real 2% spread between the
-two physical GPUs. A shared-memory CAS chains 12 cycles dearer than the
-add; on the throughput side, independent shared adds sustain half a
-warp-instruction per cycle (the non-returning form stays `ATOMS.ADD` —
-there is no shared reduction opcode), while global reductions from a
-single SM peak at one warp in flight: the L2 service path, not warp
-count, binds.
+prior’s stall-counting method does not — a stall-attribution profile
+corroborates the placement: 83.6% of the uncontended chain’s cycles are
+short-scoreboard stalls waiting on the returned value, about 21 of the
+25, with one cycle issuing (Nsight Compute 2026.2, corroboration-only,
+record in the repository); global atomics sit at $`{\sim}310`$ cycles
+through the L2 with a real 2% spread between the two physical GPUs. A
+shared-memory CAS chains 12 cycles dearer than the add; on the
+throughput side, independent shared adds sustain half a warp-instruction
+per cycle (the non-returning form stays `ATOMS.ADD` — there is no shared
+reduction opcode), while global reductions from a single SM peak at one
+warp in flight: the L2 service path, not warp count, binds.
 
 # Interconnect
 
@@ -784,13 +787,15 @@ flag — chiefly spread flags on host-domain and refresh-sensitive
 quantities, where the flag is the documentation; the open remainder of
 the coverage manifest is down to the store-path rows and the copy-engine
 transfer curve. The chain-method atomics offset shows that even agreeing
-contention structure can ride a method constant. No independent
-replication exists yet. Within this rig every SM-domain row is
-replicated across the two physical boards as a publication gate, which
-catches die-level variation but not method or toolchain artefacts;
-replication on another TU102 is a documented one-evening procedure
-(`REPRODUCING.md` in the repository), and the append-only results layout
-accepts additional datasets without touching the reference one.
+contention structure can ride a method constant — though a
+stall-attribution profile now places that constant in the return-value
+wait, where the chain interpretation put it. No independent replication
+exists yet. Within this rig every SM-domain row is replicated across the
+two physical boards as a publication gate, which catches die-level
+variation but not method or toolchain artefacts; replication on another
+TU102 is a documented one-evening procedure (`REPRODUCING.md` in the
+repository), and the append-only results layout accepts additional
+datasets without touching the reference one.
 
 ## Future work
 
