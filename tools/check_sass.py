@@ -78,6 +78,13 @@ EXPECT_FN = {
     # composite probe: the differential runner projects from the EMITTED
     # census, so this gate is smoke only (loop exists, base work present)
     "fa_mini_kernel": None,  # gated by census-match vs the production cubin
+    "ffma_anchor": {"primary": {"FFMA"}},
+    "stream_anchor": {"primary": {"LDG"}, "min": 12,
+                      "companions": {"FADD", "IMAD", "LEA", "SHF", "LOP3", "MOV"}},
+    "smemtile_anchor": {"primary": {"LDS", "FFMA"}, "min": 48,
+                        "companions": {"IMAD", "LEA", "SHF", "LOP3", "MOV"}},
+    "capmix_anchor": {"primary": {"FFMA", "LOP3"}},
+    "latbound_demo": {"primary": {"FFMA"}},
     "inject_kernel": {"primary": {"FFMA", "LOP3", "LDG"}, "min": 40,
                       "companions": {"IDP", "POPC", "SEL", "ISETP", "IMAD",
                                      "LEA", "MOV", "SHF", "FADD"}},
