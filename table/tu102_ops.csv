@@ -76,6 +76,14 @@ mem.l1.bw,mem,,w16_f32,bandwidth,63.9111,B/clk/SM,0.018,,,,,ok,bench/mem/l1bw.cu
 mem.l1.bw,mem,,w32_f64,bandwidth,63.9862,B/clk/SM,0.012,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
 mem.l1.lat,mem,,l1hit,latency_cycles,34,cycles,0.000,,32,jia2019turing:sec3.1.1,6.2,ok,bench/mem/l1.cu@a4fdd73 n_runs=5,1455,pointer chase; embedded 64-bit pointers; pure LDG chain
 mem.l2.lat,mem,,fp4096k,latency_ns,161.47,ns,0.004,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,designated L2 row (4 MiB footprint within the 6 MB L2); ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.ldg.policy.lat,mem,,default,latency_ns,161.454,ns,0.007,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,2 MiB ring (L1-capacity miss / L2 hit); ns = cyc/1.455
+mem.ldg.policy.lat,mem,,default_l1fit,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,16 KiB ring; default retains in L1
+mem.ldg.policy.lat,mem,,ldcg,latency_ns,161.457,ns,0.005,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,L2-only (bypass L1)
+mem.ldg.policy.lat,mem,,ldcg_l1fit,latency_ns,161.301,ns,0.005,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,16 KiB ring; L2-only never retains
+mem.ldg.policy.lat,mem,,ldcs,latency_ns,161.453,ns,0.011,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,evict-first streaming policy
+mem.ldg.policy.lat,mem,,ldcs_l1fit,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,16 KiB ring; does evict-first retain?
+mem.ldg.policy.lat,mem,,ldlu,latency_ns,161.485,ns,0.017,,,,,UNVERIFIED,bench/mem/policy.cu@a05c604 n_runs=5,1455,last-use policy; between-run spread 0.10% exceeds within-run cv 0.02%
+mem.ldg.policy.lat,mem,,ldlu_l1fit,latency_ns,161.3,ns,0.005,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,16 KiB ring; last-use retention
 mem.ldg.u8.stride.tput,mem,,stride1,bandwidth,151.334,GB/s,0.423,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 1 sectors per warp request predicted
 mem.ldg.u8.stride.tput,mem,,stride128,bandwidth,9.61647,GB/s,0.153,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 32 sectors per warp request predicted
 mem.ldg.u8.stride.tput,mem,,stride18,bandwidth,33.9054,GB/s,0.118,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 18 sectors per warp request predicted

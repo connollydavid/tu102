@@ -63,6 +63,8 @@ EXPECT_FN = {
                        "companions": {"FADD", "FFMA", "IMAD", "LOP3", "LEA", "SHF", "MOV"}},
     "l1_chase_kernel": {"primary": {"LDG"}},
     "pchase_kernel": {"primary": {"LDG"}},
+    "policy_chase_kernel": {"primary": {"LDG"}},
+    "policy_ring_init": None,
     "pchase_ring_init": None,
     "tlb_chase_kernel": {"primary": {"LDG"}},
     "tlb_ring_init": None,
