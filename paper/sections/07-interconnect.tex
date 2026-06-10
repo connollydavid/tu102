@@ -21,9 +21,33 @@ spin and acknowledge --- round-trips between concurrently resident
 kernels in 3.90~\textmu s empty, 4.92 at 4~KiB, and 7.94 at 20~KiB, with
 a data-check litmus run before any timing is trusted. The NCCL
 comparator, environment pinned (Ring, LL, two channels, NCCL 2.30.4),
-holds a steady-state two-rank all-reduce floor of 21.6--28.2~\textmu s
-across 4--64~KiB, with a 4.98~ms cold first call; the in-situ production
-figure this study set out to explain is retired in favour of these
-standalone numbers. PCIe rows complete the picture: 12.2/13.2~GB/s
-pinned in each direction on both x16 GPUs, and a 4.1~\textmu s pinned
-small-transfer floor.
+holds a steady-state two-rank all-reduce floor of 21.1--28.3~\textmu s
+across 4--64~KiB, with a cold first call in the milliseconds (5--10~ms
+across four fresh-communicator samples; the row is flagged for its
+spread); the in-situ production figure this study set out to explain is
+retired in favour of these standalone numbers. PCIe rows complete the
+picture: 12.2/13.2~GB/s pinned in each direction on both x16 GPUs, and a
+${\sim}4$~\textmu s pinned small-transfer floor. \Cref{tab:interconnect}
+collects the rows; \cref{fig:exchange} sets the primitive against the
+registered bar of \cref{sec:hyp-exchange}.
+
+\begin{table}[t]
+\centering
+\caption{Interconnect rows, GPU0$\to$GPU1 direction (the reverse
+direction agrees within 1\% throughout). The cold NCCL row is the median
+of four fresh-communicator samples spanning 5--10~ms and carries a
+spread flag in the table.}
+\label{tab:interconnect}
+\small
+\input{tables/tab_interconnect}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics{figures/fig_exchange}
+\caption{The exchange primitive against the NCCL per-call floor. The
+registered comparison applies where the composed-prediction gate passes
+(4~KiB and below); at 20~KiB the margin is observational
+(\cref{sec:hypotheses-outcomes}).}
+\label{fig:exchange}
+\end{figure}

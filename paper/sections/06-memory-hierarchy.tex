@@ -7,9 +7,9 @@ Dependent chases place the levels at: L1 data 23.4~ns (34 cycles; the
 read-only \texttt{\_\_ldg} path measures the same 34, one physical
 array); L2 161.5~ns (235 cycles), flat from 128~KiB to 5~MiB with the
 cliff binding between 5 and 8~MiB against the 6~MB L2; DRAM 299.9~ns.
-Bandwidths: DRAM streams at 608~GB/s read (97.5\% of the P2 ceiling, and
+Bandwidths: DRAM streams at 609~GB/s read (97.5\% of the P2 ceiling, and
 within 0.3\% of an independent estimate from the sector experiment
-below), 474 write, 507 copy. The L2's own service rate is lower than the
+below), 477 write, 507 copy. The L2's own service rate is lower than the
 DRAM streaming rate: a 4~MiB footprint read entirely from L2 via
 \texttt{.cg} sustains 382~GB/s (the request-serving path saturates
 before the line-fill path), while the same footprint under the default
@@ -20,6 +20,40 @@ widths), and the 96~KiB carveout moves the L1 chase cliff exactly as the
 split predicts. One hazard row: \texttt{float4} shared-memory access
 compiles to paired \texttt{LDS.64} whose 16-byte stride self-conflicts
 two-way, halving bandwidth --- tiles built on \texttt{float4} pay it.
+\Cref{fig:hierarchy} traces both chases and \cref{tab:memory} summarises
+the levels; conflict serialisation is exactly linear at two cycles per
+additional way, and \texttt{BAR.SYNC} obeys the same
+$22 + 2(n{-}1)$ law in warps per block (\cref{fig:laws}).
+
+\begin{table}[t]
+\centering
+\caption{Memory-hierarchy summary. Cycle-domain rows at the locked
+1455~MHz; bandwidth rows against the P2 memory state
+(\cref{sec:methodology}). The L2 row pair separates the request-serving
+\texttt{.cg} path from the aggregate-L1 effect under the default policy.}
+\label{tab:memory}
+\small
+\input{tables/tab_memory}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics{figures/fig_hierarchy}
+\caption{Left: dependent pointer-chase latency by footprint --- the
+three plateaus are the levels of \cref{tab:memory}. Right: the same
+chase held L2-resident while page reach grows; both TLB cliffs land on
+the T4 priors.}
+\label{fig:hierarchy}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics{figures/fig_laws}
+\caption{One law, two mechanisms: shared-memory conflict latency by
+ways and \texttt{BAR.SYNC} latency by warps per block coincide on
+$22 + 2(n{-}1)$ cycles (dashed).}
+\label{fig:laws}
+\end{figure}
 
 \subsection{TLBs, constant path, instruction caches}
 
@@ -41,9 +75,19 @@ The quantised-block stride experiment binds the row that motivated it: a
 warp of byte loads at stride 18 (the q4\_0 block layout) requests 18
 32-byte sectors, and measured useful bandwidth times sectors reproduces
 the DRAM peak --- 610~GB/s of fetched sectors at stride 18 and 32, the
-fetch-bound regime exactly where the model predicts it. Small strides
-are request-rate-bound instead, and stride 128 additionally loses DRAM
-row locality. Load-policy probes refute a common assumption:
+fetch-bound regime exactly where the model predicts it
+(\cref{fig:stride}). Small strides are request-rate-bound instead, and
+stride 128 additionally loses DRAM row locality.
+
+\begin{figure}[t]
+\centering
+\includegraphics{figures/fig_stride}
+\caption{The sector model. Useful bandwidth for byte loads by stride,
+and the implied fetched traffic; at strides 18 and 32 the fetched
+sectors reproduce the DRAM streaming rate, independently of the
+bandwidth benches.}
+\label{fig:stride}
+\end{figure} Load-policy probes refute a common assumption:
 \texttt{.cs} (evict-first) lines still enter the L1 and re-read at
 23.4~ns --- the hint sets priority, not eviction --- while \texttt{.lu}
 genuinely evicts and \texttt{.cg} never allocates (both 161~ns re-read).

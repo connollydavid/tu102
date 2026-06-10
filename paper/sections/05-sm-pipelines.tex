@@ -16,7 +16,21 @@ cycles and the full 2.0 warp-instructions per SM per cycle, and the
 emulated \texttt{u32} divide at 55.5 cycles per sequence. Throughput
 saturates at 2.0 warp-instructions per SM per cycle for both the FP32 and
 INT32 classes --- 64 lanes of each per SM --- with the FFMA anchor
-landing within 0.005\% of the geometric 2.0.
+landing within 0.005\% of the geometric 2.0. \Cref{tab:core} collects
+these rows; the repository table carries the remaining variants and the
+provenance columns.
+
+\begin{table}[t]
+\centering
+\caption{Core instruction rows. Latency by dependent \texttt{clock64}
+chain, throughput at the peak of the warps-per-SM sweep, pipe bindings by
+contention probe (\cref{sec:methodology}); \emph{own} marks a dedicated
+unit. Starred rows derive from pair constructions. Latency priors from
+Jia et al.\ \citep{jia2019turing}.}
+\label{tab:core}
+\small
+\input{tables/tab_core}
+\end{table}
 
 Some rows are measurable only as pairs from PTX: a predicate cannot be
 chained, so \texttt{ISETP} latency derives from a compare-plus-select
@@ -56,7 +70,17 @@ because the whitepaper does not say it. A dependent accumulate chain puts
 \texttt{HMMA} latency at 14.0 cycles, and a contention probe confirms
 that \texttt{HFMA2} shares the tensor unit (mixed rate 0.76 against a
 shared-unit prediction of 0.80): FP16 math runs through the tensor
-cores, measured rather than inferred.
+cores, measured rather than inferred. \Cref{tab:tensor} summarises.
+
+\begin{table}[t]
+\centering
+\caption{Tensor-core rows. The f32-accumulate rate equals the
+f16-accumulate rate on this Quadro-positioned part; the half-rate figure
+in circulation describes GeForce-positioned TU102s.}
+\label{tab:tensor}
+\small
+\input{tables/tab_tensor}
+\end{table}
 
 \subsection{SFU, shuffle, divergence}
 

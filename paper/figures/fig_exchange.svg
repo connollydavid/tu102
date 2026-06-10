@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="289.962656pt" height="187.93817pt" viewBox="0 0 289.962656 187.93817" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-06-10T09:53:42.097112</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.9, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 187.93817 
+L 289.962656 187.93817 
+L 289.962656 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 37.242656 153.164498 
+L 282.762656 153.164498 
+L 282.762656 9.020498 
+L 37.242656 9.020498 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <defs>
+       <path id="mfc165790b9" d="M 0 0 
+L 0 3.5 
+" style="stroke: #000000; stroke-width: 0.6"/>
+      </defs>
+      <g>
+       <use xlink:href="#mfc165790b9" x="44.463833" y="153.164498" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: middle" x="44.463833" y="166.62317" transform="rotate(-0 44.463833 166.62317)">0</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2">
+      <g>
+       <use xlink:href="#mfc165790b9" x="80.569715" y="153.164498" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: middle" x="80.569715" y="166.62317" transform="rotate(-0 80.569715 166.62317)">10</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3">
+      <g>
+       <use xlink:href="#mfc165790b9" x="116.675597" y="153.164498" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: middle" x="116.675597" y="166.62317" transform="rotate(-0 116.675597 166.62317)">20</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#mfc165790b9" x="152.78148" y="153.164498" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: middle" x="152.78148" y="166.62317" transform="rotate(-0 152.78148 166.62317)">30</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5">
+      <g>
+       <use xlink:href="#mfc165790b9" x="188.887362" y="153.164498" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: middle" x="188.887362" y="166.62317" transform="rotate(-0 188.887362 166.62317)">40</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#mfc165790b9" x="224.993244" y="153.164498" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: middle" x="224.993244" y="166.62317" transform="rotate(-0 224.993244 166.62317)">50</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_7">
+      <g>
+       <use xlink:href="#mfc165790b9" x="261.099127" y="153.164498" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: middle" x="261.099127" y="166.62317" transform="rotate(-0 261.099127 166.62317)">60</text>
+     </g>
+    </g>
+    <g id="text_8">
+     <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: middle" x="160.002656" y="178.849576" transform="rotate(-0 160.002656 178.849576)">payload (KiB)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_8">
+      <defs>
+       <path id="mee83b01335" d="M 0 0 
+L -3.5 0 
+" style="stroke: #000000; stroke-width: 0.6"/>
+      </defs>
+      <g>
+       <use xlink:href="#mee83b01335" x="37.242656" y="153.164498" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: end" x="30.242656" y="156.393834" transform="rotate(-0 30.242656 156.393834)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_9">
+      <g>
+       <use xlink:href="#mee83b01335" x="37.242656" y="129.915466" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: end" x="30.242656" y="133.144802" transform="rotate(-0 30.242656 133.144802)">5</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#mee83b01335" x="37.242656" y="106.666433" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_11">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: end" x="30.242656" y="109.895769" transform="rotate(-0 30.242656 109.895769)">10</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_11">
+      <g>
+       <use xlink:href="#mee83b01335" x="37.242656" y="83.417401" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_12">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: end" x="30.242656" y="86.646737" transform="rotate(-0 30.242656 86.646737)">15</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#mee83b01335" x="37.242656" y="60.168369" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_13">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: end" x="30.242656" y="63.397705" transform="rotate(-0 30.242656 63.397705)">20</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_13">
+      <g>
+       <use xlink:href="#mee83b01335" x="37.242656" y="36.919337" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_14">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: end" x="30.242656" y="40.148673" transform="rotate(-0 30.242656 40.148673)">25</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_14">
+      <g>
+       <use xlink:href="#mee83b01335" x="37.242656" y="13.670304" style="stroke: #000000; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_15">
+      <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: end" x="30.242656" y="16.89964" transform="rotate(-0 30.242656 16.89964)">30</text>
+     </g>
+    </g>
+    <g id="text_16">
+     <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: middle" x="13.658672" y="81.092498" transform="rotate(-90 13.658672 81.092498)">time (µs)</text>
+    </g>
+   </g>
+   <g id="line2d_15">
+    <path d="M 58.906186 55.125654 
+L 102.233244 40.306721 
+L 116.675597 36.805416 
+L 275.54148 21.658672 
+" clip-path="url(#p3a52fd5d78)" style="fill: none; stroke: #888888; stroke-width: 1.2; stroke-linecap: square"/>
+    <defs>
+     <path id="me57b5a90ba" d="M -1.75 1.75 
+L 1.75 1.75 
+L 1.75 -1.75 
+L -1.75 -1.75 
+z
+" style="stroke: #888888; stroke-linejoin: miter"/>
+    </defs>
+    <g clip-path="url(#p3a52fd5d78)">
+     <use xlink:href="#me57b5a90ba" x="58.906186" y="55.125654" style="fill: #ffffff; stroke: #888888; stroke-linejoin: miter"/>
+     <use xlink:href="#me57b5a90ba" x="102.233244" y="40.306721" style="fill: #ffffff; stroke: #888888; stroke-linejoin: miter"/>
+     <use xlink:href="#me57b5a90ba" x="116.675597" y="36.805416" style="fill: #ffffff; stroke: #888888; stroke-linejoin: miter"/>
+     <use xlink:href="#me57b5a90ba" x="275.54148" y="21.658672" style="fill: #ffffff; stroke: #888888; stroke-linejoin: miter"/>
+    </g>
+   </g>
+   <g id="line2d_16">
+    <path d="M 58.906186 104.145076 
+L 102.233244 96.735609 
+L 116.675597 94.984957 
+L 275.54148 87.411585 
+" clip-path="url(#p3a52fd5d78)" style="fill: none; stroke-dasharray: 3.33,1.44; stroke-dashoffset: 0; stroke: #888888; stroke-width: 0.9"/>
+   </g>
+   <g id="line2d_17">
+    <path d="M 44.463833 134.916216 
+L 58.906186 130.250228 
+L 116.675597 116.273794 
+" clip-path="url(#p3a52fd5d78)" style="fill: none; stroke: #1f5f5b; stroke-width: 1.2; stroke-linecap: square"/>
+    <defs>
+     <path id="m901fbf3403" d="M 0 1.75 
+C 0.464105 1.75 0.909265 1.565609 1.237437 1.237437 
+C 1.565609 0.909265 1.75 0.464105 1.75 0 
+C 1.75 -0.464105 1.565609 -0.909265 1.237437 -1.237437 
+C 0.909265 -1.565609 0.464105 -1.75 0 -1.75 
+C -0.464105 -1.75 -0.909265 -1.565609 -1.237437 -1.237437 
+C -1.565609 -0.909265 -1.75 -0.464105 -1.75 0 
+C -1.75 0.464105 -1.565609 0.909265 -1.237437 1.237437 
+C -0.909265 1.565609 -0.464105 1.75 0 1.75 
+z
+" style="stroke: #1f5f5b"/>
+    </defs>
+    <g clip-path="url(#p3a52fd5d78)">
+     <use xlink:href="#m901fbf3403" x="44.463833" y="134.916216" style="fill: #1f5f5b; stroke: #1f5f5b"/>
+     <use xlink:href="#m901fbf3403" x="58.906186" y="130.250228" style="fill: #1f5f5b; stroke: #1f5f5b"/>
+     <use xlink:href="#m901fbf3403" x="116.675597" y="116.273794" style="fill: #1f5f5b; stroke: #1f5f5b"/>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 37.242656 153.164498 
+L 37.242656 9.020498 
+" style="fill: none; stroke: #000000; stroke-width: 0.6; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 37.242656 153.164498 
+L 282.762656 153.164498 
+" style="fill: none; stroke: #000000; stroke-width: 0.6; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: end; fill: #888888" x="271.54148" y="13.658672" transform="rotate(-0 271.54148 13.658672)">NCCL all-reduce, steady</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: end; fill: #888888" x="271.54148" y="80.411585" transform="rotate(-0 271.54148 80.411585)">half NCCL — the registered bar</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; fill: #1f5f5b" transform="translate(126.675597 110.634794)">exchange round trip</text>
+    <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; fill: #1f5f5b" transform="translate(126.675597 120.273794)">(store + fence + poll)</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 8.5px; font-family: 'TeX Gyre Pagella', 'P052', 'Palatino', 'DejaVu Serif', serif; text-anchor: start; fill: #1f5f5b" x="68.906186" y="142.250228" transform="rotate(-0 68.906186 142.250228)">2.2× under the bar</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p3a52fd5d78">
+   <rect x="37.242656" y="9.020498" width="245.52" height="144.144"/>
+  </clipPath>
+ </defs>
+</svg>
