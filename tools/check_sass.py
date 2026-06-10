@@ -66,6 +66,7 @@ EXPECT_FN = {
     "pchase_ring_init": None,
     "tlb_chase_kernel": {"primary": {"LDG"}},
     "tlb_ring_init": None,
+    "icache_kernel": {"primary": {"FFMA"}},
     "const_chase_div_kernel": {"primary": {"LDC"}},
     "const_chase_kernel": {"primary": {"ULDC"}},
     "dram_read_kernel": {"primary": {"LDG"}, "min": 4,
