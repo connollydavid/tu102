@@ -38,8 +38,8 @@ release is tagged.
 
 ## Tensor cores
 
-- [ ] `tensor.hmma.1688.{f16acc,f32acc}.tput` (f32acc = ½ f16acc expected)
-- [ ] `tensor.imma.8816.tput`
+- [x] `tensor.hmma.1688.tput` (variants f16acc/f32acc; the half-rate f32acc expectation is GeForce segmentation — this Quadro runs full rate, measured)
+- [x] `tensor.imma.8816.tput`
 - [ ] `tensor.ldsm.{lat,tput}` (LDSM.16 variants)
 
 ## Memory hierarchy — every cache level present, plus DRAM
@@ -49,54 +49,50 @@ TU102 levels, each with latency + bandwidth + geometry rows: register file
 data/texture cache (+ smem carveout configurations), L2, the constant path
 (immediate, c[] bank, IDC), L1/L2 TLB, DRAM.
 
-- [ ] `mem.icache.{l0,l1}.{size,line,miss_cycles}` — instruction-fetch
-      hierarchy; loop-body size cliffs
-- [ ] `mem.smem.{lat,bw}`; bank-conflict sweep `conflict{2,4,8,16,32}`
-- [ ] `mem.l1.{lat,bw,line}` (l1hit variant); carveout sweep
-      `carveout{32k,64k}` — smem/L1 split effect
-- [ ] `mem.tex.lat` — texture-path read (`__ldg`/tex object); same physical
+- [x] `mem.icache.lat` — body-size sweep (cycles/op vs unrolled SASS size); cliffs bracket L0 (~32 KiB bodies) and L1I (past 64 KiB). Size/line geometry decomposition open
+- [x] `mem.smem.{lat,bw}`; bank-conflict sweep `conflict{2,4,8,16,32}`
+- [x] `mem.l1.lat` (l1hit 34 cyc), `mem.l1.bw` (64 B/clk/SM = the smem ceiling), `mem.l1.carveout` (the cliff moves with the 96K split)
+- [ ] `mem.l1.line` — line-size probe (open)
+- [x] `mem.tex.lat` — texture-path read (`__ldg`/tex object); same physical
       L1 on Turing — row proves or refutes
-- [ ] `mem.l2.{lat,bw}`; cliff at 6 MB
-- [ ] `mem.const.{imm,cbank,idc}.lat` — constant hierarchy
-- [ ] `mem.tlb.{l1,l2}.{pagesize,reach,lat}` (P-chase)
-- [ ] `mem.dram.{read,write,copy}.bw` — gate: read ≥530 GB/s (85% of the
-      624 GB/s P2-state peak; compute cannot reach the P0 memory clock —
-      see SCHEMA clock-gate item); `mem.dram.lat`
-- [ ] `mem.ldg.u8.stride18.tput` — q4_0 block stride; predict 18 sectors/req
-- [ ] `mem.ldg.policy.{ldcs,ldcg,ldlu}` eviction-policy probes — consumer: MMVQ
+- [x] `mem.l2.lat` (161.5 ns; cliff binds between 5 and 8 MiB)
+- [ ] `mem.l2.bw` — dedicated L2-resident bandwidth row (open)
+- [x] `mem.const.{cbank,idc}.lat` + the bonus `mem.const.uldc.lat` (uniform datapath); immediates are decode-embedded (note, not row)
+- [x] `mem.tlb.lat` — reach sweep, .cg loads; both coverage cliffs land on the Jia priors (32 MiB, ~8 GiB)
+- [x] `mem.dram.bw` (variants read/write/copy) — gate passed: read 608 GB/s ≥530 (85% of the 624 GB/s P2 peak); `mem.dram.lat` 299.9 ns
+- [x] `mem.ldg.u8.stride.tput` (variants stride1..128) — the stride-18 sector model reproduces the DRAM peak
+- [x] `mem.ldg.policy.lat` (variants default/ldcs/ldcg/ldlu × footprint) — .cs retains in L1; the MMVQ lever is .cg on the streamed side
 - [ ] `mem.stg.*` write paths
-- [ ] `atomics.{global,shared}.{add,cas}.{lat,tput}` + contention sweeps
-- [ ] `NA_SM75`: `cp.async`/LDGSTS, async barriers, L2 residency controls
-      (sm_80+)
+- [x] `atomics.shared.add.lat` (contention sweep binds Jia's deltas), `atomics.global.add.lat`, `atomics.global.cas.lat`
+- [ ] atomics throughput rows + `atomics.shared.cas` (open)
+- [x] explicit-absence rows `mem.cpasync`, `sync.asyncbar`, `mem.l2.residency` (NA_SM75 with PTX ISA locators)
 
 ## Sync / control / launch
 
-- [ ] `sync.bar.{lat,tput}` warps-per-CTA sweep 32..1024 incl. 192
-- [ ] `sync.shfl.{lat,tput}`, `sync.vote.{lat,tput}`
-- [ ] `branch.divergent.{2,32}way`, `branch.predicated`
-- [ ] `launch.empty_kernel.{lat}` (back-to-back, stream)
-- [ ] `launch.graph_node.replay_us` — consumer: launch-bound decode (736 ns gaps)
-- [ ] `launch.event.{record,query,sync}.us`
-- [ ] uniform-datapath note (U-register ops)
+- [x] `sync.bar.lat` warps sweep incl. the 192-thread production point
+- [ ] `sync.bar.tput` (open)
+- [x] `sync.shfl.{lat,tput}`
+- [ ] `sync.vote.{lat,tput}` (open)
+- [x] `branch.divergent` (variants 1/2/4/32way), `branch.predicated` — exactly linear serialisation; predication free
+- [x] `launch.empty_kernel.{lat}` (back-to-back, stream)
+- [x] `launch.graph_node.replay` — 0.906 µs/node by the 2K−K slope (the stale 736 ns anchor re-baselined: 29.9% launch share at the 16k shape)
+- [x] `launch.event.{record,query,sync}`
+- [x] uniform-datapath note (U-register ops)
 
 ## Interconnect — additive scope
 
-- [ ] `x.nvlink.peer_ldg.{lat,bw}` (P-chase + streaming over NVLink)
-- [ ] `x.nvlink.peer_stg.bw` — read-vs-write asymmetry noted against peer_ldg
-- [ ] `x.nvlink.peer_atom.{add,cas}.{lat,tput}` — native over NVLink (NA over
-      PCIe); flags for hand-rolled peer exchange
-- [ ] `x.nvlink.msg.{8b..4kb}` — sub-4 KB message-size efficiency curve
-      (the peer-exchange lever operates at ≤20 KiB)
-- [ ] `x.nvlink.fence_roundtrip.us` — peer STG + `__threadfence_system()` +
-      system-scope flag poll; the hand-rolled exchange primitive (input to
-      the NCCL-floor memo)
-- [ ] `x.nvlink.contention.local_vs_peer` — scalar at a defined operating
+- [x] `x.nvlink.peer_ldg.{lat,bw}` (P-chase + streaming over NVLink)
+- [x] `x.nvlink.peer_stg.bw` — read-vs-write asymmetry noted against peer_ldg
+- [x] `x.nvlink.peer_atom.add.lat` (541 ns, native over NVLink)
+- [ ] `x.nvlink.peer_atom.cas` + throughput rows (open)
+- [x] `x.nvlink.msg.oneway` (variants 0b..20480b) — store-burst+fence curve 1.20→1.80 µs
+- [x] `x.nvlink.fence_roundtrip` (variants 0b/4096b/20480b) — litmus-checked 3.90/4.91/7.94 µs; composed gate validated at ≤4 KiB; hypothesis #2 confirmed in that regime
+- [x] `x.nvlink.contention.local_vs_peer` — scalar at a defined operating
       point: % degradation of local DRAM-read bandwidth while the peer
       streams at full NVLink rate; the full 2D trade surface stays in
       `data/` as a curve
 - [ ] `x.nvlink.{sm,ce}.{uni,bi}.bw` size curve 4 KB–256 MB — gate: ±15% of
       50 GB/s/dir
-- [ ] `x.pcie.{h2d,d2h}.{pinned,pageable}.bw` per GPU
-- [ ] `x.pcie.lat.{4b..64kb}` — pinned small-transfer latency floor
-      (consumer: logits D2H)
-- [ ] `x.nccl.allreduce.{4k..64k}.us` 2-rank — consumer: 72.9 µs/call floor
+- [x] `x.pcie.bw` (variants h2d/d2h × pinned/pageable × GPU) — both GPUs at x16 rates
+- [x] `x.pcie.lat` (variants 4b..64kb pinned) — 4.1 µs floor (logits-D2H consumer)
+- [x] `x.nccl.allreduce` (variants 4k..64k steady + cold) — env-pinned floor 21.6–28.2 µs; cold first call 4.98 ms; the 72.9 µs in-situ anchor retired
