@@ -6,7 +6,7 @@ interconnect (NVLink/PCIe/NCCL) characterisation for the NVIDIA TU102 GPU
 NVLink bridge. In the style of Agner Fog's x86 instruction tables, with the
 methodology of Jia et al.'s Volta/Turing dissections.
 
-**Status: measured; audit in progress.** 264 rows across every family:
+**Status: measured, audit in progress.** 264 rows across every family:
 ALU with contention-probed pipe bindings, the full memory hierarchy
 (smem/L1/L2/DRAM/TLB/constant/instruction caches, carveout, policies,
 atomics), tensor cores, SFU, shuffle/branch/barrier, the launch family,
@@ -34,9 +34,9 @@ v1.0 close the work.
 - `data/results/<host>/` — append-only raw run CSVs. The pristine reference
   dataset is `t5820-2xrtx6000` (Xeon W-2140B, both GPUs PCIe 3.0 x16).
 - `paper/` — LaTeX write-up (arXiv-ready). `PAPER.md` at the repository root
-  is a generated GitHub-readable mirror (`make paper-md`, via pandoc); the
-  `.tex` is the source of truth. Prose is British English; code identifiers
-  and named APIs stay US English ASCII.
+  is a generated GitHub-readable mirror (`make paper-md`, via pandoc), and
+  the `.tex` is the source of truth. Prose is British English, while code
+  identifiers and named APIs stay US English ASCII.
 
 ## Hardware
 
@@ -49,7 +49,7 @@ v1.0 close the work.
 
 Scope: compute path only. RT cores (not reachable from CUDA), NVENC/NVDEC,
 and the graphics pipe are out of scope, stated rather than silent. The table is a
-**snapshot** of this toolchain/driver pairing, not a living document; run
+**snapshot** of this toolchain/driver pairing, not a living document. Run
 headers carry the exact versions, and the append-only results layout admits
 later datasets under newer toolchains.
 
@@ -85,5 +85,5 @@ is released, cite the repository directly.
 The microbenchmark harness, analysis tooling, and manuscript drafts were
 developed with the assistance of Claude (model `claude-fable-5`, Anthropic),
 used via Claude Code. All measurements were executed, validated, and
-interpreted on the author's hardware under the author's direction; the author
-takes sole responsibility for the content.
+interpreted on the author's hardware under the author's direction, and the
+author takes sole responsibility for the content.

@@ -1,22 +1,22 @@
 # Reproducing the table
 
 A replication run needs a TU102 board (any RTX 6000/8000 Quadro or TITAN
-RTX; interconnect rows additionally need two boards and an NVLink
+RTX, with interconnect rows additionally needing two boards and an NVLink
 bridge), CUDA 12+ with `nvcc` on the PATH (edit `NVCC` in the Makefile),
 the NVML development headers (shipped with the CUDA toolkit), Python 3,
 and root for the clock lock. Expect one evening: the full sweep is under
-an hour of GPU time; the rest is reading the diffs.
+an hour of GPU time, and the rest is reading the diffs.
 
 The table is a snapshot of one toolchain/driver pairing. A different
-`nvcc` emits different SASS for the same PTX; the purity gate reports
+`nvcc` emits different SASS for the same PTX. The purity gate reports
 when that has happened, and a row that moved under different SASS is
 a finding about the toolchain, not a replication failure. Compare like
 with like before comparing numbers.
 
 ## Preconditions
 
-Every binary re-checks these and exits 2 with instructions if one fails;
-setting them up front avoids piecemeal failures.
+Every binary re-checks these and exits 2 with instructions if one fails.
+Setting them up front avoids piecemeal failures.
 
 ```bash
 # SM clock locked on every GPU (the harness verifies 1455 MHz; TU102
@@ -68,10 +68,10 @@ git diff table/tu102_ops.csv
 
 Agreement bounds are the published per-domain floors (`table/SCHEMA.md`):
 0.1% for cycle-domain rows, 0.5% for bandwidths, 5% for host-domain
-times. Cycle-domain rows on a locked clock should land inside the floor;
-interconnect and host rows are rig-dependent by design and carry their
+times. Cycle-domain rows on a locked clock should land inside the floor.
+Interconnect and host rows are rig-dependent by design and carry their
 configuration in the variant and notes. Rows flagged `UNVERIFIED` in the
-published table carry their reason in the notes column; a replication
+published table carry their reason in the notes column, and a replication
 run may legitimately resolve or reproduce the flag.
 
 A replication dataset is welcome as a pull request adding a new

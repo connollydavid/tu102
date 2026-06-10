@@ -20,7 +20,7 @@ and is registered before any differential-projection data exists.
 
 \emph{Projected cost deltas between kernel variants that shift work onto a
 contended issue pipe carry larger projection error than deltas that shift
-the same work onto an uncontended pipe; under a purely additive cost model
+the same work onto an uncontended pipe. Under a purely additive cost model
 the excess swallows the flash-attention variant-arbitration margin.}
 
 Operationalisation: one synthetic base kernel; graded injections of FFMA
@@ -39,7 +39,7 @@ differential error bound discriminates deltas of 10\% and above.
 
 Decision rule: the flash-attention variant arbitration proceeds by
 projection only if the measured per-pipe-max differential error bound is
-below the projected inter-variant delta; otherwise the projection route is
+below the projected inter-variant delta. Otherwise the projection route is
 abandoned for that decision and both variants are implemented and measured.
 
 \subsection{A hand-rolled NVLink exchange against the NCCL call floor}
@@ -64,7 +64,7 @@ tolerance. This is the interconnect analogue of the projection gate.
 
 Decision rule: the deterministic peer-exchange mechanism in the consuming
 project proceeds only if the validated primitive beats half the freshly
-re-measured NCCL per-call floor at 20\,KiB and below; otherwise the
+re-measured NCCL per-call floor at 20\,KiB and below. Otherwise the
 mechanism is recorded as not viable on this fabric.
 
 \subsection{Dispatch-cost composition and the decode ceiling}
@@ -79,12 +79,12 @@ rows predict the decode-rate ceiling that full capture would unlock.}
 
 Operationalisation: per-token dispatch overhead is node count
 \(\times\) the relevant per-node row, compared against a profiler baseline
-measured freshly on the same host and driver; prior-session anchors are
+measured freshly on the same host and driver. Prior-session anchors are
 re-measured, never reused. The ceiling prediction divides measured compute
 time by the sum of compute time and predicted captured dispatch time.
 
 Decision rule: the consuming project's capture work is prioritised by the
-predicted ceiling; a composed prediction outside \(\pm20\%\) blocks the
+predicted ceiling. A composed prediction outside \(\pm20\%\) blocks the
 use of these rows for that prioritisation and is published as a model
 failure.
 
@@ -97,7 +97,7 @@ Recorded after the data, against the rules as registered.
 confirmed, with additive-model differential error larger for fma-pipe
 injections than alu-pipe ones, but prediction (ii) was refuted on its
 registered metric, because the additive model is so uniformly poor
-(93--480\% differential error) that its between-pipe gap is small; the
+(93--480\% differential error) that its between-pipe gap is small. The
 per-pipe-max model shows the coupling structure instead, with 3--5\%
 differential error on uncontended injections against 21--28\% on
 fma-coupled ones. Prediction (iii) failed: the bound does not
@@ -118,7 +118,7 @@ single warp cannot reach: the same floor-row failure mode as the
 dispatch hypothesis below, observed independently. With the constituents
 re-measured at the right width (a single-warp store burst and a
 single-warp consumption row), the remediated gate passed at 4~KiB
-($-10\%$) but still under-predicted 20~KiB by 28\%; the residual was
+($-10\%$) but still under-predicted 20~KiB by 28\%. The residual was
 named (a first-read-after-peer-write visibility cost with no table
 row) and the comparison stayed blocked there until the row existed.
 Measured by its own instrument (the responder times only its read
@@ -131,7 +131,7 @@ across its stated domain: 4.92~\textmu s against a bar of 10.78 at
 1.6$\times$).
 
 \emph{Dispatch composition} (\cref{sec:hyp-dispatch}): refuted. A
-production-shaped decode dispatches 4{,}614 kernels per token; composed
+production-shaped decode dispatches 4{,}614 kernels per token. Composed
 against the empty-launch row this predicts 7.2~ms of per-token dispatch
 against 14.9~ms measured ($-52\%$). The empty-launch row is a floor:
 in-situ launches average 3.13~\textmu s against the row's 1.56, and four

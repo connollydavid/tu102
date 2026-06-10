@@ -9,7 +9,7 @@ anchor, the smem-bound attention variant within 5\%, the exchange
 primitive within 4--14\% once its constituents are measured at the
 right width and freshness. Where work couples across issue
 pipes, or where a primitive row is a floor rather than a typical cost,
-no; both failure modes were caught by pre-registered gates rather
+no. Both failure modes were caught by pre-registered gates rather
 than discovered in production. The practical reading for anyone pricing
 similar hardware: trust the table's rows, trust compositions in
 single-resource regimes, and measure directly anywhere pipes couple.
@@ -22,7 +22,7 @@ the same PTX (this paper catalogues eight distinct rewrites), and a
 different driver may move the host-domain rows. T4 priors transfer only
 core-domain, as recorded per row. Some rows carry an honest
 \texttt{UNVERIFIED} flag, chiefly spread flags on host-domain and
-refresh-sensitive quantities, where the flag is the documentation; the
+refresh-sensitive quantities, where the flag is the documentation. The
 open remainder of the coverage manifest is down to the store-path rows
 and the copy-engine transfer curve. The chain-method atomics offset
 shows that even agreeing contention structure can ride a method
@@ -30,13 +30,13 @@ constant, though a stall-attribution profile now places that constant
 in the return-value wait, where the chain interpretation put it. No independent replication exists yet. Within this rig every
 SM-domain row is replicated across the two physical boards as a
 publication gate, which catches die-level variation but not method or
-toolchain artefacts; replication on another TU102 is a documented
+toolchain artefacts. Replication on another TU102 is a documented
 one-evening procedure (\texttt{REPRODUCING.md} in the repository), and
 the append-only results layout accepts additional datasets without
 touching the reference one.
 
 \subsection{Future work}
 
-The named rows above; a width-aware launch row that would let the
-dispatch composition bind; and the same table for the second
-architecture this rig's market segment offers cheaply, GA102.
+The open rows above, a width-aware launch row that would let the
+dispatch composition bind, and the same table for GA102, the second
+architecture this rig's market segment offers cheaply.
