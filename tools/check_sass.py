@@ -108,6 +108,7 @@ EXPECT_FN = {
     "mufu_lat_kernel": {"primary": {"MUFU"}},
     "mufu_tput_kernel": {"primary": {"MUFU"}},
     "bar_kernel": {"primary": {"BAR"}, "min": 8},
+    "empty_kernel": None,
     "shfl_lat_kernel": {"primary": {"SHFL"}},
     "branch_div_kernel": {"primary": {"FFMA"}, "min": 4,
                           "companions": {"BSSY", "BSYNC", "SEL", "MOV", "IMAD", "PLOP3", "SHF", "LOP3"}},

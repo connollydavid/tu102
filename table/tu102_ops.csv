@@ -63,6 +63,14 @@ cvt.f2f.lat,cvt,,roundtrip_pair,latency_cycles,11.5625,cycles,0.000,,,,,ok,bench
 cvt.f2f.tput,cvt,,w32_pair,recip_tput,0.99982,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,round-trip pair stream
 cvt.i2f_f2i.lat,cvt,,roundtrip_pair,latency_cycles,15.0078,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,per-convert avg of f32-to-s32-to-f32 pair
 cvt.i2f_f2i.tput,cvt,,w16_pair,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@a4fdd73 n_runs=5,1455,round-trip pair stream
+launch.empty_kernel.lat,launch,,roundtrip,time_us,4.297,us,7.861,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=5,1455,launch plus full synchronisation; p10 4.11 us; p90 4.43 us
+launch.empty_kernel.lat,launch,,submit,time_us,1.53002,us,4.674,,,,,UNVERIFIED,bench/launch/launch.cu@8b811a5 n_runs=5,1455,async submission; 64-launch batches; p10 1.48 us; p90 1.55 us; between-run spread 5.46% exceeds within-run cv 4.67%
+launch.empty_kernel.lat,launch,,submit_eventxcheck,time_us,1.56525,us,3.271,,,,,UNVERIFIED,bench/launch/launch.cu@8b811a5 n_runs=5,1455,device-event view of the submission stream (cross-check); p10 1.49 us; p90 1.53 us; between-run spread 6.84% exceeds within-run cv 3.27%
+launch.event.query,launch,,,time_us,0.168,us,1.522,,,,,UNVERIFIED,bench/launch/launch.cu@8b811a5 n_runs=4,1455,on a completed event; p10 0.16 us; p90 0.16 us; between-run spread 5.39% exceeds within-run cv 1.52%
+launch.event.record,launch,,,time_us,1.46591,us,6.443,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=4,1455,64-record batches; p10 1.41 us; p90 1.52 us
+launch.event.sync,launch,,,time_us,0.184133,us,3.392,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=4,1455,on a completed event; p10 0.18 us; p90 0.19 us
+launch.graph.roundtrip,launch,,n64,time_us,55.111,us,1.077,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=4,1455,64-node graph launch plus sync; p10 54.86 us; p90 55.38 us
+launch.graph_node.replay,launch,,slope,time_us,0.906253,us,0.147,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=4,1455,per-node replay: (256-node - 64-node)/192 graph round trips; p10 0.91 us; p90 0.91 us
 mem.const.cbank.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,ok,bench/mem/constpath.cu@3727ddd n_runs=4,1455,divergent registers converging to one slot: main-path LDC broadcast hit; immediates are decode-embedded (note not row)
 mem.const.idc.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,ok,bench/mem/constpath.cu@3727ddd n_runs=4,1455,32 distinct constant addresses per step: serialised constant read (per-step latency)
 mem.const.uldc.lat,mem,,,latency_cycles,5.10938,cycles,0.000,,,,,ok,bench/mem/constpath.cu@3727ddd n_runs=4,1455,warp-uniform chain lowered to ULDC by ptxas: the uniform-datapath constant load (SASS verified)
