@@ -20,6 +20,10 @@ endif
 %.bin: %.cu bench/common/harness.cuh
 	$(NVCC) $(NVCCFLAGS) -o $@ $< $(LDLIBS)
 
+# the NCCL comparator links the system NCCL (2.30.4)
+bench/x/nccl_pcie.bin: bench/x/nccl_pcie.cu bench/common/harness.cuh
+	$(NVCC) $(NVCCFLAGS) -o $@ $< $(LDLIBS) -lnccl
+
 # disassemble every built bench for check_sass.py
 sass: $(BENCH_BINS:.bin=.sass)
 
