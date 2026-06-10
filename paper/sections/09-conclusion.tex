@@ -20,13 +20,19 @@ One rig, one toolchain-and-driver snapshot, and rows therefore
 confounded with both: a different \texttt{nvcc} emits different SASS for
 the same PTX (this paper catalogues eight distinct rewrites), and a
 different driver may move the host-domain rows. T4 priors transfer only
-core-domain, as recorded per row. Several rows are single-method and
-flagged \texttt{UNVERIFIED} pending a second construction; several more
-(enumerated in the public coverage manifest) remain open, among them
-\texttt{LDSM}, vote, and atomic throughputs. The chain-method atomics
+core-domain, as recorded per row. Some rows carry an honest \texttt{UNVERIFIED} flag ---
+chiefly spread flags on host-domain and refresh-sensitive quantities,
+where the flag is the documentation; the open remainder of the coverage
+manifest is down to the store-path rows and the copy-engine transfer
+curve. The chain-method atomics
 offset shows that even agreeing contention structure can ride a method
-constant. No independent replication exists yet; the repository is
-arranged so that one requires a clone and a locked clock.
+constant. No independent replication exists yet. Within this rig every
+SM-domain row is replicated across the two physical boards as a
+publication gate, which catches die-level variation but not method or
+toolchain artefacts; replication on another TU102 is a documented
+one-evening procedure (\texttt{REPRODUCING.md} in the repository), and
+the append-only results layout accepts additional datasets without
+touching the reference one.
 
 \subsection{Future work}
 

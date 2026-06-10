@@ -32,15 +32,15 @@ release is tagged.
 
 ## SFU / conversion
 
-- [ ] `sfu.mufu.{rcp,rsq,ex2,lg2,sin,cos}.{lat,tput}`
-- [ ] `cvt.f2f.{f16f32,f32f16}.{lat,tput}` — consumer: delta-net convert storm
-- [ ] `cvt.i2f.*`, `cvt.f2i.*` — consumer: dequant chains
+- [x] `sfu.mufu.{rsq,ex2,lg2,sin,cos}.{lat,tput}` + `sfu.mufu.rcp_fadd_pair.{lat,tput}` — 15 cyc set (SIN/COS 21-cyc pairs with the FMUL range scale; RCP derived from the rcp+fadd pair after the approx-algebra deletions), quarter rate throughout
+- [x] `cvt.f2f.{lat,tput}` — roundtrip pair (one-way needs an unmatchable operand type), 11.6 cyc per convert; second method (pair+FADD chain minus the FADD row) corroborates at +1 cyc/convert (cross-pipe forwarding rides the derived form). Consumer: delta-net convert storm
+- [x] `cvt.i2f_f2i.{lat,tput}` — roundtrip pair 15.0 cyc per convert; second method corroborates at +1 cyc/convert. Consumer: dequant chains
 
 ## Tensor cores
 
 - [x] `tensor.hmma.1688.tput` (variants f16acc/f32acc; the half-rate f32acc expectation is GeForce segmentation — this Quadro runs full rate, measured)
 - [x] `tensor.imma.8816.tput`
-- [ ] `tensor.ldsm.{lat,tput}` (LDSM.16 variants)
+- [x] `tensor.ldsm.{lat,tput}` — x1 chain 30 cyc (link = LDSM + address LOP3, construction named); x4 throughput peaks at 0.125 wi/SM/clk = 512 B/inst = exactly the 64 B/clk/SM unified-datapath ceiling: LDSM is bandwidth-bound on the smem/L1 path
 
 ## Memory hierarchy — every cache level present, plus DRAM
 
@@ -52,7 +52,7 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [x] `mem.icache.lat` — body-size sweep (cycles/op vs unrolled SASS size); cliffs bracket L0 (~32 KiB bodies) and L1I (past 64 KiB). Size/line geometry decomposition open
 - [x] `mem.smem.{lat,bw}`; bank-conflict sweep `conflict{2,4,8,16,32}`
 - [x] `mem.l1.lat` (l1hit 34 cyc), `mem.l1.bw` (64 B/clk/SM = the smem ceiling), `mem.l1.carveout` (the cliff moves with the 96K split)
-- [ ] `mem.l1.line` — line-size probe (open)
+- [x] `mem.l1.line` — fill-granularity probe (256 KiB capacity-evicted ring): strides 32/64/128 all cost the full 235-cycle miss while stride 16 costs (miss+hit)/2 and stride 8 (miss+3 hits)/4 exactly — the L1 fills 32-byte sectors with no spatial prefetch
 - [x] `mem.tex.lat` — texture-path read (`__ldg`/tex object); same physical
       L1 on Turing — row proves or refutes
 - [x] `mem.l2.lat` (161.5 ns; cliff binds between 5 and 8 MiB)
@@ -64,15 +64,15 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [x] `mem.ldg.policy.lat` (variants default/ldcs/ldcg/ldlu × footprint) — .cs retains in L1; the MMVQ lever is .cg on the streamed side
 - [ ] `mem.stg.*` write paths
 - [x] `atomics.shared.add.lat` (contention sweep binds Jia's deltas), `atomics.global.add.lat`, `atomics.global.cas.lat`
-- [ ] atomics throughput rows + `atomics.shared.cas` (open)
+- [x] atomics throughput rows + `atomics.shared.cas` — shared CAS 37 cyc (+12 on add); shared add sustains 0.5 warpinst/SM/clk (ATOMS.ADD, no shared RED form); global RED from one SM peaks at one warp (the L2 service path, not warps, binds)
 - [x] explicit-absence rows `mem.cpasync`, `sync.asyncbar`, `mem.l2.residency` (NA_SM75 with PTX ISA locators)
 
 ## Sync / control / launch
 
 - [x] `sync.bar.lat` warps sweep incl. the 192-thread production point
-- [ ] `sync.bar.tput` (open)
+- [x] `sync.bar.tput` — a co-resident 192-thread CTA per SM leaves block 0's per-barrier cost unchanged (32.34 cyc = the solo w6 row): the barrier unit serves two concurrent CTAs without serialising
 - [x] `sync.shfl.{lat,tput}`
-- [ ] `sync.vote.{lat,tput}` (open)
+- [x] `sync.vote.{lat,tput}` — ballot chain 16.2 cyc (VOTE.ANY; lane-shifted predicate keeps the chain off the uniform datapath); four independent chains sustain 0.96 warpinst/SM/clk
 - [x] `branch.divergent` (variants 1/2/4/32way), `branch.predicated` — exactly linear serialisation; predication free
 - [x] `launch.empty_kernel.{lat}` (back-to-back, stream)
 - [x] `launch.graph_node.replay` — 0.906 µs/node by the 2K−K slope (the stale 736 ns anchor re-baselined: 29.9% launch share at the 16k shape)
@@ -84,7 +84,7 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [x] `x.nvlink.peer_ldg.{lat,bw}` (P-chase + streaming over NVLink)
 - [x] `x.nvlink.peer_stg.bw` — read-vs-write asymmetry noted against peer_ldg
 - [x] `x.nvlink.peer_atom.add.lat` (541 ns, native over NVLink)
-- [ ] `x.nvlink.peer_atom.cas` + throughput rows (open)
+- [x] `x.nvlink.peer_atom.cas` + throughput rows — peer CAS 552-558 ns (+16 on peer add); independent non-returning adds (RED over NVLink) sustain ~800 Mop/s from a single warp, peak at w1 (more warps contend)
 - [x] `x.nvlink.msg.oneway` (variants 0b..20480b) — store-burst+fence curve 1.20→1.80 µs
 - [x] `x.nvlink.fence_roundtrip` (variants 0b/4096b/20480b) — litmus-checked 3.90/4.91/7.94 µs; visibility-aware composed gate (v3) passes at 4 AND 20 KiB (−4.5/−10.3%); hypothesis #2 confirmed at ≤20 KiB
 - [x] `x.nvlink.peer_write_visibility` (variants 4096b/20480b) — single-warp

@@ -17,7 +17,11 @@ policy reads at 1.11~TB/s because it nearly fits the \emph{aggregate} L1
 capacity (72 SMs $\times$ 64~KiB). Shared memory and L1 share one 64-byte
 per-cycle-per-SM datapath (both measure the same ceiling by two load
 widths), and the 96~KiB carveout moves the L1 chase cliff exactly as the
-split predicts. One hazard row: \texttt{float4} shared-memory access
+split predicts. A fill-granularity probe (a capacity-evicted ring chased
+at growing byte strides) reads the promotion unit directly: strides of
+32 and above all pay the full 235-cycle miss while stride 16 pays
+exactly the mean of a miss and a hit and stride 8 one miss in four ---
+the L1 fills 32-byte sectors and prefetches nothing within the line. One hazard row: \texttt{float4} shared-memory access
 compiles to paired \texttt{LDS.64} whose 16-byte stride self-conflicts
 two-way, halving bandwidth --- tiles built on \texttt{float4} pay it.
 \Cref{fig:hierarchy} traces both chases and \cref{tab:memory} summarises
@@ -98,4 +102,9 @@ Shared-memory atomics reproduce the T4 contention deltas exactly
 17-cycle offset attributable to the return-value chain this method times
 and the prior's stall-counting method does not; global atomics sit at
 ${\sim}310$ cycles through the L2 with a real 2\% spread between the two
-physical GPUs.
+physical GPUs. A shared-memory CAS chains 12 cycles dearer than the add;
+on the throughput side, independent shared adds sustain half a
+warp-instruction per cycle (the non-returning form stays
+\texttt{ATOMS.ADD} --- there is no shared reduction opcode), while
+global reductions from a single SM peak at one warp in flight: the L2
+service path, not warp count, binds.

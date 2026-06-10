@@ -118,6 +118,55 @@ __global__ void imma_s8_tput_kernel(unsigned trips, unsigned a, long long* out,
     }
 }
 
+// LDSM (ldmatrix m8n8 b16): the shared-memory operand-staging load the
+// mma pipeline feeds from. Latency by a dependent chain (the loaded
+// value perturbs the next row address — construction named on the row);
+// throughput by independent x4 loads at a warps sweep.
+__global__ void ldsm_lat_kernel(unsigned trips, long long* out,
+                                unsigned* sink) {
+    __shared__ alignas(16) unsigned smem[512];
+    for (int i = threadIdx.x; i < 512; i += blockDim.x) smem[i] = 0;
+    __syncthreads();
+    unsigned base = (unsigned)__cvta_generic_to_shared(smem);
+    unsigned d = threadIdx.x;
+    long long t0 = clock64();
+    for (unsigned t = 0; t < trips; t++) {
+#pragma unroll
+        for (int u = 0; u < UNROLL; u++) {
+            unsigned addr = base + (d & 0xf0u);
+            asm volatile(
+                "ldmatrix.sync.aligned.m8n8.x1.shared.b16 {%0}, [%1];"
+                : "=r"(d) : "r"(addr));
+        }
+    }
+    long long t1 = clock64();
+    if (threadIdx.x == 0) { *out = t1 - t0; *sink = d; }
+}
+
+__global__ void ldsm_tput_kernel(unsigned trips, long long* out,
+                                 unsigned* sink) {
+    __shared__ alignas(16) unsigned smem[512];
+    for (int i = threadIdx.x; i < 512; i += blockDim.x) smem[i] = 0;
+    __syncthreads();
+    unsigned base = (unsigned)__cvta_generic_to_shared(smem);
+    unsigned addr = base + (threadIdx.x & 31) * 16u;
+    unsigned d0, d1, d2, d3;
+    unsigned acc = 0;
+    long long t0 = clock64();
+    for (unsigned t = 0; t < trips; t++) {
+#pragma unroll
+        for (int u = 0; u < UNROLL; u++) {
+            asm volatile(
+                "ldmatrix.sync.aligned.m8n8.x4.shared.b16 {%0,%1,%2,%3}, [%4];"
+                : "=r"(d0), "=r"(d1), "=r"(d2), "=r"(d3) : "r"(addr));
+            acc += d0 + d1 + d2 + d3;  // consume all four (sink-DCE lesson)
+        }
+    }
+    long long t1 = clock64();
+    if (threadIdx.x == 0 && blockIdx.x == 0) *out = t1 - t0;
+    if (threadIdx.x == 31) *sink = acc;
+}
+
 __global__ void hmma_f16_lat_kernel(unsigned trips, unsigned a, long long* out,
                                     unsigned* sink) {
     unsigned d0 = a, d1 = a + 7, a1 = a ^ 0x3c003c00u, b0 = a | 1u;
@@ -183,6 +232,9 @@ int main(int argc, char** argv) {
     sweep("tensor.imma.8816.tput", "s8", [&](unsigned t, int w) {
         imma_s8_tput_kernel<<<N_SM, 32 * w>>>(t, 0x01020304u, d_cyc, (int*)d_sink);
     }, "m8n8k16 s8; 1024 MAC per inst per warp");
+    sweep("tensor.ldsm.tput", "x4", [&](unsigned t, int w) {
+        ldsm_tput_kernel<<<N_SM, 32 * w>>>(t, d_cyc, (unsigned*)d_sink);
+    }, "ldmatrix m8n8.x4 (four 8x8 b16 tiles per inst), independent loads, all four results consumed");
 
     {
         unsigned trips = 1024;
@@ -217,6 +269,42 @@ int main(int argc, char** argv) {
                    "d_feeds_a", median(vals), "cycles", cv_pct(vals),
                    (int)vals.size(), (int)r.rejected_total, SRC,
                    "dependent accumulate chain (D feeds A)", &vals);
+    }
+
+    {
+        unsigned trips = 1024;
+        auto launch = [&](unsigned t) {
+            ldsm_lat_kernel<<<1, 32>>>(t, d_cyc, (unsigned*)d_sink);
+        };
+        for (;;) {
+            cudaEvent_t e0, e1;
+            TU102_CUDA_CHECK(cudaEventCreate(&e0));
+            TU102_CUDA_CHECK(cudaEventCreate(&e1));
+            TU102_CUDA_CHECK(cudaEventRecord(e0));
+            launch(trips);
+            TU102_CUDA_CHECK(cudaEventRecord(e1));
+            TU102_CUDA_CHECK(cudaEventSynchronize(e1));
+            float ms = 0;
+            TU102_CUDA_CHECK(cudaEventElapsedTime(&ms, e0, e1));
+            cudaEventDestroy(e0);
+            cudaEventDestroy(e1);
+            if (ms >= MIN_TIMED_MS * 1.1) break;
+            trips *= 2;
+            calib_guard(trips);
+        }
+        auto vals = run_reps(r, [&] {
+            long long s1 = 0, s2 = 0;
+            launch(trips);
+            TU102_CUDA_CHECK(cudaMemcpy(&s1, d_cyc, 8, cudaMemcpyDeviceToHost));
+            launch(2 * trips);
+            TU102_CUDA_CHECK(cudaMemcpy(&s2, d_cyc, 8, cudaMemcpyDeviceToHost));
+            return (double)(s2 - s1) / ((double)trips * UNROLL);
+        });
+        report_row(r, "tensor", "tensor.ldsm.lat", "latency_cycles",
+                   "x1_chain", median(vals), "cycles", cv_pct(vals),
+                   (int)vals.size(), (int)r.rejected_total, SRC,
+                   "chain link = LDSM + address LOP3 (loaded value perturbs the next row address); construction named, not subtracted",
+                   &vals);
     }
 
     std::fprintf(stderr, "tensor: done (run %s)\n", r.run_id);

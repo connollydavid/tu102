@@ -132,6 +132,11 @@ EXPECT_FN = {
     # F2F (narrowing) + HADD2 (widening via the half pipe)
     "cvt_f2f": {"primary": {"F2F", "HADD2"}},
     "cvt_i2f": {"primary": {"F2I", "I2F"}},
+    # the derived second-method chain interleaves an FADD per link; this
+    # key must precede the pair-fn keys (its symbols contain them, and the
+    # matcher is first-substring-wins)
+    "cvt_derived_lat_kernel": {"primary": {"F2F", "HADD2", "F2I", "I2F"},
+                               "min": 32, "companions": {"FADD"}},
     # tput template instantiations carry the pair-fn symbol in their name
     "f2f_pair": {"primary": {"F2F", "HADD2"}},
     "i2f_pair": {"primary": {"F2I", "I2F"}},
@@ -144,6 +149,27 @@ EXPECT_FN = {
     "mufu_lat_kernel": {"primary": {"MUFU"}},
     "mufu_tput_kernel": {"primary": {"MUFU"}},
     "bar_kernel": {"primary": {"BAR"}, "min": 8},
+    "bar_direct_kernel": {"primary": {"BAR"}, "min": 1,
+                          "companions": {"CS2R", "S2R", "MOV", "SHF", "LEA", "IMAD"}},
+    "bar_tput_kernel": {"primary": {"BAR"}, "min": 8},
+    "vote_lat_kernel": {"primary": {"VOTE", "VOTEU"}, "min": 16,
+                        "companions": {"SHF", "LOP3", "ISETP", "MOV", "PLOP3",
+                                       "P2R", "R2P", "SEL"}},
+    "vote_tput_kernel": {"primary": {"VOTE", "VOTEU"}, "min": 16,
+                         "companions": {"SHF", "LOP3", "ISETP", "MOV", "PLOP3",
+                                        "P2R", "R2P", "SEL"}},
+    "ldsm_lat_kernel": {"primary": {"LDSM"}, "min": 16,
+                        "companions": {"LOP3", "MOV", "SHF", "LEA", "IMAD"}},
+    "ldsm_tput_kernel": {"primary": {"LDSM"}, "min": 16,
+                         "companions": {"LOP3", "MOV", "SHF", "LEA", "IMAD"}},
+    "line_chase_kernel": {"primary": {"LDG"}},
+    "line_ring_init": None,
+    "atom_shared_cas_lat_kernel": {"primary": {"ATOMS"}, "min": 16},
+    # non-returning atomicAdd lowers to the RED reduction form
+    "atom_shared_tput_kernel": {"primary": {"ATOMS", "REDS"}, "min": 16},
+    "atom_global_tput_kernel": {"primary": {"RED", "ATOMG"}, "min": 16},
+    "peer_cas_chase": {"primary": {"ATOMG"}, "min": 8},
+    "peer_atom_tput": {"primary": {"RED", "ATOMG"}, "min": 8},
     "empty_kernel": None,
     "k_noargs": None, "k_args": None,
     "shfl_lat_kernel": {"primary": {"SHFL"}},

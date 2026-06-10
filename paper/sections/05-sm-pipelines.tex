@@ -70,7 +70,13 @@ because the whitepaper does not say it. A dependent accumulate chain puts
 \texttt{HMMA} latency at 14.0 cycles, and a contention probe confirms
 that \texttt{HFMA2} shares the tensor unit (mixed rate 0.76 against a
 shared-unit prediction of 0.80): FP16 math runs through the tensor
-cores, measured rather than inferred. \Cref{tab:tensor} summarises.
+cores, measured rather than inferred. The operand-staging load,
+\texttt{LDSM} (\texttt{ldmatrix}), chains at 30 cycles through an
+address perturbation and peaks at 0.125 warp-instructions per SM per
+cycle in its four-tile form --- 512 bytes per instruction, exactly the
+64-byte-per-cycle unified-datapath ceiling of \cref{sec:memory}: feeding
+the tensor cores is bandwidth-bound on the same path as every other
+shared-memory access. \Cref{tab:tensor} summarises.
 
 \begin{table}[t]
 \centering
@@ -89,8 +95,14 @@ The remaining \texttt{MUFU} set sits at 15 cycles (\texttt{RSQ},
 carrying an \texttt{FMUL} range scale, all at the quarter rate;
 \texttt{RCP} derives at ${\sim}17$ cycles after the approximate-algebra
 deletions of \cref{sec:sass}. \texttt{SHFL.IDX} chains at 25 cycles and
-0.5 per cycle. Branch divergence is exactly linear: a $k$-way divergent
-switch costs $k$ times the uniform path (16.7 cycles to 528 for 1-way to
-32-way), and the predicated equivalent costs precisely the uniform 16.7
---- if-conversion is free at this shape, with reconvergence visible as
-\texttt{BSSY}/\texttt{BSYNC} in the SASS.
+0.5 per cycle; a ballot (\texttt{VOTE.ANY}) chains at 16.2 cycles and
+sustains 0.96 per cycle across independent chains, with the predicate
+lane-shifted to keep the chain off the uniform datapath. A barrier in a
+192-thread block costs 32.3 cycles whether or not a second 192-thread
+block is resident on the same SM --- the barrier unit serves two
+concurrent CTAs without serialising them. Branch divergence is exactly
+linear: a $k$-way divergent switch costs $k$ times the uniform path
+(16.7 cycles to 528 for 1-way to 32-way), and the predicated equivalent
+costs precisely the uniform 16.7 --- if-conversion is free at this
+shape, with reconvergence visible as \texttt{BSSY}/\texttt{BSYNC} in the
+SASS.
