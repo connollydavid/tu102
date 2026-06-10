@@ -129,14 +129,13 @@ two-GPU rig. Every timed loop is SASS-verified: the public toolchain
 rewrote or deleted measurement kernels eight distinct ways, and the gate
 caught each one. Every row carries provenance, priors where they apply,
 and published deviations. Three decision-grade questions were
-pre-registered in the repository before their data existed. Their
-outcomes split sharply: compositions of table rows predict
-single-resource kernels within 3.5\% but fail with the wrong sign on an
-issue-coupled kernel pair, under-predict a payload-bearing interconnect
-primitive until single-warp width and first-read visibility rows replace
-streaming floors, and under-predict production dispatch cost by half
-against an empty-launch floor whose gap survives four exonerated
-mechanisms. Findings new to the
+pre-registered in the repository before their data existed.
+Composition predicts single-resource kernels within 3.5\%. It fails
+with the wrong sign on an issue-coupled pair, under-predicts a
+payload-bearing interconnect primitive until single-warp width and
+first-read visibility rows replace streaming floors, and under-predicts
+production dispatch cost by half against an empty-launch floor that
+survives four exonerated mechanisms. Findings new to the
 public record include the fma-pipe binding of dp4a, full-rate
 f32-accumulate tensor cores on Quadro-positioned TU102, evict-first loads
 that still allocate in L1, and an L2 whose request path saturates below

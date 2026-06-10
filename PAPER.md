@@ -9,18 +9,17 @@ abstract: |
   ways, and the gate caught each one. Every row carries provenance,
   priors where they apply, and published deviations. Three
   decision-grade questions were pre-registered in the repository before
-  their data existed. Their outcomes split sharply: compositions of
-  table rows predict single-resource kernels within 3.5% but fail with
-  the wrong sign on an issue-coupled kernel pair, under-predict a
-  payload-bearing interconnect primitive until single-warp width and
-  first-read visibility rows replace streaming floors, and under-predict
-  production dispatch cost by half against an empty-launch floor whose
-  gap survives four exonerated mechanisms. Findings new to the public
-  record include the fma-pipe binding of dp4a, full-rate f32-accumulate
-  tensor cores on Quadro-positioned TU102, evict-first loads that still
-  allocate in L1, and an L2 whose request path saturates below the DRAM
-  streaming rate. The table, benchmarks, and registration history are
-  public and regenerable.
+  their data existed. Composition predicts single-resource kernels
+  within 3.5%. It fails with the wrong sign on an issue-coupled pair,
+  under-predicts a payload-bearing interconnect primitive until
+  single-warp width and first-read visibility rows replace streaming
+  floors, and under-predicts production dispatch cost by half against an
+  empty-launch floor that survives four exonerated mechanisms. Findings
+  new to the public record include the fma-pipe binding of dp4a,
+  full-rate f32-accumulate tensor cores on Quadro-positioned TU102,
+  evict-first loads that still allocate in L1, and an L2 whose request
+  path saturates below the DRAM streaming rate. The table, benchmarks,
+  and registration history are public and regenerable.
 author:
 - |
   David Connolly  
@@ -56,10 +55,10 @@ SASS level and whose every published row carries its provenance.
 
 The research question is operational rather than encyclopaedic: *can a
 table of independently measured primitive costs predict the behaviour of
-real composite kernels well enough to drive engineering decisions?* The
-answer, developed through three pre-registered hypotheses
+real composite kernels well enough to drive engineering decisions?*
+Three pre-registered hypotheses
 (<a href="#sec:hypotheses" data-reference-type="ref+label"
-data-reference="sec:hypotheses">4</a>), is sharply split. Composed
+data-reference="sec:hypotheses">4</a>) develop the answer. Composed
 predictions are excellent where a single resource binds, within 3.5% on
 single-resource kernels and within 10% on a latency-dominated
 interconnect primitive, and fail systematically where work couples
@@ -432,8 +431,9 @@ Core instruction rows. Latency by dependent `clock64` chain, throughput
 at the peak of the warps-per-SM sweep, pipe bindings by contention probe
 (<a href="#sec:methodology" data-reference-type="ref+label"
 data-reference="sec:methodology">3</a>). The pipe *own* denotes a
-dedicated unit. Starred rows derive from pair constructions. Latency
-priors from Jia et al. (Jia et al. 2019).
+dedicated unit; wi/SM/clk abbreviates warp-instructions per SM per
+cycle. Starred rows derive from pair constructions. Latency priors from
+Jia et al. (Jia et al. 2019).
 
 </div>
 
@@ -525,28 +525,30 @@ If-conversion is free at this shape, with reconvergence visible as
 
 ## Levels
 
-Dependent chases place the levels at: L1 data 23.4 ns (34 cycles,
-matched by the read-only `__ldg` path: one physical array); L2 161.5 ns
-(235 cycles), flat from 128 KiB to 5 MiB with the cliff binding between
-5 and 8 MiB against the 6 MB L2; DRAM 299.9 ns. Bandwidths: DRAM streams
-at 609 GB/s read (97.5% of the P2 ceiling, and within 0.3% of an
-independent estimate from the sector experiment below), 477 write, 507
-copy. The L2’s own service rate is lower than the DRAM streaming rate: a
-4 MiB footprint read entirely from L2 via `.cg` sustains 382 GB/s (the
-request-serving path saturates before the line-fill path), while the
-same footprint under the default policy reads at 1.11 TB/s because it
-nearly fits the *aggregate* L1 capacity (72 SMs $`\times`$ 64 KiB).
-Shared memory and L1 share one 64-byte per-cycle-per-SM datapath (both
-measure the same ceiling by two load widths), and the 96 KiB carveout
-moves the L1 chase cliff exactly as the split predicts. A
-fill-granularity probe (a capacity-evicted ring chased at growing byte
-strides) reads the promotion unit directly: strides of 32 and above all
-pay the full 235-cycle miss while stride 16 pays exactly the mean of a
-miss and a hit and stride 8 one miss in four. The L1 fills 32-byte
-sectors and prefetches nothing within the line. One hazard row: `float4`
-shared-memory access compiles to paired `LDS.64` whose 16-byte stride
-self-conflicts two-way, halving bandwidth, and tiles built on `float4`
-pay it. <a href="#fig:hierarchy" data-reference-type="ref+Label"
+Dependent chases place the levels: L1 at 23.4 ns, L2 at 161.5, DRAM at
+299.9 (<a href="#tab:memory" data-reference-type="ref+label"
+data-reference="tab:memory">3</a>). The read-only `__ldg` path measures
+the same 34 cycles as the L1, one physical array. The L2 plateau holds
+from 128 KiB to 5 MiB, the cliff binding between 5 and 8 MiB against the
+6 MB L2. Bandwidths: DRAM streams at 609 GB/s read (97.5% of the P2
+ceiling, and within 0.3% of an independent estimate from the sector
+experiment below), 477 write, 507 copy. The L2’s own service rate is
+lower than the DRAM streaming rate: a 4 MiB footprint read entirely from
+L2 via `.cg` sustains 382 GB/s (the request-serving path saturates
+before the line-fill path), while the same footprint under the default
+policy reads at 1.11 TB/s because it nearly fits the *aggregate* L1
+capacity (72 SMs $`\times`$ 64 KiB). Shared memory and L1 share one
+64-byte per-cycle-per-SM datapath (both measure the same ceiling by two
+load widths), and the 96 KiB carveout moves the L1 chase cliff exactly
+as the split predicts. A fill-granularity probe (a capacity-evicted ring
+chased at growing byte strides) reads the promotion unit directly:
+strides of 32 and above all pay the full 235-cycle miss while stride 16
+pays exactly the mean of a miss and a hit and stride 8 one miss in four.
+The L1 fills 32-byte sectors and prefetches nothing within the line. One
+hazard row: `float4` shared-memory access compiles to paired `LDS.64`
+whose 16-byte stride self-conflicts two-way, halving bandwidth, and
+tiles built on `float4` pay it.
+<a href="#fig:hierarchy" data-reference-type="ref+Label"
 data-reference="fig:hierarchy">1</a> traces both chases and
 <a href="#tab:memory" data-reference-type="ref+label"
 data-reference="tab:memory">3</a> summarises the levels. Conflict
@@ -580,9 +582,10 @@ default policy.
 <img src="paper/figures/fig_hierarchy.svg" />
 <figcaption>Left: dependent pointer-chase latency by footprint, with the
 three plateaus the levels of <a href="#tab:memory"
-data-reference-type="ref+label" data-reference="tab:memory">3</a>.
-Right: the same chase held L2-resident while page reach grows. Both TLB
-cliffs land on the T4 priors.</figcaption>
+data-reference-type="ref+label" data-reference="tab:memory">3</a>; the
+L1 cliff position follows the shared-memory carveout. Right: the same
+chase held L2-resident while page reach grows. Both TLB cliffs land on
+the T4 priors.</figcaption>
 </figure>
 
 <figure id="fig:laws">

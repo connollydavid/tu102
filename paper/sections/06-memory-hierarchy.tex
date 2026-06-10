@@ -3,10 +3,11 @@
 
 \subsection{Levels}
 
-Dependent chases place the levels at: L1 data 23.4~ns (34 cycles,
-matched by the read-only \texttt{\_\_ldg} path: one physical
-array); L2 161.5~ns (235 cycles), flat from 128~KiB to 5~MiB with the
-cliff binding between 5 and 8~MiB against the 6~MB L2; DRAM 299.9~ns.
+Dependent chases place the levels: L1 at 23.4~ns, L2 at 161.5, DRAM at
+299.9 (\cref{tab:memory}). The read-only \texttt{\_\_ldg} path measures
+the same 34 cycles as the L1, one physical array. The L2 plateau holds
+from 128~KiB to 5~MiB, the cliff binding between 5 and 8~MiB against
+the 6~MB L2.
 Bandwidths: DRAM streams at 609~GB/s read (97.5\% of the P2 ceiling, and
 within 0.3\% of an independent estimate from the sector experiment
 below), 477 write, 507 copy. The L2's own service rate is lower than the
@@ -45,7 +46,8 @@ $22 + 2(n{-}1)$ law in warps per block (\cref{fig:laws}).
 \centering
 \includegraphics{figures/fig_hierarchy}
 \caption{Left: dependent pointer-chase latency by footprint, with the
-three plateaus the levels of \cref{tab:memory}. Right: the same
+three plateaus the levels of \cref{tab:memory}; the L1 cliff position
+follows the shared-memory carveout. Right: the same
 chase held L2-resident while page reach grows. Both TLB cliffs land on
 the T4 priors.}
 \label{fig:hierarchy}
