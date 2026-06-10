@@ -6,9 +6,13 @@ interconnect (NVLink/PCIe/NCCL) characterisation for the NVIDIA TU102 GPU
 NVLink bridge. In the style of Agner Fog's x86 instruction tables, with the
 methodology of Jia et al.'s Volta/Turing dissections.
 
-**Status: measuring.** First families published: ALU latency/throughput with
-measurement policy, and coverage manifest are in place; the benchmark families
-land next, followed by a completeness audit and the paper.
+**Status: measuring.** 74 rows published: ALU latency/throughput with
+measured pipe bindings, shared-memory and L1 hierarchy, the q4_0 stride
+sector model, conversions, barriers — zero UNVERIFIED, every row gated on
+locked clocks and SASS-verified loops. The projection model and its
+registered-hypothesis verdicts live under `data/proj/`, including the
+decision record in `KILL_CALL.md`. Remaining families land span by span;
+the completeness audit and the paper close the work.
 
 ## What this will contain
 
