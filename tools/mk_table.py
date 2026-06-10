@@ -92,9 +92,7 @@ def main():
         kind = rows[0]["kind"]
         unit = rows[0]["unit"]
         family = rows[0]["family"]
-        git_shas = sorted({r["git_sha"] for r in rows})
         bench_src = rows[0]["bench_src"]
-        n_runs = len({r["run_id"] for r in rows})
 
         if kind in ("recip_tput", "bandwidth"):
             # w-prefixed variants are occupancy sweeps: peak per suffix.
@@ -137,6 +135,12 @@ def main():
                     gpu_vals[r["gpu_index"]].append(float(r["value"]))
                 cvs = [float(r["cv_pct"]) for r in grp]
                 variant = variant_key
+
+            # provenance binds per published row (this variant group), not
+            # per row_id — a later-added variant must not inherit sibling
+            # variants' shas or run counts
+            grp_shas = sorted({r["git_sha"] for r in grp})
+            grp_runs = len({r["run_id"] for r in grp})
 
             value = statistics.median(run_vals)
             within_cv = statistics.median(cvs) if cvs else 0.0
@@ -191,7 +195,7 @@ def main():
                               if row_id.startswith(k + ".")), ""),
                 "prior_value": prior_value, "prior_src": prior_src,
                 "deviation_pct": deviation, "flag": flag,
-                "measured_by": f"{bench_src}@{'+'.join(git_shas)} n_runs={n_runs}",
+                "measured_by": f"{bench_src}@{'+'.join(grp_shas)} n_runs={grp_runs}",
                 "clock_mhz": "1455", "notes": all_notes,
             })
 

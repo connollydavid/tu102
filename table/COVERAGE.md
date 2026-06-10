@@ -86,13 +86,19 @@ data/texture cache (+ smem carveout configurations), L2, the constant path
 - [x] `x.nvlink.peer_atom.add.lat` (541 ns, native over NVLink)
 - [ ] `x.nvlink.peer_atom.cas` + throughput rows (open)
 - [x] `x.nvlink.msg.oneway` (variants 0b..20480b) — store-burst+fence curve 1.20→1.80 µs
-- [x] `x.nvlink.fence_roundtrip` (variants 0b/4096b/20480b) — litmus-checked 3.90/4.91/7.94 µs; composed gate validated at ≤4 KiB; hypothesis #2 confirmed in that regime
+- [x] `x.nvlink.fence_roundtrip` (variants 0b/4096b/20480b) — litmus-checked 3.90/4.91/7.94 µs; visibility-aware composed gate (v3) passes at 4 AND 20 KiB (−4.5/−10.3%); hypothesis #2 confirmed at ≤20 KiB
+- [x] `x.nvlink.peer_write_visibility` (variants 4096b/20480b) — single-warp
+      first-read-after-peer-write, 0.61/2.59 µs vs the 0.32/1.14 µs
+      steady-state consume rows: the formerly named ~2.3 µs residual is now
+      mostly a measured row (penalty 0.29/1.45 µs), litmus-gated
 - [x] `x.nvlink.contention.local_vs_peer` — scalar at a defined operating
       point: % degradation of local DRAM-read bandwidth while the peer
       streams at full NVLink rate; the full 2D trade surface stays in
-      `data/` as a curve
+      `data/` as a curve. Kernel re-gated 2026-06-10 (a 64-bit % compiled
+      to a division CALL — caught by the purity sweep; superseded-revision
+      rows purged, row now 509.0 GB/s, −16.4% vs unloaded)
 - [ ] `x.nvlink.{sm,ce}.{uni,bi}.bw` size curve 4 KB–256 MB — gate: ±15% of
       50 GB/s/dir
 - [x] `x.pcie.bw` (variants h2d/d2h × pinned/pageable × GPU) — both GPUs at x16 rates
 - [x] `x.pcie.lat` (variants 4b..64kb pinned) — 4.1 µs floor (logits-D2H consumer)
-- [x] `x.nccl.allreduce` (variants 4k..64k steady + cold) — env-pinned floor 21.6–28.2 µs; cold first call 4.98 ms; the 72.9 µs in-situ anchor retired
+- [x] `x.nccl.allreduce` (variants 4k..64k steady + cold) — env-pinned floor 21.1–28.3 µs; cold first call 5–10 ms across four fresh-communicator samples (spread-flagged); the 72.9 µs in-situ anchor retired

@@ -55,8 +55,11 @@ registers); strength-reduced dependent add chains into \texttt{IMAD} and
 accumulators; deleted six of eight independent accumulator chains whose
 results a sink did not consume; folded \texttt{rcp.approx} compositions
 as exact algebra, twice; contracted a deliberately separate add into an
-\texttt{FFMA}; and lowered an f16 widening conversion to \texttt{HADD2}
-rather than the expected \texttt{F2F}. Every one of these was caught by
+\texttt{FFMA}; lowered an f16 widening conversion to \texttt{HADD2}
+rather than the expected \texttt{F2F}; and expanded a 64-bit remainder
+into a division subroutine call whose float-reciprocal emulation put
+\texttt{MUFU} and conversion traffic inside a bandwidth loop. Every one
+of these was caught by
 counting emitted mnemonics against the design, not by a timing looking
 wrong --- several produced plausible numbers for the wrong instruction
 stream. Both gates carry negative tests: a deliberately unlocked clock

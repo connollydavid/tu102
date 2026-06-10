@@ -10,8 +10,11 @@ peer write bandwidth & 45.8 GB/s \\
 \addlinespace
 one-way message, flag only & 1.20 \textmu s \\
 exchange round trip, flag only & 3.93 \textmu s \\
-exchange round trip, 4 KiB & 4.91 \textmu s \\
+exchange round trip, 4 KiB & 4.92 \textmu s \\
 exchange round trip, 20 KiB & 7.94 \textmu s \\
+first read after peer write, 4 KiB & 0.61 \textmu s \\
+first read after peer write, 20 KiB & 2.59 \textmu s \\
+steady-state read of the same bytes, 4 / 20 KiB & 0.32 / 1.14 \textmu s \\
 \addlinespace
 NCCL all-reduce, 4 KiB steady & 21.1 \textmu s \\
 NCCL all-reduce, 20 KiB steady & 25.0 \textmu s \\
