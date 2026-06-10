@@ -20,10 +20,11 @@ widths), and the 96~KiB carveout moves the L1 chase cliff exactly as the
 split predicts. A fill-granularity probe (a capacity-evicted ring chased
 at growing byte strides) reads the promotion unit directly: strides of
 32 and above all pay the full 235-cycle miss while stride 16 pays
-exactly the mean of a miss and a hit and stride 8 one miss in four ---
-the L1 fills 32-byte sectors and prefetches nothing within the line. One hazard row: \texttt{float4} shared-memory access
+exactly the mean of a miss and a hit and stride 8 one miss in four.
+The L1 fills 32-byte sectors and prefetches nothing within the line.
+One hazard row: \texttt{float4} shared-memory access
 compiles to paired \texttt{LDS.64} whose 16-byte stride self-conflicts
-two-way, halving bandwidth --- tiles built on \texttt{float4} pay it.
+two-way, halving bandwidth, and tiles built on \texttt{float4} pay it.
 \Cref{fig:hierarchy} traces both chases and \cref{tab:memory} summarises
 the levels; conflict serialisation is exactly linear at two cycles per
 additional way, and \texttt{BAR.SYNC} obeys the same
@@ -43,7 +44,7 @@ $22 + 2(n{-}1)$ law in warps per block (\cref{fig:laws}).
 \begin{figure}[t]
 \centering
 \includegraphics{figures/fig_hierarchy}
-\caption{Left: dependent pointer-chase latency by footprint --- the
+\caption{Left: dependent pointer-chase latency by footprint; the
 three plateaus are the levels of \cref{tab:memory}. Right: the same
 chase held L2-resident while page reach grows; both TLB cliffs land on
 the T4 priors.}
@@ -71,14 +72,14 @@ at 26.1, and a 32-address indexed read shows the same per-step
 \emph{latency} (serialisation costs throughput, not dependent-chain
 time). Instruction-fetch cost stays at the single-warp issue floor
 through 16~KiB loop bodies, softens at 32~KiB, and steps at 64 and
-128~KiB --- bracketing the L0 and L1I capacities.
+128~KiB, bracketing the L0 and L1I capacities.
 
 \subsection{The sector model, load policies, atomics}
 
 The quantised-block stride experiment binds the row that motivated it: a
 warp of byte loads at stride 18 (the q4\_0 block layout) requests 18
 32-byte sectors, and measured useful bandwidth times sectors reproduces
-the DRAM peak --- 610~GB/s of fetched sectors at stride 18 and 32, the
+the DRAM peak: 610~GB/s of fetched sectors at stride 18 and 32, the
 fetch-bound regime exactly where the model predicts it
 (\cref{fig:stride}). Small strides are request-rate-bound instead, and
 stride 128 additionally loses DRAM row locality.
@@ -93,22 +94,22 @@ bandwidth benches.}
 \label{fig:stride}
 \end{figure} Load-policy probes refute a common assumption:
 \texttt{.cs} (evict-first) lines still enter the L1 and re-read at
-23.4~ns --- the hint sets priority, not eviction --- while \texttt{.lu}
+23.4~ns (the hint sets priority, not eviction), while \texttt{.lu}
 genuinely evicts and \texttt{.cg} never allocates (both 161~ns re-read).
 Keeping weights resident against streamed data therefore means marking
 the \emph{streamed} side \texttt{.cg}, not the weights \texttt{.cs}.
 Shared-memory atomics reproduce the T4 contention deltas exactly
 ($+2/+4/+8/+16/+32$ cycles for 2- to 32-way) atop a constant
 17-cycle offset attributable to the return-value chain this method times
-and the prior's stall-counting method does not --- a stall-attribution
+and the prior's stall-counting method does not. A stall-attribution
 profile corroborates the placement: 83.6\% of the uncontended chain's
 cycles are short-scoreboard stalls waiting on the returned value,
 about 21 of the 25, with one cycle issuing (Nsight Compute 2026.2,
-corroboration-only, record in the repository); global atomics sit at
+corroboration-only, record in the repository). Global atomics sit at
 ${\sim}310$ cycles through the L2 with a real 2\% spread between the two
 physical GPUs. A shared-memory CAS chains 12 cycles dearer than the add;
 on the throughput side, independent shared adds sustain half a
 warp-instruction per cycle (the non-returning form stays
-\texttt{ATOMS.ADD} --- there is no shared reduction opcode), while
+\texttt{ATOMS.ADD}; there is no shared reduction opcode), while
 global reductions from a single SM peak at one warp in flight: the L2
 service path, not warp count, binds.

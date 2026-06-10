@@ -20,7 +20,7 @@ the priors this paper compares against, row by row, where the prior
 applies. The applicability boundary matters: the T4's TU104 shares the
 TU102's streaming multiprocessor, so core-domain priors transfer, but its
 L2, DRAM system, and lack of NVLink make memory-system and interconnect
-priors non-binding --- a distinction this paper records per row rather
+priors non-binding, a distinction this paper records per row rather
 than per paper.
 
 Two methodological differences from Jia et al.\ are deliberate. First,
@@ -28,10 +28,10 @@ their measurements were taken with a custom SASS assembler, giving direct
 control of the instruction stream; this work stays within the public
 toolchain (PTX inline assembly under \texttt{nvcc} 13.3) and instead
 \emph{verifies} the emitted stream, gating every benchmark on a
-disassembly check. The compiler fights this approach --- constant
+disassembly check. The compiler fights this approach: constant
 folding, uniform-datapath conversion, strength reduction, and
 approximate-arithmetic algebra each deleted or rewrote measurement
-kernels during development --- and \cref{sec:methodology} catalogues the
+kernels during development. \Cref{sec:methodology} catalogues the
 countermeasures, because any future toolchain-bound measurement effort
 will face the same opponents. Second, where their report states results,
 this one also pre-registers the decision-grade questions

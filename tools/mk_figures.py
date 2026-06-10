@@ -154,7 +154,7 @@ def fig_exchange(rows):
     ax.annotate("NCCL all-reduce, steady", (64, nccl[-1]),
                 textcoords="offset points", xytext=(-4, 8), ha="right",
                 color=GREY)
-    ax.annotate("half NCCL — the registered bar", (64, nccl[-1] / 2),
+    ax.annotate("half NCCL (the registered bar)", (64, nccl[-1] / 2),
                 textcoords="offset points", xytext=(-4, 7), ha="right",
                 color=GREY)
     ax.annotate("exchange round trip\n(store + fence + poll)", (20, rt[2]),

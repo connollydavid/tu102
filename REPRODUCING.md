@@ -8,8 +8,8 @@ and root for the clock lock. Expect one evening: the full sweep is under
 an hour of GPU time; the rest is reading the diffs.
 
 The table is a snapshot of one toolchain/driver pairing. A different
-`nvcc` emits different SASS for the same PTX — the purity gate will tell
-you when that has happened, and a row that moved under different SASS is
+`nvcc` emits different SASS for the same PTX; the purity gate reports
+when that has happened, and a row that moved under different SASS is
 a finding about the toolchain, not a replication failure. Compare like
 with like before comparing numbers.
 
@@ -51,18 +51,18 @@ bash bench/common/run_all.sh       # gate sweep + every family, 2 invocations x 
 `run_all.sh` aborts on the first gate failure. It runs `check_sass.py`
 on every binary before any timing (the catalogue of compiler defeats
 this gate has caught is in the paper's methodology section), then every
-bench twice per GPU — the between-run rule wants two independent process
-invocations — and regenerates the table.
+bench twice per GPU (the between-run rule wants two independent process
+invocations), and regenerates the table.
 
 Results land in `data/results/<host>/` as append-only per-family CSVs
 with a run header carrying driver, toolchain, clock, and ECC state.
-Name your host directory after the rig (`t5820-2xrtx6000` is the
+The host directory is named after the rig (`t5820-2xrtx6000` is the
 reference dataset).
 
 ## Compare
 
 ```bash
-python3 tools/mk_table.py          # regenerate table/tu102_ops.csv from your results
+python3 tools/mk_table.py          # regenerate table/tu102_ops.csv from the new results
 git diff table/tu102_ops.csv
 ```
 
@@ -71,9 +71,10 @@ Agreement bounds are the published per-domain floors (`table/SCHEMA.md`):
 times. Cycle-domain rows on a locked clock should land inside the floor;
 interconnect and host rows are rig-dependent by design and carry their
 configuration in the variant and notes. Rows flagged `UNVERIFIED` in the
-published table carry their reason in the notes column — your run may
-legitimately resolve or reproduce the flag.
+published table carry their reason in the notes column; a replication
+run may legitimately resolve or reproduce the flag.
 
-A replication dataset is welcome as a pull request adding
-`data/results/<your-host>/` (do not edit the reference dataset) with the
-host described in the PR body: board, bus topology, driver, toolchain.
+A replication dataset is welcome as a pull request adding a new
+`data/results/<host>/` directory (the reference dataset stays untouched)
+with the host described in the PR body: board, bus topology, driver,
+toolchain.

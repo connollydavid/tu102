@@ -9,15 +9,15 @@ largest, and three smaller memos show the rows at work.
 the key tile is reused once, so staging into shared memory pays a store,
 a reload, and a synchronisation against the dequantisation it saves; with
 the measured shared-memory ceiling the saving cannot reach the cost below
-a reuse factor of about two, and the projection route --- validated at
-5\% on the staged pair --- prices the alternative directly. The verdict
+a reuse factor of about two, and the projection route (validated at
+5\% on the staged pair) prices the alternative directly. The verdict
 is shape-dependent and stated as such: staging loses at decode, can win
 at prefill-like reuse, and must avoid \texttt{float4} tiles (the measured
 split-conflict halves their bandwidth).
 
 \emph{A serial merge step.} A 196-step dependent merge costs at most
 $196 \times 299.9$~ns $= 58.8$~\textmu s if every step missed to DRAM and
-31.7~\textmu s at L2 residency --- against a ${\sim}50$~ms decode token,
+31.7~\textmu s at L2 residency: against a ${\sim}50$~ms decode token,
 at worst 0.1\%. ``Negligible'' is now a number with a stated worst case.
 
 \emph{Streaming loads in a quantised matrix-vector kernel.} The policy
