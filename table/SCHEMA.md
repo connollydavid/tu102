@@ -85,7 +85,9 @@ Every bench binary, via `bench/common/harness.cuh`:
    within-run cv, with a kind-aware floor: 0.1% for cycle-domain rows
    (clock64-timed, deterministic) and 0.5% for wall-clock bandwidth rows
    in GB/s (DRAM refresh and memory-timing variation are real and of that
-   order; cycle-true timing does not apply to wall-clock quantities).
+   order; cycle-true timing does not apply to wall-clock quantities), and
+   5% for host-domain time rows (scheduler jitter; the p10/p90 spread in
+   each row's notes carries the distribution).
 6. Loop overhead cancelled by the 2N−N slope method; the chosen N is
    documented per bench and the loop body is verified (via SASS size) to fit
    in the L0 instruction cache, so the slope never silently measures icache
