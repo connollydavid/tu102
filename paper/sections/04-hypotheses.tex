@@ -123,18 +123,20 @@ named (a first-read-after-peer-write visibility cost with no table
 row) and the comparison stayed blocked there until the row existed.
 Measured by its own instrument (the responder times only its read
 section), the visibility row puts the first read of 20~KiB of freshly
-peer-written lines at 2.59~\textmu s against 1.14 steady-state, and the
+peer-written lines at 2.59~\textmu s against 1.14~\textmu s
+steady-state, and the
 visibility-aware composition closes the gate at both sizes ($-4.5\%$ at
-4~KiB, $-10.3\%$ at 20). The registered comparison therefore applies
-across its stated domain: 4.92~\textmu s against a bar of 10.54 at
-4~KiB (margin 2.1$\times$), 7.94 against 12.51 at 20~KiB (margin
-1.6$\times$).
+4~KiB, $-10.3\%$ at 20~KiB). The registered comparison therefore applies
+across its stated domain: 4.92~\textmu s against a bar of
+10.54~\textmu s at 4~KiB (margin 2.1$\times$), 7.94~\textmu s against
+12.51~\textmu s at 20~KiB (margin 1.6$\times$).
 
 \emph{Dispatch composition} (\cref{sec:hyp-dispatch}): refuted. A
 production-shaped decode dispatches 4{,}614 kernels per token. Composed
 against the empty-launch row this predicts 7.2~ms of per-token dispatch
 against 14.9~ms measured ($-52\%$). The empty-launch row is a floor:
-in-situ launches average 3.13~\textmu s against the row's 1.56, and four
+in-situ launches average 3.13~\textmu s against the row's
+1.56~\textmu s, and four
 candidate mechanisms for the gap (argument marshalling, kernel-identity
 variety, cross-device alternation, and submission-queue backpressure)
 were each measured and exonerated, leaving driver-state interaction as

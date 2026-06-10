@@ -10,7 +10,7 @@ hop over the local DRAM latency, and the default and \texttt{.cg}
 chases measure identically: peer lines do not enter the local L1 at all.
 SM-path streaming sustains 43.4~GB/s reading and 45.8 writing per
 direction (inside the $\pm15\%$ gate, posted writes faster). A peer
-\texttt{atomicAdd} chains at 541~ns and a peer CAS at 552--558. The
+\texttt{atomicAdd} chains at 541~ns and a peer CAS at 552--558~ns. The
 non-returning form (\texttt{RED} over NVLink) sustains about 800
 million operations per second from a single warp, and adding warps
 loses rather than gains: the fabric, not issue width, binds. With one
@@ -19,7 +19,8 @@ writes at full NVLink rate, the victim's local DRAM read bandwidth
 degrades 16.4\% at the defined operating point. Freshly peer-written
 lines also read back dearer than warm ones: a single warp's first read
 of 20~KiB its peer has just written, fenced, and flagged costs
-2.59~\textmu s against 1.14 for the same bytes at steady state. This
+2.59~\textmu s against 1.14~\textmu s for the same bytes at steady
+state. This
 visibility cost has its own table row, measured by timing only the
 responder's read section inside the litmus-checked handshake.
 
@@ -27,7 +28,8 @@ The exchange primitive of \cref{sec:hyp-exchange} (peer store,
 \texttt{\_\_threadfence\_system}, which lowers to
 \texttt{MEMBAR.SYS}+\texttt{CCTL}+\texttt{ERRBAR}, flag write, remote
 spin and acknowledge) round-trips between concurrently resident
-kernels in 3.90~\textmu s empty, 4.92 at 4~KiB, and 7.94 at 20~KiB, with
+kernels in 3.90~\textmu s empty, 4.92~\textmu s at 4~KiB, and
+7.94~\textmu s at 20~KiB, with
 a data-check litmus run before any timing is trusted. The NCCL
 comparator, environment pinned (Ring, LL, two channels, NCCL 2.30.4),
 holds a steady-state two-rank all-reduce floor of 21.1--28.3~\textmu s

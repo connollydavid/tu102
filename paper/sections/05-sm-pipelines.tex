@@ -7,10 +7,11 @@ The four-cycle class \citep[tab.~4.1]{jia2019turing} reproduces:
 \texttt{FFMA}, \texttt{FADD}, \texttt{FMUL}, \texttt{LOP3}, \texttt{SHF},
 \texttt{SEL}, and the derived \texttt{IADD3}, \texttt{ISETP}, and
 \texttt{FSETP} all measure between 3.96 and 4.13 cycles. \texttt{POPC}
-and \texttt{FLO} measure exactly 15, \texttt{HFMA2} 6.19, both on prior.
+and \texttt{FLO} measure exactly 15 cycles, \texttt{HFMA2} 6.19 cycles,
+both on prior.
 Three deviations publish: \texttt{IMAD} at 4.11 cycles against a prior of
-5 ($-17.8\%$), \texttt{DADD} at 44.0 against ${\sim}48$, and
-\texttt{DFMA} at 48.0 against ${\sim}54$. Rows with no published prior
+5 ($-17.8\%$), \texttt{DADD} at 44.0 cycles against ${\sim}48$, and
+\texttt{DFMA} at 48.0 cycles against ${\sim}54$. Rows with no published prior
 are contributions: \texttt{PRMT} at 4.13 cycles, \texttt{IDP.4A} at 4.11
 cycles and the full 2.0 warp-instructions per SM per cycle, and the
 emulated \texttt{u32} divide at 55.5 cycles per sequence. Throughput
@@ -103,8 +104,8 @@ lane-shifted to keep the chain off the uniform datapath. A barrier in a
 block is resident on the same SM: the barrier unit serves two
 concurrent CTAs without serialising them. Branch divergence is linear:
 a $k$-way divergent switch costs close to $k$ times the uniform path
-(16.7 cycles to 528 for 1-way to 32-way, within 5\% of $k\times$
+(16.7 to 528 cycles for 1-way to 32-way, within 5\% of $k\times$
 throughout), and the predicated equivalent
-costs precisely the uniform 16.7. If-conversion is free at this
+costs precisely the uniform 16.7 cycles. If-conversion is free at this
 shape, with reconvergence visible as \texttt{BSSY}/\texttt{BSYNC} in the
 SASS.

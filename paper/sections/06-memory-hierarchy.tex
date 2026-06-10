@@ -3,14 +3,14 @@
 
 \subsection{Levels}
 
-Dependent chases place the levels: L1 at 23.4~ns, L2 at 161.5, DRAM at
-299.9 (\cref{tab:memory}). The read-only \texttt{\_\_ldg} path measures
+Dependent chases place the levels: L1 at 23.4~ns, L2 at 161.5~ns, DRAM
+at 299.9~ns (\cref{tab:memory}). The read-only \texttt{\_\_ldg} path measures
 the same 34 cycles as the L1, one physical array. The L2 plateau holds
 from 128~KiB to 5~MiB, the cliff binding between 5 and 8~MiB against
 the 6~MB L2.
 Bandwidths: DRAM streams at 609~GB/s read (97.5\% of the P2 ceiling, and
 within 0.3\% of an independent estimate from the sector experiment
-below), 477 write, 507 copy. The L2's own service rate is lower than the
+below), 477~GB/s write, 507~GB/s copy. The L2's own service rate is lower than the
 DRAM streaming rate: a 4~MiB footprint read entirely from L2 via
 \texttt{.cg} sustains 382~GB/s (the request-serving path saturates
 before the line-fill path), while the same footprint under the default
@@ -70,7 +70,7 @@ past 32~MiB of reach and $+5.9$~ns past 8~GiB \citep[p.~38]{jia2019turing},
 small penalties on a 160~ns L2 baseline. The constant path resolves into
 three measured levels: a warp-uniform chain lowers to the uniform
 datapath at 5.1 cycles, divergent-register chains hit the constant cache
-at 26.1, and a 32-address indexed read shows the same per-step
+at 26.1 cycles, and a 32-address indexed read shows the same per-step
 \emph{latency} (serialisation costs throughput, not dependent-chain
 time). Instruction-fetch cost stays at the single-warp issue floor
 through 16~KiB loop bodies, softens at 32~KiB, and steps at 64 and

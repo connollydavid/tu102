@@ -354,11 +354,12 @@ first-read-after-peer-write visibility cost with no table row) and the
 comparison stayed blocked there until the row existed. Measured by its
 own instrument (the responder times only its read section), the
 visibility row puts the first read of 20 KiB of freshly peer-written
-lines at 2.59 s against 1.14 steady-state, and the visibility-aware
+lines at 2.59 s against 1.14 s steady-state, and the visibility-aware
 composition closes the gate at both sizes ($`-4.5\%`$ at 4 KiB,
-$`-10.3\%`$ at 20). The registered comparison therefore applies across
-its stated domain: 4.92 s against a bar of 10.54 at 4 KiB (margin
-2.1$`\times`$), 7.94 against 12.51 at 20 KiB (margin 1.6$`\times`$).
+$`-10.3\%`$ at 20 KiB). The registered comparison therefore applies
+across its stated domain: 4.92 s against a bar of 10.54 s at 4 KiB
+(margin 2.1$`\times`$), 7.94 s against 12.51 s at 20 KiB (margin
+1.6$`\times`$).
 
 *Dispatch composition*
 (<a href="#sec:hyp-dispatch" data-reference-type="ref+label"
@@ -366,7 +367,7 @@ data-reference="sec:hyp-dispatch">4.3</a>): refuted. A production-shaped
 decode dispatches 4,614 kernels per token. Composed against the
 empty-launch row this predicts 7.2 ms of per-token dispatch against
 14.9 ms measured ($`-52\%`$). The empty-launch row is a floor: in-situ
-launches average 3.13 s against the row’s 1.56, and four candidate
+launches average 3.13 s against the row’s 1.56 s, and four candidate
 mechanisms for the gap (argument marshalling, kernel-identity variety,
 cross-device alternation, and submission-queue backpressure) were each
 measured and exonerated, leaving driver-state interaction as the
@@ -388,16 +389,16 @@ bought was failures cheap to localise and safe to publish.
 The four-cycle class (Jia et al. 2019, tab. 4.1) reproduces: `FFMA`,
 `FADD`, `FMUL`, `LOP3`, `SHF`, `SEL`, and the derived `IADD3`, `ISETP`,
 and `FSETP` all measure between 3.96 and 4.13 cycles. `POPC` and `FLO`
-measure exactly 15, `HFMA2` 6.19, both on prior. Three deviations
-publish: `IMAD` at 4.11 cycles against a prior of 5 ($`-17.8\%`$),
-`DADD` at 44.0 against $`{\sim}48`$, and `DFMA` at 48.0 against
-$`{\sim}54`$. Rows with no published prior are contributions: `PRMT` at
-4.13 cycles, `IDP.4A` at 4.11 cycles and the full 2.0 warp-instructions
-per SM per cycle, and the emulated `u32` divide at 55.5 cycles per
-sequence. Throughput saturates at 2.0 warp-instructions per SM per cycle
-for both the FP32 and INT32 classes (64 lanes of each per SM), with the
-FFMA anchor landing within 0.005% of the geometric 2.0.
-<a href="#tab:core" data-reference-type="ref+Label"
+measure exactly 15 cycles, `HFMA2` 6.19 cycles, both on prior. Three
+deviations publish: `IMAD` at 4.11 cycles against a prior of 5
+($`-17.8\%`$), `DADD` at 44.0 cycles against $`{\sim}48`$, and `DFMA` at
+48.0 cycles against $`{\sim}54`$. Rows with no published prior are
+contributions: `PRMT` at 4.13 cycles, `IDP.4A` at 4.11 cycles and the
+full 2.0 warp-instructions per SM per cycle, and the emulated `u32`
+divide at 55.5 cycles per sequence. Throughput saturates at 2.0
+warp-instructions per SM per cycle for both the FP32 and INT32 classes
+(64 lanes of each per SM), with the FFMA anchor landing within 0.005% of
+the geometric 2.0. <a href="#tab:core" data-reference-type="ref+Label"
 data-reference="tab:core">1</a> collects these rows. The repository
 table carries the remaining variants and the provenance columns.
 
@@ -515,9 +516,9 @@ lane-shifted to keep the chain off the uniform datapath. A barrier in a
 192-thread block costs 32.3 cycles whether or not a second 192-thread
 block is resident on the same SM: the barrier unit serves two concurrent
 CTAs without serialising them. Branch divergence is linear: a $`k`$-way
-divergent switch costs close to $`k`$ times the uniform path (16.7
-cycles to 528 for 1-way to 32-way, within 5% of $`k\times`$ throughout),
-and the predicated equivalent costs precisely the uniform 16.7.
+divergent switch costs close to $`k`$ times the uniform path (16.7 to
+528 cycles for 1-way to 32-way, within 5% of $`k\times`$ throughout),
+and the predicated equivalent costs precisely the uniform 16.7 cycles.
 If-conversion is free at this shape, with reconvergence visible as
 `BSSY`/`BSYNC` in the SASS.
 
@@ -525,19 +526,19 @@ If-conversion is free at this shape, with reconvergence visible as
 
 ## Levels
 
-Dependent chases place the levels: L1 at 23.4 ns, L2 at 161.5, DRAM at
-299.9 (<a href="#tab:memory" data-reference-type="ref+label"
+Dependent chases place the levels: L1 at 23.4 ns, L2 at 161.5 ns, DRAM
+at 299.9 ns (<a href="#tab:memory" data-reference-type="ref+label"
 data-reference="tab:memory">3</a>). The read-only `__ldg` path measures
 the same 34 cycles as the L1, one physical array. The L2 plateau holds
 from 128 KiB to 5 MiB, the cliff binding between 5 and 8 MiB against the
 6 MB L2. Bandwidths: DRAM streams at 609 GB/s read (97.5% of the P2
 ceiling, and within 0.3% of an independent estimate from the sector
-experiment below), 477 write, 507 copy. The L2’s own service rate is
-lower than the DRAM streaming rate: a 4 MiB footprint read entirely from
-L2 via `.cg` sustains 382 GB/s (the request-serving path saturates
-before the line-fill path), while the same footprint under the default
-policy reads at 1.11 TB/s because it nearly fits the *aggregate* L1
-capacity (72 SMs $`\times`$ 64 KiB). Shared memory and L1 share one
+experiment below), 477 GB/s write, 507 GB/s copy. The L2’s own service
+rate is lower than the DRAM streaming rate: a 4 MiB footprint read
+entirely from L2 via `.cg` sustains 382 GB/s (the request-serving path
+saturates before the line-fill path), while the same footprint under the
+default policy reads at 1.11 TB/s because it nearly fits the *aggregate*
+L1 capacity (72 SMs $`\times`$ 64 KiB). Shared memory and L1 share one
 64-byte per-cycle-per-SM datapath (both measure the same ceiling by two
 load widths), and the 96 KiB carveout moves the L1 chase cliff exactly
 as the split predicts. A fill-granularity probe (a capacity-evicted ring
@@ -603,8 +604,8 @@ entirely), both TLB cliffs land on the T4 priors: $`+7.0`$ ns past
 32 MiB of reach and $`+5.9`$ ns past 8 GiB (Jia et al. 2019, 38), small
 penalties on a 160 ns L2 baseline. The constant path resolves into three
 measured levels: a warp-uniform chain lowers to the uniform datapath at
-5.1 cycles, divergent-register chains hit the constant cache at 26.1,
-and a 32-address indexed read shows the same per-step *latency*
+5.1 cycles, divergent-register chains hit the constant cache at 26.1
+cycles, and a 32-address indexed read shows the same per-step *latency*
 (serialisation costs throughput, not dependent-chain time).
 Instruction-fetch cost stays at the single-warp issue floor through
 16 KiB loop bodies, softens at 32 KiB, and steps at 64 and 128 KiB,
@@ -661,33 +662,33 @@ over the local DRAM latency, and the default and `.cg` chases measure
 identically: peer lines do not enter the local L1 at all. SM-path
 streaming sustains 43.4 GB/s reading and 45.8 writing per direction
 (inside the $`\pm15\%`$ gate, posted writes faster). A peer `atomicAdd`
-chains at 541 ns and a peer CAS at 552–558. The non-returning form
+chains at 541 ns and a peer CAS at 552–558 ns. The non-returning form
 (`RED` over NVLink) sustains about 800 million operations per second
 from a single warp, and adding warps loses rather than gains: the
 fabric, not issue width, binds. With one GPU streaming inbound writes at
 full NVLink rate, the victim’s local DRAM read bandwidth degrades 16.4%
 at the defined operating point. Freshly peer-written lines also read
 back dearer than warm ones: a single warp’s first read of 20 KiB its
-peer has just written, fenced, and flagged costs 2.59 s against 1.14 for
-the same bytes at steady state. This visibility cost has its own table
-row, measured by timing only the responder’s read section inside the
-litmus-checked handshake.
+peer has just written, fenced, and flagged costs 2.59 s against 1.14 s
+for the same bytes at steady state. This visibility cost has its own
+table row, measured by timing only the responder’s read section inside
+the litmus-checked handshake.
 
 The exchange primitive of
 <a href="#sec:hyp-exchange" data-reference-type="ref+label"
 data-reference="sec:hyp-exchange">4.2</a> (peer store,
 `__threadfence_system`, which lowers to `MEMBAR.SYS`+`CCTL`+`ERRBAR`,
 flag write, remote spin and acknowledge) round-trips between
-concurrently resident kernels in 3.90 s empty, 4.92 at 4 KiB, and 7.94
-at 20 KiB, with a data-check litmus run before any timing is trusted.
-The NCCL comparator, environment pinned (Ring, LL, two channels, NCCL
-2.30.4), holds a steady-state two-rank all-reduce floor of 21.1–28.3 s
-across 4–64 KiB, with a cold first call in the milliseconds (5–10 ms
-across four fresh-communicator samples, and the row is flagged for its
-spread). The in-situ production figure this study set out to explain is
-retired in favour of these standalone numbers. PCIe rows complete the
-picture: 12.2/13.2 GB/s pinned in each direction on both x16 GPUs, and a
-$`{\sim}4`$ s pinned small-transfer floor.
+concurrently resident kernels in 3.90 s empty, 4.92 s at 4 KiB, and
+7.94 s at 20 KiB, with a data-check litmus run before any timing is
+trusted. The NCCL comparator, environment pinned (Ring, LL, two
+channels, NCCL 2.30.4), holds a steady-state two-rank all-reduce floor
+of 21.1–28.3 s across 4–64 KiB, with a cold first call in the
+milliseconds (5–10 ms across four fresh-communicator samples, and the
+row is flagged for its spread). The in-situ production figure this study
+set out to explain is retired in favour of these standalone numbers.
+PCIe rows complete the picture: 12.2/13.2 GB/s pinned in each direction
+on both x16 GPUs, and a $`{\sim}4`$ s pinned small-transfer floor.
 <a href="#tab:interconnect" data-reference-type="ref+Label"
 data-reference="tab:interconnect">4</a> collects the rows, and
 <a href="#fig:exchange" data-reference-type="ref+label"
