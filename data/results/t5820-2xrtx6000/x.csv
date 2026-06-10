@@ -31,3 +31,114 @@ run_id,gpu_index,row_id,kind,variant,value,unit,cv_pct,n_reps,n_rejected,bench_s
 20260610T023316-39905,1,x.nvlink.msg.oneway,time_us,512b_gpu1to0,1.24708,us,0.031,10,0,bench/x/peer.cu,f0869ee,store burst + threadfence_system; one warp,1.24714;1.24726;1.24614;1.24685;1.24767;1.24693;1.24709;1.24722;1.24703;1.24707
 20260610T023316-39905,1,x.nvlink.msg.oneway,time_us,4096b_gpu1to0,1.32046,us,0.048,10,0,bench/x/peer.cu,f0869ee,store burst + threadfence_system; one warp,1.32114;1.32093;1.32051;1.32042;1.3212;1.31989;1.32042;1.31987;1.31936;1.32115
 20260610T023316-39905,1,x.nvlink.msg.oneway,time_us,20480b_gpu1to0,1.75514,us,0.010,10,0,bench/x/peer.cu,f0869ee,store burst + threadfence_system; one warp,1.75529;1.75513;1.75555;1.7554;1.7551;1.75492;1.75511;1.75514;1.75533;1.75513
+20260610T023517-40132,0,x.nvlink.fence_roundtrip,time_us,0b,3.94341,us,0.584,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,3.94247;3.9056;3.93256;3.94932;3.94792;3.9437;3.88019;3.94532;3.94967;3.94311
+20260610T023517-40132,0,x.nvlink.fence_roundtrip,time_us,20480b,7.93935,us,0.082,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,7.94752;7.9387;7.94445;7.93908;7.93963;7.95011;7.94585;7.92836;7.93442;7.93858
+20260610T023517-40132,0,x.nvlink.fence_roundtrip.composed,na,gate,-15.2002,pct_err,0.000,2,0,bench/x/fence.cu,0579c08,composed gate: pred 3.34/3.79 us vs meas 3.94/7.94 us; err -15.2%/-52.2% vs +-25% a-priori tolerance -> FAIL,-15.2002;-52.2485
+20260610T023517-40132,0,x.nvlink.peer_atom.add.lat,latency_ns,gpu0to1,541.495,ns,0.018,10,0,bench/x/fence.cu,0579c08,per-lane dependent atomicAdd chains on peer lines,541.53;541.493;541.507;541.497;541.525;541.275;541.289;541.434;541.556;541.413
+20260610T023517-40132,0,x.nvlink.contention.local_vs_peer,bandwidth,defined_op_point,516.604,GB/s,0.917,10,0,bench/x/fence.cu,0579c08,local DRAM read while the peer streams inbound NVLink writes; compare mem.dram.bw read 608 GB/s unloaded,524.795;514.976;517.094;516.734;514.912;516.474;512.403;524.468;509.73;518.695
+20260610T023612-40206,0,x.nvlink.fence_roundtrip,time_us,0b,3.9023,us,0.841,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,3.93439;3.90183;3.85077;3.88295;3.90277;3.92868;3.85993;3.94036;3.90077;3.94438
+20260610T023612-40206,0,x.nvlink.fence_roundtrip,time_us,4096b,4.91537,us,0.132,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,4.91232;4.91743;4.91815;4.91059;4.91107;4.92976;4.9174;4.91333;4.9237;4.90902
+20260610T023612-40206,0,x.nvlink.fence_roundtrip,time_us,20480b,7.94118,us,0.071,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,7.9486;7.94909;7.94786;7.94311;7.94156;7.9408;7.93277;7.93899;7.93478;7.93834
+20260610T023612-40206,0,x.nvlink.fence_roundtrip.composed,na,gate,-14.3069,pct_err,0.000,2,0,bench/x/fence.cu,0579c08,composed gate: pred 3.34/3.49/3.79 vs meas 3.90/4.92/7.94 us; err -14.3/-28.9/-52.3% vs +-25% a-priori -> 0B PASS, 4K FAIL, 20K FAIL (single-warp payload width missing from the streaming-bw form),-14.3069;-28.9168;-52.2595
+20260610T023612-40206,0,x.nvlink.peer_atom.add.lat,latency_ns,gpu0to1,541.461,ns,0.013,10,0,bench/x/fence.cu,0579c08,per-lane dependent atomicAdd chains on peer lines,541.461;541.474;541.397;541.377;541.461;541.493;541.411;541.503;541.276;541.466
+20260610T023612-40206,0,x.nvlink.contention.local_vs_peer,bandwidth,defined_op_point,516.49,GB/s,0.565,10,0,bench/x/fence.cu,0579c08,local DRAM read while the peer streams inbound NVLink writes; compare mem.dram.bw read 608 GB/s unloaded,516.165;515.336;515.921;521.627;512.616;514.028;518.66;516.816;520.933;519.167
+20260610T023650-40317,0,x.nvlink.fence_roundtrip,time_us,0b,3.92287,us,0.827,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,3.94497;3.94297;3.85314;3.92738;3.93206;3.88587;3.92365;3.9221;3.86415;3.92029
+20260610T023650-40317,0,x.nvlink.fence_roundtrip,time_us,4096b,4.90987,us,0.124,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,4.91053;4.90921;4.91906;4.90351;4.90767;4.9069;4.91472;4.90728;4.92337;4.91152
+20260610T023650-40317,0,x.nvlink.fence_roundtrip,time_us,20480b,7.94049,us,0.103,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,7.9433;7.96053;7.94059;7.93849;7.93454;7.94538;7.93239;7.9404;7.9341;7.94645
+20260610T023650-40317,0,x.nvlink.fence_roundtrip.composed,na,gate,-14.7564,pct_err,0.000,2,0,bench/x/fence.cu,0579c08,composed gate: pred 3.34/3.49/3.79 vs meas 3.92/4.91/7.94 us; err -14.8/-28.8/-52.3% vs +-25% a-priori -> 0B PASS, 4K FAIL, 20K FAIL (single-warp payload width missing from the streaming-bw form),-14.7564;-28.8372;-52.2553
+20260610T023650-40317,0,x.nvlink.peer_atom.add.lat,latency_ns,gpu0to1,541.468,ns,0.007,10,0,bench/x/fence.cu,0579c08,per-lane dependent atomicAdd chains on peer lines,541.4;541.475;541.455;541.558;541.456;541.472;541.481;541.483;541.465;541.443
+20260610T023650-40317,0,x.nvlink.contention.local_vs_peer,bandwidth,defined_op_point,516.013,GB/s,0.586,10,0,bench/x/fence.cu,0579c08,local DRAM read while the peer streams inbound NVLink writes; compare mem.dram.bw read 608 GB/s unloaded,512.087;515.084;507.917;516.059;516.151;515.233;517.82;515.967;517.286;517.649
+20260610T023651-40330,1,x.nvlink.fence_roundtrip,time_us,0b,3.91636,us,0.535,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,3.93995;3.91259;3.94685;3.90486;3.93867;3.89343;3.9429;3.89484;3.9015;3.92013
+20260610T023651-40330,1,x.nvlink.fence_roundtrip,time_us,4096b,4.91506,us,0.348,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,4.96414;4.90984;4.91548;4.91463;4.92773;4.9094;4.9241;4.91232;4.92627;4.90414
+20260610T023651-40330,1,x.nvlink.fence_roundtrip,time_us,20480b,7.89889,us,0.061,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,7.91009;7.89893;7.89885;7.90241;7.89355;7.90012;7.90166;7.89327;7.89858;7.89694
+20260610T023651-40330,1,x.nvlink.fence_roundtrip.composed,na,gate,-14.6147,pct_err,0.000,2,0,bench/x/fence.cu,0579c08,composed gate: pred 3.34/3.49/3.79 vs meas 3.92/4.92/7.90 us; err -14.6/-28.9/-52.0% vs +-25% a-priori -> 0B PASS, 4K FAIL, 20K FAIL (single-warp payload width missing from the streaming-bw form),-14.6147;-28.9123;-52.0039
+20260610T023651-40330,1,x.nvlink.peer_atom.add.lat,latency_ns,gpu0to1,536.602,ns,0.018,10,0,bench/x/fence.cu,0579c08,per-lane dependent atomicAdd chains on peer lines,536.725;536.516;536.583;536.621;536.741;536.581;536.434;536.539;536.64;536.69
+20260610T023651-40330,1,x.nvlink.contention.local_vs_peer,bandwidth,defined_op_point,515.479,GB/s,0.766,10,0,bench/x/fence.cu,0579c08,local DRAM read while the peer streams inbound NVLink writes; compare mem.dram.bw read 608 GB/s unloaded,512.699;512.902;510.74;516.358;514.633;519.848;518.475;523.099;516.324;511.519
+20260610T023653-40343,0,x.nvlink.fence_roundtrip,time_us,0b,3.92289,us,0.691,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,3.94317;3.9167;3.89539;3.93211;3.85146;3.92688;3.89885;3.9268;3.93781;3.91899
+20260610T023653-40343,0,x.nvlink.fence_roundtrip,time_us,4096b,4.91436,us,0.133,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,4.91193;4.90536;4.92189;4.90875;4.92136;4.90473;4.922;4.91273;4.91632;4.91598
+20260610T023653-40343,0,x.nvlink.fence_roundtrip,time_us,20480b,7.93641,us,0.028,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,7.9354;7.93695;7.93548;7.93637;7.93644;7.93821;7.93178;7.94004;7.9363;7.93877
+20260610T023653-40343,0,x.nvlink.fence_roundtrip.composed,na,gate,-14.7568,pct_err,0.000,2,0,bench/x/fence.cu,0579c08,composed gate: pred 3.34/3.49/3.79 vs meas 3.92/4.91/7.94 us; err -14.8/-28.9/-52.2% vs +-25% a-priori -> 0B PASS, 4K FAIL, 20K FAIL (single-warp payload width missing from the streaming-bw form),-14.7568;-28.9022;-52.2307
+20260610T023653-40343,0,x.nvlink.peer_atom.add.lat,latency_ns,gpu0to1,541.505,ns,0.016,10,0,bench/x/fence.cu,0579c08,per-lane dependent atomicAdd chains on peer lines,541.332;541.556;541.534;541.556;541.454;541.513;541.323;541.497;541.51;541.5
+20260610T023653-40343,0,x.nvlink.contention.local_vs_peer,bandwidth,defined_op_point,515.433,GB/s,0.485,10,0,bench/x/fence.cu,0579c08,local DRAM read while the peer streams inbound NVLink writes; compare mem.dram.bw read 608 GB/s unloaded,515.85;512.606;516.542;515.059;514.878;520.007;514.729;515.365;515.501;520.942
+20260610T023655-40356,1,x.nvlink.fence_roundtrip,time_us,0b,3.92083,us,0.495,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,3.90553;3.92261;3.90398;3.93894;3.91906;3.94308;3.88613;3.94009;3.90576;3.93648
+20260610T023655-40356,1,x.nvlink.fence_roundtrip,time_us,4096b,4.94676,us,0.350,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,4.90966;4.92282;4.94574;4.96821;4.94624;4.96207;4.93991;4.95267;4.95109;4.94728
+20260610T023655-40356,1,x.nvlink.fence_roundtrip,time_us,20480b,7.90247,us,0.600,10,0,bench/x/fence.cu,0579c08,store+fence+flag / spin+ack between resident kernels; litmus-checked,8.0057;8.02042;7.93805;7.89344;7.90442;7.89957;7.90473;7.89626;7.89903;7.90052
+20260610T023655-40356,1,x.nvlink.fence_roundtrip.composed,na,gate,-14.712,pct_err,0.000,2,0,bench/x/fence.cu,0579c08,composed gate: pred 3.34/3.49/3.79 vs meas 3.92/4.95/7.90 us; err -14.7/-29.4/-52.0% vs +-25% a-priori -> 0B PASS, 4K FAIL, 20K FAIL (single-warp payload width missing from the streaming-bw form),-14.712;-29.3679;-52.0256
+20260610T023655-40356,1,x.nvlink.peer_atom.add.lat,latency_ns,gpu0to1,536.553,ns,0.030,10,0,bench/x/fence.cu,0579c08,per-lane dependent atomicAdd chains on peer lines,536.524;536.823;536.57;536.42;536.577;536.829;536.764;536.46;536.537;536.378
+20260610T023655-40356,1,x.nvlink.contention.local_vs_peer,bandwidth,defined_op_point,515.177,GB/s,0.594,10,0,bench/x/fence.cu,0579c08,local DRAM read while the peer streams inbound NVLink writes; compare mem.dram.bw read 608 GB/s unloaded,514.437;509.439;513.85;521.329;515.049;515.531;515.43;515.304;518.454;514.475
+20260610T023808-40478,0,x.pcie.bw,bandwidth,h2d_pinned_gpu0,12.2049,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023808-40478,0,x.pcie.bw,bandwidth,d2h_pinned_gpu0,13.1645,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023808-40478,0,x.pcie.bw,bandwidth,h2d_pageable_gpu0,9.51165,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023808-40478,0,x.pcie.bw,bandwidth,d2h_pageable_gpu0,11.4131,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023808-40478,0,x.pcie.lat,time_us,h2d_4b_gpu0,3.9,us,8.821,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 3.77 us; p90 4.11 us,
+20260610T023808-40478,0,x.pcie.lat,time_us,h2d_4096b_gpu0,4.674,us,10.355,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.49 us; p90 4.97 us,
+20260610T023808-40478,0,x.pcie.lat,time_us,h2d_65536b_gpu0,10.783,us,3.923,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 10.60 us; p90 11.03 us,
+20260610T023808-40478,0,x.pcie.bw,bandwidth,h2d_pinned_gpu1,12.2258,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023808-40478,0,x.pcie.bw,bandwidth,d2h_pinned_gpu1,13.1695,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023808-40478,0,x.pcie.bw,bandwidth,h2d_pageable_gpu1,9.59478,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023808-40478,0,x.pcie.bw,bandwidth,d2h_pageable_gpu1,11.7807,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023808-40478,0,x.pcie.lat,time_us,h2d_4b_gpu1,4.087,us,6.092,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.04 us; p90 4.29 us,
+20260610T023808-40478,0,x.pcie.lat,time_us,h2d_4096b_gpu1,4.891,us,7.647,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.72 us; p90 5.09 us,
+20260610T023808-40478,0,x.pcie.lat,time_us,h2d_65536b_gpu1,10.902,us,3.495,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 10.72 us; p90 11.10 us,
+20260610T023808-40478,0,x.nccl.allreduce,time_us,20480b_cold,4979.57,us,0.000,1,0,bench/x/nccl_pcie.cu,d05d32f,first call on fresh comms; one sample per invocation; ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; p10 4979.57 us; p90 4979.57 us,
+20260610T023808-40478,0,x.nccl.allreduce,time_us,4096b_steady,21.559,us,3.706,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 21.16 us; p90 21.96 us,
+20260610T023808-40478,0,x.nccl.allreduce,time_us,16384b_steady,24.378,us,3.368,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 24.01 us; p90 24.83 us,
+20260610T023808-40478,0,x.nccl.allreduce,time_us,20480b_steady,25.118,us,2.381,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 24.87 us; p90 25.47 us,
+20260610T023808-40478,0,x.nccl.allreduce,time_us,65536b_steady,28.16,us,2.173,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 27.91 us; p90 28.52 us,
+20260610T023848-40534,1,x.pcie.bw,bandwidth,h2d_pinned_gpu0,12.2063,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023848-40534,1,x.pcie.bw,bandwidth,d2h_pinned_gpu0,13.1641,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023848-40534,1,x.pcie.bw,bandwidth,h2d_pageable_gpu0,9.56889,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023848-40534,1,x.pcie.bw,bandwidth,d2h_pageable_gpu0,11.7982,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023848-40534,1,x.pcie.lat,time_us,h2d_4b_gpu0,4.157,us,11.018,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 3.92 us; p90 4.38 us,
+20260610T023848-40534,1,x.pcie.lat,time_us,h2d_4096b_gpu0,4.869,us,7.414,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.76 us; p90 5.12 us,
+20260610T023848-40534,1,x.pcie.lat,time_us,h2d_65536b_gpu0,10.891,us,4.095,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 10.70 us; p90 11.15 us,
+20260610T023848-40534,1,x.pcie.bw,bandwidth,h2d_pinned_gpu1,12.2266,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023848-40534,1,x.pcie.bw,bandwidth,d2h_pinned_gpu1,13.1704,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023848-40534,1,x.pcie.bw,bandwidth,h2d_pageable_gpu1,9.50863,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023848-40534,1,x.pcie.bw,bandwidth,d2h_pageable_gpu1,11.4031,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023848-40534,1,x.pcie.lat,time_us,h2d_4b_gpu1,4.018,us,10.229,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 3.82 us; p90 4.23 us,
+20260610T023848-40534,1,x.pcie.lat,time_us,h2d_4096b_gpu1,4.658,us,8.781,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.46 us; p90 4.87 us,
+20260610T023848-40534,1,x.pcie.lat,time_us,h2d_65536b_gpu1,10.811,us,3.894,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 10.63 us; p90 11.05 us,
+20260610T023848-40534,1,x.nccl.allreduce,time_us,20480b_cold,10145.8,us,0.000,1,0,bench/x/nccl_pcie.cu,d05d32f,first call on fresh comms; one sample per invocation; ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; p10 10145.76 us; p90 10145.76 us,
+20260610T023848-40534,1,x.nccl.allreduce,time_us,4096b_steady,20.921,us,3.322,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 20.61 us; p90 21.31 us,
+20260610T023848-40534,1,x.nccl.allreduce,time_us,16384b_steady,24.165,us,3.017,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 23.86 us; p90 24.59 us,
+20260610T023848-40534,1,x.nccl.allreduce,time_us,20480b_steady,24.931,us,2.828,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 24.58 us; p90 25.29 us,
+20260610T023848-40534,1,x.nccl.allreduce,time_us,65536b_steady,28.54,us,24.674,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 28.04 us; p90 35.08 us,
+20260610T023852-40557,0,x.pcie.bw,bandwidth,h2d_pinned_gpu0,12.2053,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023852-40557,0,x.pcie.bw,bandwidth,d2h_pinned_gpu0,13.165,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023852-40557,0,x.pcie.bw,bandwidth,h2d_pageable_gpu0,9.49044,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023852-40557,0,x.pcie.bw,bandwidth,d2h_pageable_gpu0,11.2922,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023852-40557,0,x.pcie.lat,time_us,h2d_4b_gpu0,3.873,us,9.140,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 3.72 us; p90 4.07 us,
+20260610T023852-40557,0,x.pcie.lat,time_us,h2d_4096b_gpu0,4.66,us,9.485,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.44 us; p90 4.88 us,
+20260610T023852-40557,0,x.pcie.lat,time_us,h2d_65536b_gpu0,10.8,us,3.806,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 10.63 us; p90 11.04 us,
+20260610T023852-40557,0,x.pcie.bw,bandwidth,h2d_pinned_gpu1,12.2263,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023852-40557,0,x.pcie.bw,bandwidth,d2h_pinned_gpu1,13.1705,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023852-40557,0,x.pcie.bw,bandwidth,h2d_pageable_gpu1,9.50855,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023852-40557,0,x.pcie.bw,bandwidth,d2h_pageable_gpu1,11.5668,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023852-40557,0,x.pcie.lat,time_us,h2d_4b_gpu1,4.15,us,6.410,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.07 us; p90 4.34 us,
+20260610T023852-40557,0,x.pcie.lat,time_us,h2d_4096b_gpu1,4.784,us,7.170,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.71 us; p90 5.05 us,
+20260610T023852-40557,0,x.pcie.lat,time_us,h2d_65536b_gpu1,10.894,us,3.461,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 10.73 us; p90 11.11 us,
+20260610T023852-40557,0,x.nccl.allreduce,time_us,20480b_cold,6335.35,us,0.000,1,0,bench/x/nccl_pcie.cu,d05d32f,first call on fresh comms; one sample per invocation; ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; p10 6335.35 us; p90 6335.35 us,
+20260610T023852-40557,0,x.nccl.allreduce,time_us,4096b_steady,20.594,us,3.360,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 20.30 us; p90 20.99 us,
+20260610T023852-40557,0,x.nccl.allreduce,time_us,16384b_steady,23.717,us,2.943,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 23.46 us; p90 24.16 us,
+20260610T023852-40557,0,x.nccl.allreduce,time_us,20480b_steady,24.746,us,2.109,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 24.53 us; p90 25.05 us,
+20260610T023852-40557,0,x.nccl.allreduce,time_us,65536b_steady,28.032,us,4.010,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 27.60 us; p90 28.72 us,
+20260610T023856-40580,1,x.pcie.bw,bandwidth,h2d_pinned_gpu0,12.2046,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023856-40580,1,x.pcie.bw,bandwidth,d2h_pinned_gpu0,13.1642,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023856-40580,1,x.pcie.bw,bandwidth,h2d_pageable_gpu0,9.5685,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023856-40580,1,x.pcie.bw,bandwidth,d2h_pageable_gpu0,11.6795,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023856-40580,1,x.pcie.lat,time_us,h2d_4b_gpu0,3.877,us,8.718,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 3.83 us; p90 4.16 us,
+20260610T023856-40580,1,x.pcie.lat,time_us,h2d_4096b_gpu0,4.714,us,8.994,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.55 us; p90 4.97 us,
+20260610T023856-40580,1,x.pcie.lat,time_us,h2d_65536b_gpu0,10.899,us,4.276,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 10.71 us; p90 11.17 us,
+20260610T023856-40580,1,x.pcie.bw,bandwidth,h2d_pinned_gpu1,12.2261,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023856-40580,1,x.pcie.bw,bandwidth,d2h_pinned_gpu1,13.1651,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023856-40580,1,x.pcie.bw,bandwidth,h2d_pageable_gpu1,9.57156,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023856-40580,1,x.pcie.bw,bandwidth,d2h_pageable_gpu1,11.0149,GB/s,0.000,10,0,bench/x/nccl_pcie.cu,d05d32f,256 MiB cudaMemcpyAsync,
+20260610T023856-40580,1,x.pcie.lat,time_us,h2d_4b_gpu1,3.843,us,8.197,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 3.80 us; p90 4.12 us,
+20260610T023856-40580,1,x.pcie.lat,time_us,h2d_4096b_gpu1,4.624,us,8.413,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 4.47 us; p90 4.86 us,
+20260610T023856-40580,1,x.pcie.lat,time_us,h2d_65536b_gpu1,10.761,us,3.187,1000,0,bench/x/nccl_pcie.cu,d05d32f,pinned small transfer; p10 10.61 us; p90 10.95 us,
+20260610T023856-40580,1,x.nccl.allreduce,time_us,20480b_cold,9947.96,us,0.000,1,0,bench/x/nccl_pcie.cu,d05d32f,first call on fresh comms; one sample per invocation; ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; p10 9947.96 us; p90 9947.96 us,
+20260610T023856-40580,1,x.nccl.allreduce,time_us,4096b_steady,21.248,us,3.450,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 20.89 us; p90 21.63 us,
+20260610T023856-40580,1,x.nccl.allreduce,time_us,16384b_steady,24.431,us,2.607,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 24.18 us; p90 24.82 us,
+20260610T023856-40580,1,x.nccl.allreduce,time_us,20480b_steady,25.49,us,2.542,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 25.19 us; p90 25.84 us,
+20260610T023856-40580,1,x.nccl.allreduce,time_us,65536b_steady,28.404,us,2.489,500,0,bench/x/nccl_pcie.cu,d05d32f,ALGO=Ring PROTO=LL channels=2 NCCL 2.30.4; 2-rank; p10 28.15 us; p90 28.86 us,
