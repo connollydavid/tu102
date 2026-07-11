@@ -1,206 +1,206 @@
 row_id,class,instruction,variant,kind,value,unit,cv_pct,pipe,prior_value,prior_src,deviation_pct,flag,measured_by,clock_mhz,notes
-alu.dadd.lat,alu,DADD,,latency_cycles,43.9999,cycles,0.000,own,48,jia2019turing:tab4.1,-8.3,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.dadd.tput,alu,DADD,w32,recip_tput,0.0526396,warpinst/SM/clk,0.002,own,0.0625,nvidia2018turing:sec-sm,-15.8,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.dfma.lat,alu,DFMA,,latency_cycles,48.0001,cycles,0.000,own,54,jia2019turing:tab4.1,-11.1,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.dfma.tput,alu,DFMA,w32,recip_tput,0.0526399,warpinst/SM/clk,0.003,own,0.0625,nvidia2018turing:sec-sm,-15.8,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.fadd.lat,alu,FADD,,latency_cycles,4.1172,cycles,0.000,fma,4,jia2019turing:tab4.1,2.9,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.fadd.tput,alu,FADD,w32,recip_tput,1.99984,warpinst/SM/clk,0.000,fma,2.0,nvidia2018turing:sec-sm,-0.0,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.ffma.lat,alu,FFMA,,latency_cycles,4.07032,cycles,0.000,fma,4,jia2019turing:tab4.1,1.8,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.ffma.tput,alu,FFMA,w8,recip_tput,1.99991,warpinst/SM/clk,0.000,fma,2.0,nvidia2018turing:sec-sm,-0.0,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.flo.lat,alu,FLO,,latency_cycles,15,cycles,0.000,own,15,jia2019turing:tab4.1,0.0,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.flo.tput,alu,FLO,w16,recip_tput,0.499986,warpinst/SM/clk,0.000,own,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.fmul.lat,alu,FMUL,,latency_cycles,4.1172,cycles,0.000,fma,4,jia2019turing:tab4.1,2.9,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.fmul.tput,alu,FMUL,w32,recip_tput,1.99984,warpinst/SM/clk,0.000,fma,2.0,nvidia2018turing:sec-sm,-0.0,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.fsel.lat,alu,SEL,,latency_cycles,4.10155,cycles,0.000,,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,f32 selp; compare off-chain
-alu.fsetp.lat,alu,FSETP,derived,latency_cycles,4.00784,cycles,0.000,,4,jia2019turing:tab4.1,0.2,ok,bench/alu/alu.cu@813577c n_runs=8,1455,derived: fsetp_sel.lat(pair) - fsel.lat
-alu.fsetp.tput,alu,FSETP,w32_pair,recip_tput,1.98432,warpinst/SM/clk,0.000,,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,FSETP+SEL pair stream; value counts both ops
-alu.fsetp_sel.lat,alu,FSETP+SEL,pair,latency_cycles,8.1094,cycles,0.000,,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,on-chain FSETP+SEL round trip
-alu.hfma2.lat,alu,HFMA2,,latency_cycles,6.1875,cycles,0.000,own,6,jia2019turing:tab4.1,3.1,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.hfma2.tput,alu,HFMA2,w32,recip_tput,1.96146,warpinst/SM/clk,0.000,own,2.0,nvidia2018turing:sec-sm,-1.9,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.iadd3.lat,alu,IADD3,derived,latency_cycles,3.96094,cycles,0.000,,4,jia2019turing:tab4.1,-1.0,ok,bench/alu/alu.cu@813577c n_runs=8,1455,derived: iadd3_lop3.lat(pair) - lop3.lat
-alu.iadd3.tput,alu,IADD3,w32_mixpair,recip_tput,1.98441,warpinst/SM/clk,0.000,,2.0,nvidia2018turing:sec-sm,-0.8,ok,bench/alu/alu.cu@813577c n_runs=8,1455,IADD3+LOP3 alternating stream; value counts both ops
-alu.iadd3_lop3.lat,alu,IADD3+LOP3,pair,latency_cycles,8.07031,cycles,0.000,,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,alternating IADD3+LOP3 chain; pure add chains are strength-reduced by ptxas
-alu.idiv.u32.lat,alu,(IDIV sequence),,latency_cycles,55.4688,cycles,0.000,,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,emulated sequence; lat of whole sequence
-alu.idiv.u32.tput,alu,(IDIV sequence),w32,recip_tput,0.273653,warpinst/SM/clk,0.009,,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,emulated sequence
-alu.idp4a.lat,alu,IDP.4A,s8,latency_cycles,4.10938,cycles,0.000,fma,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,accumulator chain
-alu.idp4a.lat,alu,IDP.4A,u8,latency_cycles,4.10938,cycles,0.000,fma,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,accumulator chain
-alu.idp4a.tput,alu,IDP.4A,w8_s8,recip_tput,1.99996,warpinst/SM/clk,0.000,fma,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.idp4a.tput,alu,IDP.4A,w8_u8,recip_tput,1.99996,warpinst/SM/clk,0.000,fma,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.imad.lat,alu,IMAD,,latency_cycles,4.10938,cycles,0.000,fma,5,jia2019turing:tab4.1,-17.8,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.imad.tput,alu,IMAD,w8,recip_tput,1.99996,warpinst/SM/clk,0.000,fma,2.0,nvidia2018turing:sec-sm,-0.0,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.isetp.lat,alu,ISETP,derived,latency_cycles,3.96875,cycles,0.000,,4,jia2019turing:tab4.1,-0.8,ok,bench/alu/alu.cu@813577c n_runs=8,1455,derived: isetp_sel.lat(pair) - sel.lat
-alu.isetp.tput,alu,ISETP,w32_pair,recip_tput,1.98441,warpinst/SM/clk,0.000,,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,ISETP+SEL pair stream; value counts both ops (a pure compare stream is dead code to ptxas)
-alu.isetp_sel.lat,alu,ISETP+SEL,pair,latency_cycles,8.07031,cycles,0.000,,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,on-chain ISETP+SEL round trip
-alu.lop3.lat,alu,LOP3,,latency_cycles,4.10938,cycles,0.000,alu,4,jia2019turing:tab4.1,2.7,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.lop3.tput,alu,LOP3,w8,recip_tput,1.96918,warpinst/SM/clk,0.000,alu,2.0,nvidia2018turing:sec-sm,-1.5,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.popc.lat,alu,POPC,,latency_cycles,15,cycles,0.000,own,15,jia2019turing:tab4.1,0.0,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.popc.tput,alu,POPC,w16,recip_tput,0.499986,warpinst/SM/clk,0.000,own,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.popc_vs_lsu.probe,pipes,POPC,class,na,0.676738,warpinst/SM/clk,0.000,,,,,UNVERIFIED,bench/alu/audit_probes.cu@78d2a33 n_runs=4,1455,pipe=SHARED path; mix 0.676 vs same 0.50 / diff 1.00 warpinst/SM/clk (explains the factorial POPC error class); between-run spread 0.17% exceeds within-run cv 0.00%
-alu.prmt.lat,alu,PRMT,,latency_cycles,4.125,cycles,0.000,alu,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.prmt.tput,alu,PRMT,w32,recip_tput,1.96612,warpinst/SM/clk,0.000,alu,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.sel.lat,alu,SEL,,latency_cycles,4.10156,cycles,0.000,alu,4,jia2019turing:tab4.1,2.5,ok,bench/alu/alu.cu@813577c n_runs=8,1455,setp off-chain; chain is SEL alone
-alu.sel.tput,alu,SEL,w32,recip_tput,1.95409,warpinst/SM/clk,0.000,alu,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,stream is ISETP+SEL pairs; value counts both
-alu.shf.lat,alu,SHF,,latency_cycles,4.10938,cycles,0.000,alu,4,jia2019turing:tab4.1,2.7,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-alu.shf.tput,alu,SHF,w8,recip_tput,1.96918,warpinst/SM/clk,0.000,alu,,,,ok,bench/alu/alu.cu@813577c n_runs=8,1455,
-atomics.global.add.lat,atomics,,,latency_cycles,312.023,cycles,0.005,,,,,UNVERIFIED,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 0.65% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.61%
-atomics.global.add.lat,atomics,,contention16,latency_cycles,305.547,cycles,0.010,,,,,UNVERIFIED,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 0.73% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.72%
-atomics.global.add.lat,atomics,,contention2,latency_cycles,311.392,cycles,0.004,,,,,UNVERIFIED,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 0.54% exceeds within-run cv 0.00%; GPU0-vs-GPU1 medians differ 0.52%
-atomics.global.add.lat,atomics,,contention32,latency_cycles,300.07,cycles,0.044,,,,,UNVERIFIED,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 0.41% exceeds within-run cv 0.04%; GPU0-vs-GPU1 medians differ 0.36%
-atomics.global.add.lat,atomics,,contention4,latency_cycles,311.976,cycles,0.005,,,,,UNVERIFIED,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 0.85% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.81%
-atomics.global.add.lat,atomics,,contention8,latency_cycles,310.185,cycles,0.007,,,,,UNVERIFIED,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 1.46% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 1.45%
-atomics.global.add.tput,atomics,,w1,recip_tput,0.0195313,warpinst/SM/clk,0.000,,,,,ok,bench/mem/atomics.cu@4b2f6fe n_runs=4,1455,non-returning atomicAdd lowers to the RED reduction form; distinct line per lane
-atomics.global.cas.lat,atomics,,,latency_cycles,328.879,cycles,0.005,,,,,UNVERIFIED,bench/mem/atomics.cu@4b2f6fe+6ae35c2 n_runs=8,1455,per-lane dependent CAS chains on distinct lines; no published prior; between-run spread 2.09% exceeds within-run cv 0.00%; GPU0-vs-GPU1 medians differ 2.08%
-atomics.shared.add.lat,atomics,,,latency_cycles,25.0001,cycles,0.000,,8,jia2019turing:tab4.2,212.5,DEV>25%,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,dependent chain through returned value; c lanes share one slot
-atomics.shared.add.lat,atomics,,contention16,latency_cycles,54.9998,cycles,0.000,,37,jia2019turing:tab4.2,48.6,DEV>25%,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,dependent chain through returned value; c lanes share one slot
-atomics.shared.add.lat,atomics,,contention2,latency_cycles,26.9999,cycles,0.000,,10,jia2019turing:tab4.2,170.0,DEV>25%,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,dependent chain through returned value; c lanes share one slot
-atomics.shared.add.lat,atomics,,contention32,latency_cycles,86.9998,cycles,0.000,,69,jia2019turing:tab4.2,26.1,DEV>25%,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,dependent chain through returned value; c lanes share one slot
-atomics.shared.add.lat,atomics,,contention4,latency_cycles,31.0001,cycles,0.000,,14,jia2019turing:tab4.2,121.4,DEV>25%,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,dependent chain through returned value; c lanes share one slot
-atomics.shared.add.lat,atomics,,contention8,latency_cycles,38.9999,cycles,0.000,,22,jia2019turing:tab4.2,77.3,DEV>25%,bench/mem/atomics.cu@4b2f6fe+54454fe+6ae35c2 n_runs=16,1455,dependent chain through returned value; c lanes share one slot
-atomics.shared.add.tput,atomics,,w4,recip_tput,0.500001,warpinst/SM/clk,0.000,,,,,ok,bench/mem/atomics.cu@4b2f6fe n_runs=4,1455,non-returning shared adds stay ATOMS.ADD (no shared RED form); distinct slot per lane
-atomics.shared.cas.lat,atomics,,,latency_cycles,37.0001,cycles,0.000,,,,,ok,bench/mem/atomics.cu@4b2f6fe n_runs=4,1455,per-lane dependent CAS chains on distinct shared slots; no published prior
-branch.divergent,sync,,1way,cycles_per_iter,16.6875,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,uniform branch baseline; 4 chained FFMAs per iter
-branch.divergent,sync,,2way,cycles_per_iter,35,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,two serialised paths
-branch.divergent,sync,,32way,cycles_per_iter,528,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,fully serialised; reconvergence via BSSY/BSYNC
-branch.divergent,sync,,4way,cycles_per_iter,66.75,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,
-branch.predicated,sync,,,cycles_per_iter,16.6875,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@5c88700 n_runs=5,1455,same work
-cvt.f2f.lat,cvt,,roundtrip_pair,latency_cycles,11.5625,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@4b2f6fe+a4fdd73 n_runs=9,1455,per-convert avg of F2F+HADD2 pair: ptxas lowers f16-to-f32 widening to HADD2 (half pipe) not F2F
-cvt.f2f.lat,cvt,,roundtrip_pair_derived,latency_cycles,12.5181,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@4b2f6fe n_runs=4,1455,second method: pair+FADD chain minus the FADD row (4.12); corroborates roundtrip_pair
-cvt.f2f.tput,cvt,,w32_pair,recip_tput,0.99982,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@4b2f6fe+a4fdd73 n_runs=9,1455,round-trip pair stream
-cvt.i2f_f2i.lat,cvt,,roundtrip_pair,latency_cycles,15.0078,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@4b2f6fe+a4fdd73 n_runs=9,1455,per-convert avg of f32-to-s32-to-f32 pair
-cvt.i2f_f2i.lat,cvt,,roundtrip_pair_derived,latency_cycles,16.0181,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@4b2f6fe n_runs=4,1455,second method: pair+FADD chain minus the FADD row (4.12); corroborates roundtrip_pair
-cvt.i2f_f2i.tput,cvt,,w16_pair,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@4b2f6fe+a4fdd73 n_runs=9,1455,round-trip pair stream
-launch.empty_kernel.lat,launch,,roundtrip,time_us,4.297,us,7.861,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=5,1455,launch plus full synchronisation; p10 4.11 us; p90 4.43 us
-launch.empty_kernel.lat,launch,,submit,time_us,1.53002,us,4.674,,,,,UNVERIFIED,bench/launch/launch.cu@8b811a5 n_runs=5,1455,async submission; 64-launch batches; p10 1.48 us; p90 1.55 us; between-run spread 5.46% exceeds within-run cv 4.67%
-launch.empty_kernel.lat,launch,,submit_args8,time_us,1.54875,us,4.303,,,,,UNVERIFIED,bench/launch/launch.cu@086e5a3 n_runs=6,1455,8 pointer args; single kernel identity; p10 1.53 us; p90 1.59 us; between-run spread 5.41% exceeds within-run cv 4.30%
-launch.empty_kernel.lat,launch,,submit_args8_varied,time_us,1.55245,us,3.688,,,,,ok,bench/launch/launch.cu@086e5a3 n_runs=6,1455,8 pointer args; 8 kernel identities cycled; p10 1.53 us; p90 1.58 us
-launch.empty_kernel.lat,launch,,submit_busyqueue,time_us,1.51087,us,5.521,,,,,ok,bench/launch/launch.cu@086e5a3 n_runs=4,1455,64 launches of ~10 us kernels; the queue stays full; p10 1.46 us; p90 1.55 us
-launch.empty_kernel.lat,launch,,submit_dualgpu_pingpong,time_us,1.64795,us,4.619,,,,,UNVERIFIED,bench/launch/launch.cu@086e5a3 n_runs=5,1455,alternating target devices per launch (the dual-GPU graph-split pattern); p10 1.61 us; p90 1.74 us; between-run spread 5.79% exceeds within-run cv 4.62%
-launch.empty_kernel.lat,launch,,submit_eventxcheck,time_us,1.56525,us,3.271,,,,,UNVERIFIED,bench/launch/launch.cu@8b811a5 n_runs=4,1455,device-event view of the submission stream (cross-check); p10 1.49 us; p90 1.53 us; between-run spread 6.84% exceeds within-run cv 3.27%
-launch.event.query,launch,,,time_us,0.168,us,1.522,,,,,UNVERIFIED,bench/launch/launch.cu@8b811a5 n_runs=4,1455,on a completed event; p10 0.16 us; p90 0.16 us; between-run spread 5.39% exceeds within-run cv 1.52%
-launch.event.record,launch,,,time_us,1.46591,us,6.443,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=4,1455,64-record batches; p10 1.41 us; p90 1.52 us
-launch.event.sync,launch,,,time_us,0.184133,us,3.392,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=4,1455,on a completed event; p10 0.18 us; p90 0.19 us
-launch.graph.roundtrip,launch,,n64,time_us,55.111,us,1.077,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=4,1455,64-node graph launch plus sync; p10 54.86 us; p90 55.38 us
-launch.graph_node.replay,launch,,slope,time_us,0.906253,us,0.147,,,,,ok,bench/launch/launch.cu@8b811a5 n_runs=4,1455,per-node replay: (256-node - 64-node)/192 graph round trips; p10 0.91 us; p90 0.91 us
-mem.const.cbank.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,ok,bench/mem/constpath.cu@3727ddd n_runs=4,1455,divergent registers converging to one slot: main-path LDC broadcast hit; immediates are decode-embedded (note not row)
-mem.const.idc.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,ok,bench/mem/constpath.cu@3727ddd n_runs=4,1455,32 distinct constant addresses per step: serialised constant read (per-step latency)
-mem.const.uldc.lat,mem,,,latency_cycles,5.10938,cycles,0.000,,,,,ok,bench/mem/constpath.cu@3727ddd n_runs=4,1455,warp-uniform chain lowered to ULDC by ptxas: the uniform-datapath constant load (SASS verified)
-mem.dram.bw,mem,,copy,bandwidth,507.085,GB/s,0.209,,,,,ok,bench/mem/drambw.cu@9cea8e3 n_runs=4,1455,float4 copy within the buffer; bytes counted read+write
-mem.dram.bw,mem,,read,bandwidth,608.621,GB/s,0.069,,,,,ok,bench/mem/drambw.cu@9cea8e3 n_runs=4,1455,coalesced float4 read; 512 MiB footprint
-mem.dram.bw,mem,,write,bandwidth,477.438,GB/s,0.418,,,,,UNVERIFIED,bench/mem/drambw.cu@9cea8e3 n_runs=4,1455,coalesced float4 write; between-run spread 0.86% exceeds within-run cv 0.42%
-mem.dram.lat,mem,,fp262144k,latency_ns,299.949,ns,0.076,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,designated DRAM row (256 MiB footprint); ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.icache.lat,mem,,body128k,latency_cycles,4.79555,cycles/op,0.009,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
-mem.icache.lat,mem,,body16k,latency_cycles,2.11816,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
-mem.icache.lat,mem,,body1k,latency_cycles,2.09375,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
-mem.icache.lat,mem,,body32k,latency_cycles,2.34668,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
-mem.icache.lat,mem,,body4k,latency_cycles,2.05469,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
-mem.icache.lat,mem,,body64k,latency_cycles,3.88443,cycles/op,0.007,,,,,ok,bench/mem/icache.cu@24a15ef n_runs=4,1455,single warp; unrolled FFMA body; 16 B per SASS op
-mem.l1.bw,mem,,w4_f128,bandwidth,31.9997,B/clk/SM,0.002,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
-mem.l1.bw,mem,,w16_f32,bandwidth,63.9111,B/clk/SM,0.018,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
-mem.l1.bw,mem,,w32_f64,bandwidth,63.9862,B/clk/SM,0.012,,,,,ok,bench/mem/l1bw.cu@1b7a3db n_runs=4,1455,L1-resident streaming
-mem.l1.carveout,mem,,carve0_fp16k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve0_fp24k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve0_fp32k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve0_fp48k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve0_fp64k,latency_cycles,127.151,cycles,0.102,,,,,UNVERIFIED,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout; between-run spread 0.14% exceeds within-run cv 0.10%
-mem.l1.carveout,mem,,carve0_fp96k,latency_cycles,233.064,cycles,0.004,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve32_fp16k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve32_fp24k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve32_fp32k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve32_fp48k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve32_fp64k,latency_cycles,127.502,cycles,0.107,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve32_fp96k,latency_cycles,233.063,cycles,0.003,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve64_fp16k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve64_fp24k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve64_fp32k,latency_cycles,155.179,cycles,0.004,,,,,UNVERIFIED,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout; between-run spread 0.25% exceeds within-run cv 0.00%
-mem.l1.carveout,mem,,carve64_fp48k,latency_cycles,230.839,cycles,0.027,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve64_fp64k,latency_cycles,232.085,cycles,0.185,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.carveout,mem,,carve64_fp96k,latency_cycles,234.841,cycles,0.002,,,,,ok,bench/mem/carveout.cu@1a73a73 n_runs=4,1455,chase cycles vs footprint at a preferred-smem carveout
-mem.l1.lat,mem,,l1hit,latency_cycles,34,cycles,0.000,,32,jia2019turing:sec3.1.1,6.2,ok,bench/mem/l1.cu@4b2f6fe+a4fdd73 n_runs=9,1455,pointer chase; embedded 64-bit pointers; pure LDG chain
-mem.l1.line,mem,,stride128,latency_cycles,234.978,cycles,0.003,,,,,ok,bench/mem/l1.cu@4b2f6fe n_runs=4,1455,256 KiB sequential ring (4x L1)
-mem.l1.line,mem,,stride16,latency_cycles,134.486,cycles,0.003,,,,,ok,bench/mem/l1.cu@4b2f6fe n_runs=4,1455,256 KiB sequential ring (4x L1)
-mem.l1.line,mem,,stride32,latency_cycles,234.977,cycles,0.003,,,,,ok,bench/mem/l1.cu@4b2f6fe n_runs=4,1455,256 KiB sequential ring (4x L1)
-mem.l1.line,mem,,stride64,latency_cycles,234.977,cycles,0.003,,,,,ok,bench/mem/l1.cu@4b2f6fe n_runs=4,1455,256 KiB sequential ring (4x L1)
-mem.l1.line,mem,,stride8,latency_cycles,84.2453,cycles,0.003,,,,,ok,bench/mem/l1.cu@4b2f6fe n_runs=4,1455,256 KiB sequential ring (4x L1)
-mem.l2.bw,mem,,read_cg,bandwidth,382.558,GB/s,0.809,,,,,UNVERIFIED,bench/mem/l2bw.cu@4025b08 n_runs=9,1455,4 MiB footprint; .cg (every request served by the L2); BELOW the DRAM streaming rate - the L2 request path saturates first (cf. the stride bench); between-run spread 0.96% exceeds within-run cv 0.81%
-mem.l2.bw,mem,,read_default,bandwidth,1110.48,GB/s,6.239,,,,,UNVERIFIED,bench/mem/l2bw.cu@4025b08 n_runs=5,1455,default policy: L1s share the load (4 MiB across 72 x 64K L1); between-run spread 12.12% exceeds within-run cv 6.24%
-mem.l2.lat,mem,,fp4096k,latency_ns,161.47,ns,0.004,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,designated L2 row (4 MiB footprint within the 6 MB L2); ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.ldg.policy.lat,mem,,default,latency_ns,161.454,ns,0.007,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,2 MiB ring (L1-capacity miss / L2 hit); ns = cyc/1.455
-mem.ldg.policy.lat,mem,,default_l1fit,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=4,1455,16 KiB ring; default retains in L1
-mem.ldg.policy.lat,mem,,ldcg,latency_ns,161.457,ns,0.005,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,L2-only (bypass L1)
-mem.ldg.policy.lat,mem,,ldcg_l1fit,latency_ns,161.301,ns,0.005,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=4,1455,16 KiB ring; L2-only never retains
-mem.ldg.policy.lat,mem,,ldcs,latency_ns,161.453,ns,0.011,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=5,1455,evict-first streaming policy
-mem.ldg.policy.lat,mem,,ldcs_l1fit,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=4,1455,16 KiB ring; does evict-first retain?
-mem.ldg.policy.lat,mem,,ldlu,latency_ns,161.485,ns,0.017,,,,,UNVERIFIED,bench/mem/policy.cu@a05c604 n_runs=5,1455,last-use policy; between-run spread 0.10% exceeds within-run cv 0.02%
-mem.ldg.policy.lat,mem,,ldlu_l1fit,latency_ns,161.3,ns,0.005,,,,,ok,bench/mem/policy.cu@a05c604 n_runs=4,1455,16 KiB ring; last-use retention
-mem.ldg.u8.stride.tput,mem,,stride1,bandwidth,151.334,GB/s,0.423,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 1 sectors per warp request predicted
-mem.ldg.u8.stride.tput,mem,,stride128,bandwidth,9.61647,GB/s,0.153,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 32 sectors per warp request predicted
-mem.ldg.u8.stride.tput,mem,,stride18,bandwidth,33.9054,GB/s,0.118,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 18 sectors per warp request predicted
-mem.ldg.u8.stride.tput,mem,,stride32,bandwidth,19.1139,GB/s,0.024,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 32 sectors per warp request predicted
-mem.ldg.u8.stride.tput,mem,,stride4,bandwidth,119.499,GB/s,0.142,,,,,ok,bench/mem/stride.cu@a4fdd73 n_runs=5,1455,u8 loads; 4 sectors per warp request predicted
-mem.pchase.lat,mem,,fp1024k,latency_ns,161.474,ns,0.005,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.pchase.lat,mem,,fp128k,latency_ns,161.549,ns,0.005,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.pchase.lat,mem,,fp32768k,latency_ns,299.954,ns,0.097,,,,,UNVERIFIED,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step; between-run spread 0.11% exceeds within-run cv 0.10%
-mem.pchase.lat,mem,,fp32k,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.pchase.lat,mem,,fp5120k,latency_ns,161.457,ns,0.005,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.pchase.lat,mem,,fp64k,latency_ns,89.3135,ns,0.300,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.pchase.lat,mem,,fp8192k,latency_ns,299.605,ns,0.081,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.pchase.lat,mem,,fp8k,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/pchase.cu@9cea8e3 n_runs=4,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
-mem.smem.bw,mem,,w4_f128,bandwidth,32.0065,B/clk/SM,0.012,,64,jia2019turing:fig3.12,-50.0,DEV>25%,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=9,1455,ptxas splits float4 into 2x LDS.64 whose 16 B stride self-conflicts 2-way; f32/f64 reach the ceiling
-mem.smem.bw,mem,,w8_f32,bandwidth,64.0265,B/clk/SM,0.003,,64,jia2019turing:fig3.12,0.0,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=9,1455,streaming; conflict-free per phase
-mem.smem.bw,mem,,w4_f64,bandwidth,63.9957,B/clk/SM,0.001,,64,jia2019turing:fig3.12,-0.0,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=9,1455,streaming; conflict-free per phase
-mem.smem.lat,mem,,broadcast,latency_cycles,22,cycles,0.000,,22,jia2019turing:fig3.11,0.0,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,byte-offset chase; pure LDS chain; all lanes broadcast
-mem.smem.lat,mem,,conflict1,latency_cycles,22,cycles,0.000,,22,jia2019turing:fig3.11,0.0,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
-mem.smem.lat,mem,,conflict16,latency_cycles,52,cycles,0.000,,,,,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
-mem.smem.lat,mem,,conflict2,latency_cycles,24,cycles,0.000,,,,,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
-mem.smem.lat,mem,,conflict32,latency_cycles,84,cycles,0.000,,85,jia2019turing:fig3.11,-1.2,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
-mem.smem.lat,mem,,conflict4,latency_cycles,28,cycles,0.000,,,,,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
-mem.smem.lat,mem,,conflict8,latency_cycles,36,cycles,0.000,,,,,ok,bench/mem/smem.cu@a4fdd73+c7a78f6 n_runs=10,1455,c-way bank conflict every step; per-lane rings
-mem.tex.lat,mem,,ldg_ci,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/tex.cu@4576286 n_runs=4,1455,read-only path chase via __ldg; compare l1hit 34 cyc (unified-L1 test)
-mem.tlb.lat,mem,,reach1024m,latency_ns,167.679,ns,0.004,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach12288m,latency_ns,173.555,ns,0.005,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach128m,latency_ns,167.698,ns,0.004,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach16384m,latency_ns,173.541,ns,0.005,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach16m,latency_ns,159.841,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 0.61% exceeds within-run cv 0.00%; GPU0-vs-GPU1 medians differ 0.61%
-mem.tlb.lat,mem,,reach2048m,latency_ns,167.606,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach256m,latency_ns,167.577,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach32m,latency_ns,160.859,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach4096m,latency_ns,167.634,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach512m,latency_ns,167.633,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach64m,latency_ns,167.51,ns,0.003,,,,,ok,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
-mem.tlb.lat,mem,,reach8192m,latency_ns,167.661,ns,0.008,,,,,UNVERIFIED,bench/mem/tlb.cu@3727ddd n_runs=4,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 1.99% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.98%
-sfu.mufu.cos.lat,sfu,,,latency_cycles,21,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
-sfu.mufu.cos.tput,sfu,,w16,recip_tput,0.499743,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,
-sfu.mufu.ex2.lat,sfu,,,latency_cycles,15,cycles,0.000,,15,jia2019turing:tab4.1,0.0,ok,bench/sfu/mufu.cu@a4fdd73 n_runs=5,1455,ftz form (single MUFU.EX2; non-ftz adds a denormal fixup sequence); chain saturates to inf
-sfu.mufu.ex2.tput,sfu,,w32,recip_tput,0.49998,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu.cu@a4fdd73 n_runs=5,1455,
-sfu.mufu.lg2.lat,sfu,,,latency_cycles,15,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
-sfu.mufu.lg2.tput,sfu,,w16,recip_tput,0.499984,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,
-sfu.mufu.rcp_fadd_pair.lat,sfu,,,latency_cycles,21.1562,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=7,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
-sfu.mufu.rcp_fadd_pair.tput,sfu,,w16,recip_tput,0.499618,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=7,1455,
-sfu.mufu.rsq.lat,sfu,,,latency_cycles,15,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
-sfu.mufu.rsq.tput,sfu,,w16,recip_tput,0.499984,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,
-sfu.mufu.sin.lat,sfu,,,latency_cycles,21,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
-sfu.mufu.sin.tput,sfu,,w16,recip_tput,0.499733,warpinst/SM/clk,0.001,,,,,ok,bench/sfu/mufu_set.cu@1bae045+e163814 n_runs=8,1455,
-sync.bar.lat,sync,,w1,latency_cycles,22.3437,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe+a4fdd73 n_runs=10,1455,
-sync.bar.lat,sync,,w16,latency_cycles,52.3436,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe+a4fdd73 n_runs=10,1455,
-sync.bar.lat,sync,,w1_direct,latency_cycles,28,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe n_runs=4,1455,second method: per-barrier clock64 pair (carries the timer read); corroborates the slope row
-sync.bar.lat,sync,,w2,latency_cycles,24.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe+a4fdd73 n_runs=10,1455,
-sync.bar.lat,sync,,w32,latency_cycles,84.3439,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe+a4fdd73 n_runs=10,1455,
-sync.bar.lat,sync,,w4,latency_cycles,28.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe+a4fdd73 n_runs=10,1455,
-sync.bar.lat,sync,,w6,latency_cycles,32.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe+a4fdd73 n_runs=10,1455,192 threads; production attention block shape
-sync.bar.lat,sync,,w6_direct,latency_cycles,35,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe n_runs=4,1455,second method: per-barrier clock64 pair (carries the timer read); corroborates the slope row
-sync.bar.lat,sync,,w8,latency_cycles,36.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe+a4fdd73 n_runs=10,1455,
-sync.bar.tput,sync,,2blk_w6,latency_cycles,32.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@4b2f6fe n_runs=4,1455,per-barrier cost in block 0 with a co-resident 192-thread CTA per SM; compare sync.bar.lat w6
-sync.shfl.lat,sync,,idx,latency_cycles,25,cycles,0.000,,,,,ok,bench/sync/shfl.cu@5c88700 n_runs=5,1455,value-dependent SHFL.IDX ring chain
-sync.shfl.tput,sync,,w4_idx,recip_tput,0.49998,warpinst/SM/clk,0.000,,,,,ok,bench/sync/shfl.cu@5c88700 n_runs=5,1455,
-sync.vote.lat,sync,,ballot,latency_cycles,16.1875,cycles,0.000,,,,,ok,bench/sync/vote.cu@4b2f6fe n_runs=4,1455,dependent ballot chain; result feeds the next predicate via a lane shift
-sync.vote.tput,sync,,w8_ballot,recip_tput,0.960001,warpinst/SM/clk,0.000,,,,,ok,bench/sync/vote.cu@4b2f6fe n_runs=4,1455,four independent ballot chains per warp
-tensor.hmma.1688.lat,tensor,,d_feeds_a,latency_cycles,14.0234,cycles,0.000,,,,,ok,bench/tensor/tensor.cu@36c748c+4b2f6fe n_runs=9,1455,dependent accumulate chain (D feeds A)
-tensor.hmma.1688.tput,tensor,,w8_f16acc,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@36c748c+4b2f6fe n_runs=9,1455,m16n8k8 f16 accumulate; 1024 MAC per inst per warp
-tensor.hmma.1688.tput,tensor,,w8_f32acc,recip_tput,0.499955,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@36c748c+4b2f6fe n_runs=9,1455,m16n8k8 f32 accumulate; FULL rate on this Quadro-positioned TU102 (the half-rate prior describes GeForce variants)
-tensor.hmma_vs_hfma2.probe,pipes,,class,na,0.758505,warpinst/SM/clk,0.000,,,,,ok,bench/alu/audit_probes.cu@78d2a33 n_runs=4,1455,pipe=SHARED unit (FP16 via tensor cores); mix 0.759 vs shared 0.80 / distinct 1.00
-tensor.imma.8816.tput,tensor,,w8_s8,recip_tput,0.999914,warpinst/SM/clk,0.000,,1.0,nvidia2018turing:sec-tc,-0.0,ok,bench/tensor/tensor.cu@36c748c+4b2f6fe n_runs=9,1455,m8n8k16 s8; 1024 MAC per inst per warp
-tensor.ldsm.lat,tensor,,x1_chain,latency_cycles,29.9999,cycles,0.000,,,,,ok,bench/tensor/tensor.cu@4b2f6fe n_runs=4,1455,chain link = LDSM + address LOP3 (loaded value perturbs the next row address); construction named
-tensor.ldsm.tput,tensor,,w8_x4,recip_tput,0.125007,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@4b2f6fe n_runs=4,1455,ldmatrix m8n8.x4 (four 8x8 b16 tiles per inst)
+alu.dadd.lat,alu,DADD,,latency_cycles,43.9999,cycles,0.000,own,48,jia2019turing:tab4.1,-8.3,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.dadd.tput,alu,DADD,w32,recip_tput,0.0526396,warpinst/SM/clk,0.002,own,0.0625,nvidia2018turing:sec-sm,-15.8,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.dfma.lat,alu,DFMA,,latency_cycles,48.0001,cycles,0.000,own,54,jia2019turing:tab4.1,-11.1,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.dfma.tput,alu,DFMA,w32,recip_tput,0.0526399,warpinst/SM/clk,0.003,own,0.0625,nvidia2018turing:sec-sm,-15.8,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.fadd.lat,alu,FADD,,latency_cycles,4.1172,cycles,0.000,fma,4,jia2019turing:tab4.1,2.9,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.fadd.tput,alu,FADD,w32,recip_tput,1.99984,warpinst/SM/clk,0.000,fma,2.0,nvidia2018turing:sec-sm,-0.0,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.ffma.lat,alu,FFMA,,latency_cycles,4.07032,cycles,0.000,fma,4,jia2019turing:tab4.1,1.8,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.ffma.tput,alu,FFMA,w8,recip_tput,1.99991,warpinst/SM/clk,0.000,fma,2.0,nvidia2018turing:sec-sm,-0.0,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.flo.lat,alu,FLO,,latency_cycles,15,cycles,0.000,own,15,jia2019turing:tab4.1,0.0,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.flo.tput,alu,FLO,w16,recip_tput,0.499986,warpinst/SM/clk,0.000,own,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.fmul.lat,alu,FMUL,,latency_cycles,4.1172,cycles,0.000,fma,4,jia2019turing:tab4.1,2.9,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.fmul.tput,alu,FMUL,w32,recip_tput,1.99984,warpinst/SM/clk,0.000,fma,2.0,nvidia2018turing:sec-sm,-0.0,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.fsel.lat,alu,SEL,,latency_cycles,4.10155,cycles,0.000,,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,f32 selp; compare off-chain
+alu.fsetp.lat,alu,FSETP,derived,latency_cycles,4.00784,cycles,0.000,,4,jia2019turing:tab4.1,0.2,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,derived: fsetp_sel.lat(pair) - fsel.lat
+alu.fsetp.tput,alu,FSETP,w32_pair,recip_tput,1.98432,warpinst/SM/clk,0.000,,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,FSETP+SEL pair stream; value counts both ops
+alu.fsetp_sel.lat,alu,FSETP+SEL,pair,latency_cycles,8.1094,cycles,0.000,,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,on-chain FSETP+SEL round trip
+alu.hfma2.lat,alu,HFMA2,,latency_cycles,6.1875,cycles,0.000,own,6,jia2019turing:tab4.1,3.1,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.hfma2.tput,alu,HFMA2,w32,recip_tput,1.96146,warpinst/SM/clk,0.000,own,2.0,nvidia2018turing:sec-sm,-1.9,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.iadd3.lat,alu,IADD3,derived,latency_cycles,3.96094,cycles,0.000,,4,jia2019turing:tab4.1,-1.0,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,derived: iadd3_lop3.lat(pair) - lop3.lat
+alu.iadd3.tput,alu,IADD3,w32_mixpair,recip_tput,1.98441,warpinst/SM/clk,0.000,,2.0,nvidia2018turing:sec-sm,-0.8,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,IADD3+LOP3 alternating stream; value counts both ops
+alu.iadd3_lop3.lat,alu,IADD3+LOP3,pair,latency_cycles,8.07031,cycles,0.000,,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,alternating IADD3+LOP3 chain; pure add chains are strength-reduced by ptxas
+alu.idiv.u32.lat,alu,(IDIV sequence),,latency_cycles,55.4688,cycles,0.000,,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,emulated sequence; lat of whole sequence
+alu.idiv.u32.tput,alu,(IDIV sequence),w32,recip_tput,0.273653,warpinst/SM/clk,0.009,,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,emulated sequence
+alu.idp4a.lat,alu,IDP.4A,s8,latency_cycles,4.10938,cycles,0.000,fma,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,accumulator chain
+alu.idp4a.lat,alu,IDP.4A,u8,latency_cycles,4.10938,cycles,0.000,fma,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,accumulator chain
+alu.idp4a.tput,alu,IDP.4A,w8_s8,recip_tput,1.99996,warpinst/SM/clk,0.000,fma,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.idp4a.tput,alu,IDP.4A,w8_u8,recip_tput,1.99996,warpinst/SM/clk,0.000,fma,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.imad.lat,alu,IMAD,,latency_cycles,4.10938,cycles,0.000,fma,5,jia2019turing:tab4.1,-17.8,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.imad.tput,alu,IMAD,w8,recip_tput,1.99996,warpinst/SM/clk,0.000,fma,2.0,nvidia2018turing:sec-sm,-0.0,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.isetp.lat,alu,ISETP,derived,latency_cycles,3.96875,cycles,0.000,,4,jia2019turing:tab4.1,-0.8,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,derived: isetp_sel.lat(pair) - sel.lat
+alu.isetp.tput,alu,ISETP,w32_pair,recip_tput,1.98441,warpinst/SM/clk,0.000,,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,ISETP+SEL pair stream; value counts both ops (a pure compare stream is dead code to ptxas)
+alu.isetp_sel.lat,alu,ISETP+SEL,pair,latency_cycles,8.07031,cycles,0.000,,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,on-chain ISETP+SEL round trip
+alu.lop3.lat,alu,LOP3,,latency_cycles,4.10938,cycles,0.000,alu,4,jia2019turing:tab4.1,2.7,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.lop3.tput,alu,LOP3,w8,recip_tput,1.96918,warpinst/SM/clk,0.000,alu,2.0,nvidia2018turing:sec-sm,-1.5,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.popc.lat,alu,POPC,,latency_cycles,15,cycles,0.000,own,15,jia2019turing:tab4.1,0.0,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.popc.tput,alu,POPC,w16,recip_tput,0.499986,warpinst/SM/clk,0.000,own,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.popc_vs_lsu.probe,pipes,POPC,class,na,0.67631,warpinst/SM/clk,0.000,,,,,UNVERIFIED,bench/alu/audit_probes.cu@2bf0336+78d2a33 n_runs=6,1455,pipe=SHARED path; mix 0.676 vs same 0.50 / diff 1.00 warpinst/SM/clk (explains the factorial POPC error class); between-run spread 0.17% exceeds within-run cv 0.00%
+alu.prmt.lat,alu,PRMT,,latency_cycles,4.125,cycles,0.000,alu,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.prmt.tput,alu,PRMT,w32,recip_tput,1.96612,warpinst/SM/clk,0.000,alu,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.sel.lat,alu,SEL,,latency_cycles,4.10156,cycles,0.000,alu,4,jia2019turing:tab4.1,2.5,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,setp off-chain; chain is SEL alone
+alu.sel.tput,alu,SEL,w32,recip_tput,1.95409,warpinst/SM/clk,0.000,alu,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,stream is ISETP+SEL pairs; value counts both
+alu.shf.lat,alu,SHF,,latency_cycles,4.10938,cycles,0.000,alu,4,jia2019turing:tab4.1,2.7,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+alu.shf.tput,alu,SHF,w8,recip_tput,1.96918,warpinst/SM/clk,0.000,alu,,,,ok,bench/alu/alu.cu@2bf0336+813577c n_runs=10,1455,
+atomics.global.add.lat,atomics,,,latency_cycles,312.504,cycles,0.005,,,,,UNVERIFIED,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 0.65% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.60%
+atomics.global.add.lat,atomics,,contention16,latency_cycles,304.46,cycles,0.010,,,,,UNVERIFIED,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 1.24% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.72%
+atomics.global.add.lat,atomics,,contention2,latency_cycles,312.191,cycles,0.005,,,,,UNVERIFIED,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 0.77% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.52%
+atomics.global.add.lat,atomics,,contention32,latency_cycles,299.567,cycles,0.043,,,,,UNVERIFIED,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 1.46% exceeds within-run cv 0.04%; GPU0-vs-GPU1 medians differ 0.36%
+atomics.global.add.lat,atomics,,contention4,latency_cycles,313.237,cycles,0.005,,,,,UNVERIFIED,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 1.02% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.82%
+atomics.global.add.lat,atomics,,contention8,latency_cycles,311.002,cycles,0.007,,,,,UNVERIFIED,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding; between-run spread 1.46% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 1.44%
+atomics.global.add.tput,atomics,,w1,recip_tput,0.0195313,warpinst/SM/clk,0.000,,,,,ok,bench/mem/atomics.cu@2bf0336+4b2f6fe n_runs=7,1455,non-returning atomicAdd lowers to the RED reduction form; distinct line per lane
+atomics.global.cas.lat,atomics,,,latency_cycles,325.474,cycles,0.005,,,,,UNVERIFIED,bench/mem/atomics.cu@2bf0336+4b2f6fe+6ae35c2 n_runs=11,1455,per-lane dependent CAS chains on distinct lines; no published prior; between-run spread 2.93% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 2.09%
+atomics.shared.add.lat,atomics,,,latency_cycles,25.0001,cycles,0.000,,8,jia2019turing:tab4.2,212.5,DEV>25%,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,dependent chain through returned value; c lanes share one slot
+atomics.shared.add.lat,atomics,,contention16,latency_cycles,54.9998,cycles,0.000,,37,jia2019turing:tab4.2,48.6,DEV>25%,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,dependent chain through returned value; c lanes share one slot
+atomics.shared.add.lat,atomics,,contention2,latency_cycles,26.9999,cycles,0.000,,10,jia2019turing:tab4.2,170.0,DEV>25%,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,dependent chain through returned value; c lanes share one slot
+atomics.shared.add.lat,atomics,,contention32,latency_cycles,86.9998,cycles,0.000,,69,jia2019turing:tab4.2,26.1,DEV>25%,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,dependent chain through returned value; c lanes share one slot
+atomics.shared.add.lat,atomics,,contention4,latency_cycles,31.0001,cycles,0.000,,14,jia2019turing:tab4.2,121.4,DEV>25%,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,dependent chain through returned value; c lanes share one slot
+atomics.shared.add.lat,atomics,,contention8,latency_cycles,38.9999,cycles,0.000,,22,jia2019turing:tab4.2,77.3,DEV>25%,bench/mem/atomics.cu@2bf0336+4b2f6fe+54454fe+6ae35c2 n_runs=19,1455,dependent chain through returned value; c lanes share one slot
+atomics.shared.add.tput,atomics,,w4,recip_tput,0.500001,warpinst/SM/clk,0.000,,,,,ok,bench/mem/atomics.cu@2bf0336+4b2f6fe n_runs=7,1455,non-returning shared adds stay ATOMS.ADD (no shared RED form); distinct slot per lane
+atomics.shared.cas.lat,atomics,,,latency_cycles,37.0001,cycles,0.000,,,,,ok,bench/mem/atomics.cu@2bf0336+4b2f6fe n_runs=7,1455,per-lane dependent CAS chains on distinct shared slots; no published prior
+branch.divergent,sync,,1way,cycles_per_iter,16.6875,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@2bf0336+5c88700 n_runs=7,1455,uniform branch baseline; 4 chained FFMAs per iter
+branch.divergent,sync,,2way,cycles_per_iter,35,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@2bf0336+5c88700 n_runs=7,1455,two serialised paths
+branch.divergent,sync,,32way,cycles_per_iter,528,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@2bf0336+5c88700 n_runs=7,1455,fully serialised; reconvergence via BSSY/BSYNC
+branch.divergent,sync,,4way,cycles_per_iter,66.75,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@2bf0336+5c88700 n_runs=7,1455,
+branch.predicated,sync,,,cycles_per_iter,16.6875,cycles/iter,0.000,,,,,ok,bench/sync/branch.cu@2bf0336+5c88700 n_runs=7,1455,same work
+cvt.f2f.lat,cvt,,roundtrip_pair,latency_cycles,11.5625,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=11,1455,per-convert avg of F2F+HADD2 pair: ptxas lowers f16-to-f32 widening to HADD2 (half pipe) not F2F
+cvt.f2f.lat,cvt,,roundtrip_pair_derived,latency_cycles,12.5181,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@2bf0336+4b2f6fe n_runs=6,1455,second method: pair+FADD chain minus the FADD row (4.12); corroborates roundtrip_pair
+cvt.f2f.tput,cvt,,w32_pair,recip_tput,0.99982,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=11,1455,round-trip pair stream
+cvt.i2f_f2i.lat,cvt,,roundtrip_pair,latency_cycles,15.0078,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=11,1455,per-convert avg of f32-to-s32-to-f32 pair
+cvt.i2f_f2i.lat,cvt,,roundtrip_pair_derived,latency_cycles,16.0181,cycles,0.000,,,,,ok,bench/sfu/cvt.cu@2bf0336+4b2f6fe n_runs=6,1455,second method: pair+FADD chain minus the FADD row (4.12); corroborates roundtrip_pair
+cvt.i2f_f2i.tput,cvt,,w16_pair,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/cvt.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=11,1455,round-trip pair stream
+launch.empty_kernel.lat,launch,,roundtrip,time_us,4.293,us,7.861,,,,,ok,bench/launch/launch.cu@2bf0336+8b811a5 n_runs=7,1455,launch plus full synchronisation; p10 4.09 us; p90 4.40 us
+launch.empty_kernel.lat,launch,,submit,time_us,1.52636,us,4.674,,,,,UNVERIFIED,bench/launch/launch.cu@2bf0336+8b811a5 n_runs=7,1455,async submission; 64-launch batches; p10 1.50 us; p90 1.56 us; between-run spread 5.48% exceeds within-run cv 4.67%
+launch.empty_kernel.lat,launch,,submit_args8,time_us,1.55088,us,4.923,,,,,UNVERIFIED,bench/launch/launch.cu@086e5a3+2bf0336 n_runs=8,1455,8 pointer args; single kernel identity; p10 1.52 us; p90 1.63 us; between-run spread 5.40% exceeds within-run cv 4.92%
+launch.empty_kernel.lat,launch,,submit_args8_varied,time_us,1.55397,us,4.028,,,,,ok,bench/launch/launch.cu@086e5a3+2bf0336 n_runs=8,1455,8 pointer args; 8 kernel identities cycled; p10 1.54 us; p90 1.60 us
+launch.empty_kernel.lat,launch,,submit_busyqueue,time_us,1.52316,us,5.521,,,,,ok,bench/launch/launch.cu@086e5a3+2bf0336 n_runs=6,1455,64 launches of ~10 us kernels; the queue stays full; p10 1.52 us; p90 1.56 us
+launch.empty_kernel.lat,launch,,submit_dualgpu_pingpong,time_us,1.66761,us,4.867,,,,,UNVERIFIED,bench/launch/launch.cu@086e5a3+2bf0336 n_runs=7,1455,alternating target devices per launch (the dual-GPU graph-split pattern); p10 1.65 us; p90 1.74 us; between-run spread 5.72% exceeds within-run cv 4.87%
+launch.empty_kernel.lat,launch,,submit_eventxcheck,time_us,1.55,us,4.169,,,,,UNVERIFIED,bench/launch/launch.cu@2bf0336+8b811a5 n_runs=6,1455,device-event view of the submission stream (cross-check); p10 1.51 us; p90 1.58 us; between-run spread 6.90% exceeds within-run cv 4.17%
+launch.event.query,launch,,,time_us,0.168835,us,1.716,,,,,UNVERIFIED,bench/launch/launch.cu@2bf0336+8b811a5 n_runs=6,1455,on a completed event; p10 0.17 us; p90 0.18 us; between-run spread 5.36% exceeds within-run cv 1.72%
+launch.event.record,launch,,,time_us,1.4539,us,6.652,,,,,ok,bench/launch/launch.cu@2bf0336+8b811a5 n_runs=6,1455,64-record batches; p10 1.42 us; p90 1.50 us
+launch.event.sync,launch,,,time_us,0.18425,us,3.547,,,,,ok,bench/launch/launch.cu@2bf0336+8b811a5 n_runs=6,1455,on a completed event; p10 0.19 us; p90 0.19 us
+launch.graph.roundtrip,launch,,n64,time_us,55.1945,us,1.220,,,,,ok,bench/launch/launch.cu@2bf0336+8b811a5 n_runs=6,1455,64-node graph launch plus sync; p10 55.12 us; p90 56.49 us
+launch.graph_node.replay,launch,,slope,time_us,0.905825,us,0.058,,,,,ok,bench/launch/launch.cu@2bf0336+8b811a5 n_runs=6,1455,per-node replay: (256-node - 64-node)/192 graph round trips; p10 0.90 us; p90 0.90 us
+mem.const.cbank.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,ok,bench/mem/constpath.cu@2bf0336+3727ddd n_runs=6,1455,divergent registers converging to one slot: main-path LDC broadcast hit; immediates are decode-embedded (note not row)
+mem.const.idc.lat,mem,,,latency_cycles,26.1094,cycles,0.000,,,,,ok,bench/mem/constpath.cu@2bf0336+3727ddd n_runs=6,1455,32 distinct constant addresses per step: serialised constant read (per-step latency)
+mem.const.uldc.lat,mem,,,latency_cycles,5.10938,cycles,0.000,,,,,ok,bench/mem/constpath.cu@2bf0336+3727ddd n_runs=6,1455,warp-uniform chain lowered to ULDC by ptxas: the uniform-datapath constant load (SASS verified)
+mem.dram.bw,mem,,copy,bandwidth,507.065,GB/s,0.241,,,,,ok,bench/mem/drambw.cu@2bf0336+9cea8e3 n_runs=6,1455,float4 copy within the buffer; bytes counted read+write
+mem.dram.bw,mem,,read,bandwidth,608.99,GB/s,0.059,,,,,ok,bench/mem/drambw.cu@2bf0336+9cea8e3 n_runs=6,1455,coalesced float4 read; 512 MiB footprint
+mem.dram.bw,mem,,write,bandwidth,478.201,GB/s,0.460,,,,,UNVERIFIED,bench/mem/drambw.cu@2bf0336+9cea8e3 n_runs=6,1455,coalesced float4 write; between-run spread 1.24% exceeds within-run cv 0.46%
+mem.dram.lat,mem,,fp262144k,latency_ns,299.949,ns,0.071,,,,,UNVERIFIED,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,designated DRAM row (256 MiB footprint); ns = cycles/1.455 at the locked SM clock; 136 B chase step; between-run spread 0.15% exceeds within-run cv 0.07%
+mem.icache.lat,mem,,body128k,latency_cycles,4.79533,cycles/op,0.009,,,,,ok,bench/mem/icache.cu@24a15ef+2bf0336 n_runs=6,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body16k,latency_cycles,2.11816,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef+2bf0336 n_runs=6,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body1k,latency_cycles,2.09375,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef+2bf0336 n_runs=6,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body32k,latency_cycles,2.34668,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef+2bf0336 n_runs=6,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body4k,latency_cycles,2.05469,cycles/op,0.000,,,,,ok,bench/mem/icache.cu@24a15ef+2bf0336 n_runs=6,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.icache.lat,mem,,body64k,latency_cycles,3.88466,cycles/op,0.007,,,,,ok,bench/mem/icache.cu@24a15ef+2bf0336 n_runs=6,1455,single warp; unrolled FFMA body; 16 B per SASS op
+mem.l1.bw,mem,,w4_f128,bandwidth,31.9995,B/clk/SM,0.002,,,,,ok,bench/mem/l1bw.cu@1b7a3db+2bf0336 n_runs=6,1455,L1-resident streaming
+mem.l1.bw,mem,,w16_f32,bandwidth,63.9076,B/clk/SM,0.019,,,,,ok,bench/mem/l1bw.cu@1b7a3db+2bf0336 n_runs=6,1455,L1-resident streaming
+mem.l1.bw,mem,,w32_f64,bandwidth,63.9862,B/clk/SM,0.012,,,,,ok,bench/mem/l1bw.cu@1b7a3db+2bf0336 n_runs=6,1455,L1-resident streaming
+mem.l1.carveout,mem,,carve0_fp16k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve0_fp24k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve0_fp32k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve0_fp48k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve0_fp64k,latency_cycles,127.205,cycles,0.104,,,,,UNVERIFIED,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout; between-run spread 0.14% exceeds within-run cv 0.10%
+mem.l1.carveout,mem,,carve0_fp96k,latency_cycles,233.053,cycles,0.003,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve32_fp16k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve32_fp24k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve32_fp32k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve32_fp48k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve32_fp64k,latency_cycles,127.501,cycles,0.107,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve32_fp96k,latency_cycles,233.053,cycles,0.003,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve64_fp16k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve64_fp24k,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve64_fp32k,latency_cycles,155.37,cycles,0.003,,,,,UNVERIFIED,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout; between-run spread 0.41% exceeds within-run cv 0.00%
+mem.l1.carveout,mem,,carve64_fp48k,latency_cycles,230.893,cycles,0.026,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve64_fp64k,latency_cycles,232.043,cycles,0.191,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.carveout,mem,,carve64_fp96k,latency_cycles,234.837,cycles,0.002,,,,,ok,bench/mem/carveout.cu@1a73a73+2bf0336 n_runs=6,1455,chase cycles vs footprint at a preferred-smem carveout
+mem.l1.lat,mem,,l1hit,latency_cycles,34,cycles,0.000,,32,jia2019turing:sec3.1.1,6.2,ok,bench/mem/l1.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=11,1455,pointer chase; embedded 64-bit pointers; pure LDG chain
+mem.l1.line,mem,,stride128,latency_cycles,234.957,cycles,0.003,,,,,ok,bench/mem/l1.cu@2bf0336+4b2f6fe n_runs=6,1455,256 KiB sequential ring (4x L1)
+mem.l1.line,mem,,stride16,latency_cycles,134.473,cycles,0.002,,,,,ok,bench/mem/l1.cu@2bf0336+4b2f6fe n_runs=6,1455,256 KiB sequential ring (4x L1)
+mem.l1.line,mem,,stride32,latency_cycles,234.954,cycles,0.003,,,,,ok,bench/mem/l1.cu@2bf0336+4b2f6fe n_runs=6,1455,256 KiB sequential ring (4x L1)
+mem.l1.line,mem,,stride64,latency_cycles,234.951,cycles,0.003,,,,,ok,bench/mem/l1.cu@2bf0336+4b2f6fe n_runs=6,1455,256 KiB sequential ring (4x L1)
+mem.l1.line,mem,,stride8,latency_cycles,84.2391,cycles,0.002,,,,,ok,bench/mem/l1.cu@2bf0336+4b2f6fe n_runs=6,1455,256 KiB sequential ring (4x L1)
+mem.l2.bw,mem,,read_cg,bandwidth,382.852,GB/s,0.852,,,,,UNVERIFIED,bench/mem/l2bw.cu@2bf0336+4025b08 n_runs=11,1455,4 MiB footprint; .cg (every request served by the L2); BELOW the DRAM streaming rate - the L2 request path saturates first (cf. the stride bench); between-run spread 1.68% exceeds within-run cv 0.85%
+mem.l2.bw,mem,,read_default,bandwidth,1110.48,GB/s,6.239,,,,,UNVERIFIED,bench/mem/l2bw.cu@2bf0336+4025b08 n_runs=7,1455,default policy: L1s share the load (4 MiB across 72 x 64K L1); between-run spread 12.12% exceeds within-run cv 6.24%
+mem.l2.lat,mem,,fp4096k,latency_ns,161.483,ns,0.004,,,,,ok,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,designated L2 row (4 MiB footprint within the 6 MB L2); ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.ldg.policy.lat,mem,,default,latency_ns,161.486,ns,0.005,,,,,ok,bench/mem/policy.cu@2bf0336+a05c604 n_runs=7,1455,2 MiB ring (L1-capacity miss / L2 hit); ns = cyc/1.455
+mem.ldg.policy.lat,mem,,default_l1fit,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/policy.cu@2bf0336+a05c604 n_runs=6,1455,16 KiB ring; default retains in L1
+mem.ldg.policy.lat,mem,,ldcg,latency_ns,161.485,ns,0.005,,,,,ok,bench/mem/policy.cu@2bf0336+a05c604 n_runs=7,1455,L2-only (bypass L1)
+mem.ldg.policy.lat,mem,,ldcg_l1fit,latency_ns,161.358,ns,0.005,,,,,UNVERIFIED,bench/mem/policy.cu@2bf0336+a05c604 n_runs=6,1455,16 KiB ring; L2-only never retains; between-run spread 0.20% exceeds within-run cv 0.00%
+mem.ldg.policy.lat,mem,,ldcs,latency_ns,161.454,ns,0.014,,,,,ok,bench/mem/policy.cu@2bf0336+a05c604 n_runs=7,1455,evict-first streaming policy
+mem.ldg.policy.lat,mem,,ldcs_l1fit,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/policy.cu@2bf0336+a05c604 n_runs=6,1455,16 KiB ring; does evict-first retain?
+mem.ldg.policy.lat,mem,,ldlu,latency_ns,161.487,ns,0.015,,,,,UNVERIFIED,bench/mem/policy.cu@2bf0336+a05c604 n_runs=7,1455,last-use policy; between-run spread 0.10% exceeds within-run cv 0.01%
+mem.ldg.policy.lat,mem,,ldlu_l1fit,latency_ns,161.363,ns,0.004,,,,,UNVERIFIED,bench/mem/policy.cu@2bf0336+a05c604 n_runs=6,1455,16 KiB ring; last-use retention; between-run spread 0.20% exceeds within-run cv 0.00%
+mem.ldg.u8.stride.tput,mem,,stride1,bandwidth,151.334,GB/s,0.375,,,,,UNVERIFIED,bench/mem/stride.cu@2bf0336+a4fdd73 n_runs=7,1455,u8 loads; 1 sectors per warp request predicted; between-run spread 0.56% exceeds within-run cv 0.38%
+mem.ldg.u8.stride.tput,mem,,stride128,bandwidth,9.62024,GB/s,0.153,,,,,ok,bench/mem/stride.cu@2bf0336+a4fdd73 n_runs=7,1455,u8 loads; 32 sectors per warp request predicted
+mem.ldg.u8.stride.tput,mem,,stride18,bandwidth,33.9419,GB/s,0.118,,,,,ok,bench/mem/stride.cu@2bf0336+a4fdd73 n_runs=7,1455,u8 loads; 18 sectors per warp request predicted
+mem.ldg.u8.stride.tput,mem,,stride32,bandwidth,19.1284,GB/s,0.023,,,,,ok,bench/mem/stride.cu@2bf0336+a4fdd73 n_runs=7,1455,u8 loads; 32 sectors per warp request predicted
+mem.ldg.u8.stride.tput,mem,,stride4,bandwidth,119.659,GB/s,0.155,,,,,ok,bench/mem/stride.cu@2bf0336+a4fdd73 n_runs=7,1455,u8 loads; 4 sectors per warp request predicted
+mem.pchase.lat,mem,,fp1024k,latency_ns,161.473,ns,0.005,,,,,ok,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp128k,latency_ns,161.491,ns,0.005,,,,,UNVERIFIED,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step; between-run spread 0.15% exceeds within-run cv 0.00%
+mem.pchase.lat,mem,,fp32768k,latency_ns,299.866,ns,0.097,,,,,UNVERIFIED,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step; between-run spread 0.16% exceeds within-run cv 0.10%
+mem.pchase.lat,mem,,fp32k,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp5120k,latency_ns,161.448,ns,0.005,,,,,ok,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp64k,latency_ns,89.2484,ns,0.280,,,,,ok,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.pchase.lat,mem,,fp8192k,latency_ns,299.626,ns,0.078,,,,,UNVERIFIED,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step; between-run spread 0.11% exceeds within-run cv 0.08%
+mem.pchase.lat,mem,,fp8k,latency_ns,23.3677,ns,0.000,,,,,ok,bench/mem/pchase.cu@2bf0336+9cea8e3 n_runs=6,1455,ns = cycles/1.455 at the locked SM clock; 136 B chase step
+mem.smem.bw,mem,,w4_f128,bandwidth,32.0066,B/clk/SM,0.012,,64,jia2019turing:fig3.12,-50.0,DEV>25%,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=11,1455,ptxas splits float4 into 2x LDS.64 whose 16 B stride self-conflicts 2-way; f32/f64 reach the ceiling
+mem.smem.bw,mem,,w8_f32,bandwidth,64.0265,B/clk/SM,0.002,,64,jia2019turing:fig3.12,0.0,ok,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=11,1455,streaming; conflict-free per phase
+mem.smem.bw,mem,,w4_f64,bandwidth,63.9958,B/clk/SM,0.001,,64,jia2019turing:fig3.12,-0.0,ok,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=11,1455,streaming; conflict-free per phase
+mem.smem.lat,mem,,broadcast,latency_cycles,22,cycles,0.000,,22,jia2019turing:fig3.11,0.0,ok,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=12,1455,byte-offset chase; pure LDS chain; all lanes broadcast
+mem.smem.lat,mem,,conflict1,latency_cycles,22,cycles,0.000,,22,jia2019turing:fig3.11,0.0,ok,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=12,1455,c-way bank conflict every step; per-lane rings
+mem.smem.lat,mem,,conflict16,latency_cycles,52,cycles,0.000,,,,,ok,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=12,1455,c-way bank conflict every step; per-lane rings
+mem.smem.lat,mem,,conflict2,latency_cycles,24,cycles,0.000,,,,,ok,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=12,1455,c-way bank conflict every step; per-lane rings
+mem.smem.lat,mem,,conflict32,latency_cycles,84,cycles,0.000,,85,jia2019turing:fig3.11,-1.2,ok,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=12,1455,c-way bank conflict every step; per-lane rings
+mem.smem.lat,mem,,conflict4,latency_cycles,28,cycles,0.000,,,,,ok,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=12,1455,c-way bank conflict every step; per-lane rings
+mem.smem.lat,mem,,conflict8,latency_cycles,36,cycles,0.000,,,,,ok,bench/mem/smem.cu@2bf0336+a4fdd73+c7a78f6 n_runs=12,1455,c-way bank conflict every step; per-lane rings
+mem.tex.lat,mem,,ldg_ci,latency_cycles,34,cycles,0.000,,,,,ok,bench/mem/tex.cu@2bf0336+4576286 n_runs=6,1455,read-only path chase via __ldg; compare l1hit 34 cyc (unified-L1 test)
+mem.tlb.lat,mem,,reach1024m,latency_ns,167.69,ns,0.004,,,,,ok,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach12288m,latency_ns,173.553,ns,0.005,,,,,ok,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach128m,latency_ns,167.721,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 0.19% exceeds within-run cv 0.00%
+mem.tlb.lat,mem,,reach16384m,latency_ns,173.539,ns,0.005,,,,,ok,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach16m,latency_ns,160.327,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 1.69% exceeds within-run cv 0.00%
+mem.tlb.lat,mem,,reach2048m,latency_ns,167.615,ns,0.003,,,,,ok,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach256m,latency_ns,167.579,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 0.14% exceeds within-run cv 0.00%
+mem.tlb.lat,mem,,reach32m,latency_ns,160.889,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 0.85% exceeds within-run cv 0.00%; GPU0-vs-GPU1 medians differ 0.44%
+mem.tlb.lat,mem,,reach4096m,latency_ns,167.633,ns,0.003,,,,,ok,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach512m,latency_ns,167.639,ns,0.003,,,,,ok,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455
+mem.tlb.lat,mem,,reach64m,latency_ns,167.568,ns,0.003,,,,,UNVERIFIED,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 0.31% exceeds within-run cv 0.00%
+mem.tlb.lat,mem,,reach8192m,latency_ns,167.661,ns,0.007,,,,,UNVERIFIED,bench/mem/tlb.cu@2bf0336+3727ddd n_runs=6,1455,one line per 2 MiB page; .cg loads (L1 bypassed - virtually indexed L1 hides TLB); ns = cyc/1.455; between-run spread 1.99% exceeds within-run cv 0.01%; GPU0-vs-GPU1 medians differ 0.99%
+sfu.mufu.cos.lat,sfu,,,latency_cycles,21,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=10,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.cos.tput,sfu,,w16,recip_tput,0.499743,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=10,1455,
+sfu.mufu.ex2.lat,sfu,,,latency_cycles,15,cycles,0.000,,15,jia2019turing:tab4.1,0.0,ok,bench/sfu/mufu.cu@2bf0336+a4fdd73 n_runs=7,1455,ftz form (single MUFU.EX2; non-ftz adds a denormal fixup sequence); chain saturates to inf
+sfu.mufu.ex2.tput,sfu,,w32,recip_tput,0.49998,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu.cu@2bf0336+a4fdd73 n_runs=7,1455,
+sfu.mufu.lg2.lat,sfu,,,latency_cycles,15,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=10,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.lg2.tput,sfu,,w16,recip_tput,0.499984,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=10,1455,
+sfu.mufu.rcp_fadd_pair.lat,sfu,,,latency_cycles,21.1562,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=9,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.rcp_fadd_pair.tput,sfu,,w16,recip_tput,0.499618,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=9,1455,
+sfu.mufu.rsq.lat,sfu,,,latency_cycles,15,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=10,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.rsq.tput,sfu,,w16,recip_tput,0.499984,warpinst/SM/clk,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=10,1455,
+sfu.mufu.sin.lat,sfu,,,latency_cycles,21,cycles,0.000,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=10,1455,ftz chain; MUFU is fixed-latency (value oscillation/NaN noted)
+sfu.mufu.sin.tput,sfu,,w16,recip_tput,0.499733,warpinst/SM/clk,0.001,,,,,ok,bench/sfu/mufu_set.cu@1bae045+2bf0336+e163814 n_runs=10,1455,
+sync.bar.lat,sync,,w1,latency_cycles,22.3437,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=12,1455,
+sync.bar.lat,sync,,w16,latency_cycles,52.3436,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=12,1455,
+sync.bar.lat,sync,,w1_direct,latency_cycles,28,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe n_runs=6,1455,second method: per-barrier clock64 pair (carries the timer read); corroborates the slope row
+sync.bar.lat,sync,,w2,latency_cycles,24.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=12,1455,
+sync.bar.lat,sync,,w32,latency_cycles,84.3439,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=12,1455,
+sync.bar.lat,sync,,w4,latency_cycles,28.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=12,1455,
+sync.bar.lat,sync,,w6,latency_cycles,32.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=12,1455,192 threads; production attention block shape
+sync.bar.lat,sync,,w6_direct,latency_cycles,35,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe n_runs=6,1455,second method: per-barrier clock64 pair (carries the timer read); corroborates the slope row
+sync.bar.lat,sync,,w8,latency_cycles,36.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe+a4fdd73 n_runs=12,1455,
+sync.bar.tput,sync,,2blk_w6,latency_cycles,32.3438,cycles,0.000,,,,,ok,bench/sync/bar.cu@2bf0336+4b2f6fe n_runs=6,1455,per-barrier cost in block 0 with a co-resident 192-thread CTA per SM; compare sync.bar.lat w6
+sync.shfl.lat,sync,,idx,latency_cycles,25,cycles,0.000,,,,,ok,bench/sync/shfl.cu@2bf0336+5c88700 n_runs=7,1455,value-dependent SHFL.IDX ring chain
+sync.shfl.tput,sync,,w4_idx,recip_tput,0.49998,warpinst/SM/clk,0.000,,,,,ok,bench/sync/shfl.cu@2bf0336+5c88700 n_runs=7,1455,
+sync.vote.lat,sync,,ballot,latency_cycles,16.1875,cycles,0.000,,,,,ok,bench/sync/vote.cu@2bf0336+4b2f6fe n_runs=6,1455,dependent ballot chain; result feeds the next predicate via a lane shift
+sync.vote.tput,sync,,w8_ballot,recip_tput,0.960001,warpinst/SM/clk,0.000,,,,,ok,bench/sync/vote.cu@2bf0336+4b2f6fe n_runs=6,1455,four independent ballot chains per warp
+tensor.hmma.1688.lat,tensor,,d_feeds_a,latency_cycles,14.0234,cycles,0.000,,,,,ok,bench/tensor/tensor.cu@2bf0336+36c748c+4b2f6fe n_runs=11,1455,dependent accumulate chain (D feeds A)
+tensor.hmma.1688.tput,tensor,,w8_f16acc,recip_tput,0.499987,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@2bf0336+36c748c+4b2f6fe n_runs=11,1455,m16n8k8 f16 accumulate; 1024 MAC per inst per warp
+tensor.hmma.1688.tput,tensor,,w8_f32acc,recip_tput,0.499956,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@2bf0336+36c748c+4b2f6fe n_runs=11,1455,m16n8k8 f32 accumulate; FULL rate on this Quadro-positioned TU102 (the half-rate prior describes GeForce variants)
+tensor.hmma_vs_hfma2.probe,pipes,,class,na,0.758505,warpinst/SM/clk,0.000,,,,,ok,bench/alu/audit_probes.cu@2bf0336+78d2a33 n_runs=6,1455,pipe=SHARED unit (FP16 via tensor cores); mix 0.759 vs shared 0.80 / distinct 1.00
+tensor.imma.8816.tput,tensor,,w8_s8,recip_tput,0.999915,warpinst/SM/clk,0.000,,1.0,nvidia2018turing:sec-tc,-0.0,ok,bench/tensor/tensor.cu@2bf0336+36c748c+4b2f6fe n_runs=11,1455,m8n8k16 s8; 1024 MAC per inst per warp
+tensor.ldsm.lat,tensor,,x1_chain,latency_cycles,29.9999,cycles,0.000,,,,,ok,bench/tensor/tensor.cu@2bf0336+4b2f6fe n_runs=6,1455,chain link = LDSM + address LOP3 (loaded value perturbs the next row address); construction named
+tensor.ldsm.tput,tensor,,w8_x4,recip_tput,0.125007,warpinst/SM/clk,0.000,,,,,ok,bench/tensor/tensor.cu@2bf0336+4b2f6fe n_runs=6,1455,ldmatrix m8n8.x4 (four 8x8 b16 tiles per inst)
 x.consume.local,x,,20kb_singlewarp_gpu0,time_us,1.1354,us,0.000,,,,,ok,bench/x/fence.cu@2c25a74+4b2f6fe+6effc0c n_runs=6,1455,one-warp L2-resident read+fold (the responder loop)
 x.consume.local,x,,20kb_singlewarp_gpu1,time_us,1.1354,us,0.000,,,,,ok,bench/x/fence.cu@2c25a74+4b2f6fe+6effc0c n_runs=6,1455,one-warp L2-resident read+fold (the responder loop)
 x.consume.local,x,,4kb_singlewarp_gpu0,time_us,0.32165,us,0.000,,,,,ok,bench/x/fence.cu@2c25a74+4b2f6fe+6effc0c n_runs=6,1455,one-warp L2-resident read+fold (the responder loop)
