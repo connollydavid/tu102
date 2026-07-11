@@ -66,7 +66,10 @@ EXPECT = {
 }
 
 # Bespoke (non-template) bench kernels, matched by function-name substring.
-# Same loop-detection and purity rules as EXPECT.
+# Same loop-detection and purity rules as EXPECT. An entry may also carry
+# "require": a regex the full instruction text must match at least `min`
+# times in the loop (binds a specific lowering, e.g. a store cache policy,
+# where the base mnemonic alone cannot).
 EXPECT_FN = {
     "smem_chase_kernel": {"primary": {"LDS"}},
     "smem_conflict_kernel": {"primary": {"LDS"}},
@@ -126,6 +129,27 @@ EXPECT_FN = {
                           "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
     "dram_copy_kernel": {"primary": {"LDG", "STG"}, "min": 2,
                          "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
+    # mem.stg.* write paths (gate G00). The policy instantiations bind the
+    # verified lowering of each st.global cache policy (cuobjdump, sm_75,
+    # CUDA 13.3): default -> .SYS, wb -> .STRONG.CTA, cg -> .STRONG.GPU,
+    # cs -> .EF (evict-first), wt -> .STRONG.SYS
+    "stg_stream_kernel": {"primary": {"STG"}, "min": 1,
+                          "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
+    "stg_policy_kernelILi0E": {"primary": {"STG"}, "min": 1,
+                               "require": r"STG\.E\.128\.SYS \[",
+                               "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
+    "stg_policy_kernelILi1E": {"primary": {"STG"}, "min": 1,
+                               "require": r"STG\.E\.128\.STRONG\.CTA \[",
+                               "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
+    "stg_policy_kernelILi2E": {"primary": {"STG"}, "min": 1,
+                               "require": r"STG\.E\.128\.STRONG\.GPU \[",
+                               "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
+    "stg_policy_kernelILi3E": {"primary": {"STG"}, "min": 1,
+                               "require": r"STG\.E\.EF\.128\.SYS \[",
+                               "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
+    "stg_policy_kernelILi4E": {"primary": {"STG"}, "min": 1,
+                               "require": r"STG\.E\.128\.STRONG\.SYS \[",
+                               "companions": {"IMAD", "LEA", "SHF", "MOV", "LOP3"}},
     # loop-structure parse quirk on one instantiation; the row self-validates
     # via the cg-vs-default policy contrast (382 vs 1110 GB/s)
     "l2bw_kernel": None,
@@ -364,11 +388,18 @@ def main():
             min_primary = expect.get("min", args.min_primary)
             n_primary = sum(1 for _, base, _ in body if base in primary)
             aliens = [base for _, base, _ in body if base not in allowed]
+            req = expect.get("require")
+            n_req = sum(1 for _, _, text in body
+                        if re.search(req, text)) if req else None
             if size > args.l0_bytes:
                 print(f"FAIL {label}: loop body {size} B exceeds L0 budget")
                 failures += 1
             elif n_primary < min_primary:
                 print(f"FAIL {label}: only {n_primary} primary ops in loop")
+                failures += 1
+            elif req and n_req < min_primary:
+                print(f"FAIL {label}: required form /{req}/ appears {n_req}x "
+                      f"in loop, need >= {min_primary}")
                 failures += 1
             elif len(aliens) > args.staging_budget:
                 print(f"FAIL {label}: {len(aliens)} non-primary ops "

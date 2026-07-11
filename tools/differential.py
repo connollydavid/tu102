@@ -30,7 +30,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESULTS = os.path.join(ROOT, "data", "results", "t5820-2xrtx6000", "proj.csv")
 BIN = os.path.join(ROOT, "bench", "proj", "inject.bin")
 OUTDIR = os.path.join(ROOT, "data", "proj")
-CUOBJDUMP = "/opt/cuda-13.3/bin/cuobjdump"
+CUOBJDUMP = "/opt/cuda/bin/cuobjdump"
 
 SYM_RE = re.compile(r"inject_kernelINS_\d*(Op\w+?)ELi(\d+)E")
 OPKEY = {"OpNONE": "base", "OpFFMA": "ffma", "OpIDP4A_S8": "idp4a",

@@ -15,7 +15,7 @@ import re
 import subprocess
 import sys
 
-CUOBJDUMP = "/opt/cuda-13.3/bin/cuobjdump"
+CUOBJDUMP = "/opt/cuda/bin/cuobjdump"
 INSTR_RE = re.compile(r"/\*[0-9a-f]+\*/\s+(?:@!?P\d+\s+)?([A-Z][A-Z0-9.]*)")
 FUNC_RE = re.compile(r"^\s*Function : (\S+)")
 
