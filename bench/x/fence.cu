@@ -227,6 +227,7 @@ int main(int argc, char** argv) {
     using namespace tu102;
     Run r = harness_init(argc, argv, "fence");
     int self = r.dev, other = 1 - r.dev;
+    harness_also_touches(r, other);
     TU102_CUDA_CHECK(cudaSetDevice(self));
     cudaDeviceEnablePeerAccess(other, 0);
     cudaGetLastError();

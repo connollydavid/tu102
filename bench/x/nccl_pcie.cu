@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
     setenv("NCCL_MIN_NCHANNELS", "2", 1);
     setenv("NCCL_MAX_NCHANNELS", "2", 1);
     Run r = harness_init(argc, argv, "nccl_pcie");
+    harness_also_touches(r, 1 - r.dev);  // the bw/lat loops and NCCL touch both GPUs
 
     // ---- PCIe bandwidth, both GPUs, pinned and pageable ----
     const size_t NB = 1ull << 28;

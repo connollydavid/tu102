@@ -63,6 +63,8 @@ static __global__ void tu102_spin_kernel(long long cycles) {
 struct Run {
     int dev = 0;
     nvmlDevice_t nvml{};
+    nvmlDevice_t nvml_peer{};  // second device of a cross-GPU bench
+    bool has_peer = false;
     char run_id[64]{};
     char host[64]{};
     char gpu_name[96]{};
@@ -98,8 +100,35 @@ inline unsigned clock_now(const Run& r, nvmlClockType_t t) {
 inline bool clocks_on_target(const Run& r) {
     unsigned sm = clock_now(r, NVML_CLOCK_SM);
     unsigned mem = clock_now(r, NVML_CLOCK_MEM);
+    if (r.has_peer) {
+        unsigned psm = 0;
+        nvmlDeviceGetClockInfo(r.nvml_peer, NVML_CLOCK_SM, &psm);
+        if (psm != (unsigned)SM_CLOCK_MHZ) return false;
+    }
     return sm == (unsigned)SM_CLOCK_MHZ &&
            std::abs((int)mem - MEM_CLOCK_MHZ) <= MEM_CLOCK_TOL;
+}
+
+// Cross-GPU gate. harness_init covers only the --dev target; a bench that
+// touches a second device registers it here, right after init. The SM lock
+// holds its target even at idle, so it gates immediately, and
+// clocks_on_target() then re-samples the second device's SM clock around
+// every rep. The second device's memory clock is not checked: the P2 point
+// is defined under local compute load, which a passive peer does not carry.
+inline void harness_also_touches(Run& r, int dev) {
+    if (nvmlDeviceGetHandleByIndex(dev, &r.nvml_peer) != NVML_SUCCESS)
+        die_gate("NVML handle failed for the bench's second device",
+                 "check the device index");
+    unsigned sm = 0;
+    nvmlDeviceGetClockInfo(r.nvml_peer, NVML_CLOCK_SM, &sm);
+    if (sm != (unsigned)SM_CLOCK_MHZ) {
+        char msg[112];
+        std::snprintf(msg, sizeof msg,
+                      "device %d SM clock %u MHz, not locked at %d (cross-GPU bench)",
+                      dev, sm, SM_CLOCK_MHZ);
+        die_gate(msg, "sudo nvidia-smi -pm 1 && sudo nvidia-smi -lgc 1455 on every GPU the bench touches");
+    }
+    r.has_peer = true;
 }
 
 inline void read_governor(char* out, size_t n) {

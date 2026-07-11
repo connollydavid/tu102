@@ -36,6 +36,9 @@ EXEMPT_BINARIES = {
                 "cg-vs-default policy contrast (382 vs 1110 GB/s)",
     "fa_mini.bin": "composite kernels; gated by census-match mode instead",
     "nccl_pcie.bin": "host-side NCCL/cudaMemcpy timing; no timed device loops",
+    "pcie_vis.bin": "host/device mailbox handshake plus host-side event "
+                    "timing; the poll loops are guard-checked, no timed "
+                    "device compute loop",
     "icache.bin": "loop bodies sized to exceed L0 BY DESIGN (the measurement)",
 }
 
@@ -90,6 +93,20 @@ EXPECT_FN = {
                       "companions": {"FADD", "IMAD", "LEA", "SHF", "MOV", "LOP3",
                                      "SEL"}},
     "peer_ring_init": None,
+    "bulkbw_gate_kernel": None,  # release gate (mapped-flag spin), not timed
+    # gate G03 bulk curve: grid-wide float4 .cg streaming read; the require
+    # regex binds the 128-bit vector form AND the L1-bypassing .cg policy
+    # (a default load caches peer lines in the local L1 and re-reads would
+    # measure the cache, not the link; caught on the 2026-07-11 smoke run)
+    "bulkbw_read_kernel": {"primary": {"LDG"}, "min": 4,
+                           "require": r"LDG\.E\.128\.STRONG\.GPU",
+                           "companions": {"FADD", "IMAD", "LEA", "SHF", "MOV",
+                                          "LOP3",
+                                          # reconvergence scaffolding around
+                                          # the uniform back-edge; control
+                                          # only, no memory traffic
+                                          "BSSY", "BSYNC", "BMOV", "VOTE",
+                                          "VOTEU", "YIELD"}},
     "peer_read_bw_kernel": {"primary": {"LDG"}, "min": 4,
                             "companions": {"FADD", "IMAD", "LEA", "SHF", "MOV", "LOP3"}},
     "peer_write_bw_kernel": {"primary": {"STG"}, "min": 1,
@@ -255,7 +272,10 @@ def hot_loop(instrs):
     for i, (addr, base, text) in enumerate(instrs):
         if base != "BRA":
             continue
-        m = re.search(r"BRA\s+0x([0-9a-f]+)", text)
+        # BRA.U back-edges count too (ptxas emits the uniform form for some
+        # loop structures, e.g. the .cg bulk-read loop; without this the
+        # detector picks a tiny inner convergence spin as "the" loop)
+        m = re.search(r"BRA(?:\.U)?\s+0x([0-9a-f]+)", text)
         if not m:
             continue
         tgt = int(m.group(1), 16)
