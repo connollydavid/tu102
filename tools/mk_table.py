@@ -11,6 +11,12 @@ Aggregation per SCHEMA.md:
   - tput rows: peak across the warps/SM sweep; variant records the point
   - deviation_pct computed only where a prior exists (prior-applicability
     rule lives in priors_t4.csv itself: no row there, no prior here)
+  - table/verified.csv (optional; columns row_id,variant,method,result,
+    agreement,date,src): second-method verification ledger. A row whose
+    flag would be UNVERIFIED only from between-run spread and/or GPU-median
+    disagreement (never a single invocation) is set to ok, with the note
+    "verified by <method>: <result> (agreement <agreement>)" appended. An
+    entry with an empty variant matches the base variant.
 
 Deterministic output: same inputs -> byte-identical CSV (the idempotency
 gate in the Harness verification plan).
@@ -26,6 +32,7 @@ HOST_DS = "t5820-2xrtx6000"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESULTS = os.path.join(ROOT, "data", "results", HOST_DS)
 PRIORS = os.path.join(ROOT, "table", "priors_t4.csv")
+VERIFIED = os.path.join(ROOT, "table", "verified.csv")
 OUT = os.path.join(ROOT, "table", "tu102_ops.csv")
 
 # row_id prefix -> SASS instruction (as proven by check_sass.py)
@@ -62,6 +69,12 @@ def main():
     with open(PRIORS) as f:
         for row in csv.DictReader(f):
             priors[row["row_id"]] = row
+
+    verified = {}
+    if os.path.exists(VERIFIED):
+        with open(VERIFIED) as f:
+            for row in csv.DictReader(f):
+                verified[(row["row_id"], row["variant"])] = row
 
     # measurements[(row_id, variant_key)] = list of result dicts
     measurements = collections.defaultdict(list)
@@ -154,7 +167,8 @@ def main():
             # host-domain time rows carry scheduler jitter (5%)
             floor = 5.0 if kind == "time_us" else \
                     0.5 if kind == "bandwidth" and unit == "GB/s" else 0.1
-            if len(run_vals) < 2:
+            single_invocation = len(run_vals) < 2
+            if single_invocation:
                 flag = "UNVERIFIED"
                 extra.append("between-run rule unmet (single invocation)")
             else:
@@ -169,6 +183,17 @@ def main():
                 if gpu_diff > max(2 * within_cv, 0.3):
                     extra.append(f"GPU0-vs-GPU1 medians differ {gpu_diff:.2f}%")
                     flag = "UNVERIFIED"
+
+            # second-method override: a statistical UNVERIFIED (between-run
+            # spread and/or GPU-median disagreement, never a single
+            # invocation) clears when table/verified.csv records an
+            # independent method for this row and variant
+            if flag == "UNVERIFIED" and not single_invocation:
+                v = verified.get((row_id, variant))
+                if v:
+                    flag = "ok"
+                    extra.append(f"verified by {v['method']}: {v['result']} "
+                                 f"(agreement {v['agreement']})")
 
             # variant-specific priors: <row_id>.<variant> beats <row_id>
             prior = priors.get(f"{row_id}.{variant}") or priors.get(row_id)
