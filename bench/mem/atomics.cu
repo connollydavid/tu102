@@ -44,6 +44,34 @@ __global__ void atom_global_lat_kernel(unsigned trips, int c, unsigned* gslots,
     if (threadIdx.x == 0) { *out = t1 - t0; *sink = v; }
 }
 
+// RED-chain decomposition, the second method for atomics.global.add.lat
+// (gate G02). Per trip: CHASE_UNROLL non-returning same-address adds (they
+// lower to the RED reduction form) then ONE returning add whose old value
+// feeds the next trip. Same-address ordering at the L2 services the
+// returning add after every prior RED, so
+//   per-trip cycles = CHASE_UNROLL * red_service_interval + return-chain link
+// and the host derives the service interval by subtracting the return-chain
+// latency measured in the same invocation. The REDs carry v rather than 1u
+// so the next trip cannot issue before the previous return lands (the
+// addend does not change the RED lowering). Contention mirrors the
+// return-chain kernel: c lanes share slot 0, the rest chase private lines.
+__global__ void atom_global_redsvc_lat_kernel(unsigned trips, int c,
+                                              unsigned* gslots, long long* out,
+                                              unsigned* sink) {
+    int lane = threadIdx.x & 31;
+    unsigned* target = &gslots[(lane < c ? 0 : (32 + lane)) * 32];
+    unsigned v = lane + 1;
+    long long t0 = clock64();
+    for (unsigned t = 0; t < trips; t++) {
+#pragma unroll
+        for (int u = 0; u < CHASE_UNROLL; u++)
+            atomicAdd(target, v);  // result unused: lowers to RED
+        v = atomicAdd(target, v);  // one returning add closes the trip
+    }
+    long long t1 = clock64();
+    if (threadIdx.x == 0) { *out = t1 - t0; *sink = v; }
+}
+
 __global__ void atom_cas_lat_kernel(unsigned trips, unsigned* gslots,
                                     long long* out, unsigned* sink) {
     // every lane chases its own line: contention-free dependent CAS chain
@@ -112,8 +140,8 @@ static long long* d_cyc;
 static unsigned *d_sink, *d_gslots;
 
 template <typename L>
-void run_lat(Run& r, const char* row, const char* variant, L launch,
-             const char* notes) {
+double run_lat(Run& r, const char* row, const char* variant, L launch,
+               const char* notes) {
     unsigned trips = 256;
     for (;;) {
         cudaEvent_t e0, e1;
@@ -139,9 +167,50 @@ void run_lat(Run& r, const char* row, const char* variant, L launch,
         TU102_CUDA_CHECK(cudaMemcpy(&s2, d_cyc, 8, cudaMemcpyDeviceToHost));
         return (double)(s2 - s1) / ((double)trips * CHASE_UNROLL);
     });
-    report_row(r, "atomics", row, "latency_cycles", variant, median(vals),
+    double med = median(vals);
+    report_row(r, "atomics", row, "latency_cycles", variant, med,
                "cycles", cv_pct(vals), (int)vals.size(), (int)r.rejected_total,
                SRC, notes, &vals);
+    return med;
+}
+
+// RED-chain decomposition row: per-trip cycles minus the return-chain
+// latency measured in this same invocation (ret_lat), over CHASE_UNROLL.
+void run_redsvc(Run& r, const char* variant, int c, double ret_lat) {
+    auto launch = [&](unsigned t) {
+        atom_global_redsvc_lat_kernel<<<1, 32>>>(t, c, d_gslots, d_cyc, d_sink);
+    };
+    unsigned trips = 256;
+    for (;;) {
+        cudaEvent_t e0, e1;
+        TU102_CUDA_CHECK(cudaEventCreate(&e0));
+        TU102_CUDA_CHECK(cudaEventCreate(&e1));
+        TU102_CUDA_CHECK(cudaEventRecord(e0));
+        launch(trips);
+        TU102_CUDA_CHECK(cudaEventRecord(e1));
+        TU102_CUDA_CHECK(cudaEventSynchronize(e1));
+        float ms = 0;
+        TU102_CUDA_CHECK(cudaEventElapsedTime(&ms, e0, e1));
+        cudaEventDestroy(e0);
+        cudaEventDestroy(e1);
+        if (ms >= MIN_TIMED_MS * 1.1) break;
+        trips *= 2;
+        calib_guard(trips);
+    }
+    auto vals = run_reps(r, [&] {
+        long long s1 = 0, s2 = 0;
+        launch(trips);
+        TU102_CUDA_CHECK(cudaMemcpy(&s1, d_cyc, 8, cudaMemcpyDeviceToHost));
+        launch(2 * trips);
+        TU102_CUDA_CHECK(cudaMemcpy(&s2, d_cyc, 8, cudaMemcpyDeviceToHost));
+        return ((double)(s2 - s1) / (double)trips - ret_lat) / CHASE_UNROLL;
+    });
+    report_row(r, "atomics", "atomics.global.add.redsvc", "latency_cycles",
+               variant, median(vals), "cycles", cv_pct(vals), (int)vals.size(),
+               (int)r.rejected_total, SRC,
+               "RED service interval at one L2 slot: per-trip cycles minus the "
+               "return-chain latency from the same invocation over 32; "
+               "second method for atomics.global.add.lat (gate G02)", &vals);
 }
 
 }  // namespace tu102
@@ -160,9 +229,10 @@ int main(int argc, char** argv) {
         run_lat(r, "atomics.shared.add.lat", variant, [&](unsigned t) {
             atom_shared_lat_kernel<<<1, 32>>>(t, c, d_cyc, d_sink);
         }, "dependent chain through returned value; c lanes share one slot");
-        run_lat(r, "atomics.global.add.lat", variant, [&](unsigned t) {
+        double glat = run_lat(r, "atomics.global.add.lat", variant, [&](unsigned t) {
             atom_global_lat_kernel<<<1, 32>>>(t, c, d_gslots, d_cyc, d_sink);
         }, "L2-domain: Jia T4 reference 76-116 cyc by contention (tab4.2) is non-binding");
+        run_redsvc(r, variant, c, glat);
     }
     run_lat(r, "atomics.global.cas.lat", "", [&](unsigned t) {
         atom_cas_lat_kernel<<<1, 32>>>(t, d_gslots, d_cyc, d_sink);

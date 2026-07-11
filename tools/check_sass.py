@@ -21,7 +21,7 @@ import re
 import subprocess
 import sys
 
-CUOBJDUMP = "/opt/cuda-13.3/bin/cuobjdump"
+CUOBJDUMP = "/opt/cuda/bin/cuobjdump"
 
 # loop-control instructions every timed loop legitimately contains
 CONTROL = {"IADD3", "ISETP", "BRA", "NOP"}
@@ -113,6 +113,11 @@ EXPECT_FN = {
     "atom_shared_lat_kernel": {"primary": {"ATOMS"}, "min": 16},
     "atom_global_lat_kernel": {"primary": {"ATOMG"}, "min": 16},
     "atom_cas_lat_kernel": {"primary": {"ATOMG"}, "min": 16},
+    # RED-chain decomposition (gate G02 second method): the 32 non-returning
+    # same-address adds must lower to RED; the one returning add per trip is
+    # the tolerated ATOMG companion
+    "atom_global_redsvc_lat_kernel": {"primary": {"RED"}, "min": 32,
+                                      "companions": {"ATOMG"}},
     "const_chase_div_kernel": {"primary": {"LDC"}},
     "const_chase_kernel": {"primary": {"ULDC"}},
     "dram_read_kernel": {"primary": {"LDG"}, "min": 4,
