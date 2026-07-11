@@ -40,6 +40,12 @@ EXEMPT_BINARIES = {
                     "timing; the poll loops are guard-checked, no timed "
                     "device compute loop",
     "icache.bin": "loop bodies sized to exceed L0 BY DESIGN (the measurement)",
+    "dequant_gemv.bin": "composite dequant-GEMV projection kernels (proj "
+                        "family); correctness-gated in-binary by fp64 "
+                        "references, fa_mini-style",
+    "sentinel.bin": "signaling handshake twins; guard-checked poll loops and "
+                    "in-binary observation-total litmus, pcie_vis-style; no "
+                    "timed device compute loop",
 }
 
 # Op struct name (appears in the mangled kernel symbol) -> expectation.
@@ -240,6 +246,24 @@ EXPECT_FN = {
     "inject_kernel": {"primary": {"FFMA", "LOP3", "LDG"}, "min": 40,
                       "companions": {"IDP", "POPC", "SEL", "ISETP", "IMAD",
                                      "LEA", "MOV", "SHF", "FADD"}},
+    # x.nvlink .sys-scope family: the require regexes bind the system-scope
+    # lowerings (verified via cuobjdump: atom/red .sys -> .STRONG.SYS)
+    "sysatom_add_chase": {"primary": {"ATOMG"}, "min": 8,
+                          "require": r"ATOMG\.E\.ADD\.STRONG\.SYS"},
+    "sysatom_add_tput": {"primary": {"RED"}, "min": 8,
+                         "require": r"RED\.E\.ADD\.STRONG\.SYS"},
+    "mp_initiator": None, "mp_responder": None,  # handshake structure; litmus-gated
+    # grid.sync lowers to a composite software barrier (BAR + arrive
+    # red/atom + acquire poll); no single-op purity gate binds
+    "gridsync_lat_kernel": None,
+    "gridsync_direct_kernel": None,
+    # BAR is the design (one __syncthreads per pipeline page); S2R is
+    # thread-index reads in the staging prologue
+    "page_stream_kernel": {"primary": {"LDG"}, "min": 2,
+                           "companions": {"STS", "LDS", "IADD3", "IMAD", "LEA",
+                                          "SHF", "MOV", "LOP3", "ISETP", "SEL",
+                                          "BAR", "S2R"}},
+    "region_fill_kernel": None,
 }
 
 INSTR_RE = re.compile(r"/\*([0-9a-f]+)\*/\s+((?:@!?P\d+\s+)?[A-Z][A-Z0-9.]*[^;]*)")
