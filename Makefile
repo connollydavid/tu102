@@ -1,6 +1,6 @@
 # nvcc 13.3 parses libstdc++ 16 headers cleanly (the 13.2 incompat that
 # forced a g++-15 host-compiler pin is fixed), so no -ccbin pin here.
-NVCC      := /opt/cuda-13.3/bin/nvcc
+NVCC      := /opt/cuda/bin/nvcc
 GIT_SHA   := $(shell git rev-parse --short HEAD)
 NVCCFLAGS := -O2 -arch=sm_75 -lineinfo -DTU102_GIT_SHA=\"$(GIT_SHA)\"
 LDLIBS    := -lnvidia-ml
@@ -28,7 +28,7 @@ bench/x/nccl_pcie.bin: bench/x/nccl_pcie.cu bench/common/harness.cuh
 sass: $(BENCH_BINS:.bin=.sass)
 
 %.sass: %.bin
-	/opt/cuda-13.3/bin/cuobjdump -sass $< > $@
+	/opt/cuda/bin/cuobjdump -sass $< > $@
 
 table:
 	python3 tools/mk_table.py
